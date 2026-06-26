@@ -18,6 +18,7 @@ interface CreateJobStoreOptions {
 }
 
 interface CreateAnalysisInput {
+  id?: string;
   url: string;
   metadata: Record<string, unknown>;
   expiresAt: Date;
@@ -116,7 +117,7 @@ export function createJobStore(options: CreateJobStoreOptions): JobStore {
     createAnalysis(input) {
       const createdAt = now();
       const record: AnalysisRecord = {
-        id: createId("ana"),
+        id: input.id ?? createId("ana"),
         url: input.url,
         metadata: input.metadata,
         createdAt,

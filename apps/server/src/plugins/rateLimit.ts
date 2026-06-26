@@ -91,11 +91,11 @@ function selectLimiter(
   analyzeLimiter: ReturnType<typeof createFixedWindowRateLimiter>,
   jobCreateLimiter: ReturnType<typeof createFixedWindowRateLimiter>
 ) {
-  if (request.method === "POST" && request.url === "/analyze") {
+  if (request.method === "POST" && (request.url === "/analyze" || request.url === "/api/analyze")) {
     return analyzeLimiter;
   }
 
-  if (request.method === "POST" && request.url === "/jobs") {
+  if (request.method === "POST" && (request.url === "/jobs" || request.url === "/api/jobs")) {
     return jobCreateLimiter;
   }
 

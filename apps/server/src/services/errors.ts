@@ -3,6 +3,7 @@ export type NormalizedErrorCode =
   | "AUTH_REQUIRED"
   | "GEO_RESTRICTED"
   | "NETWORK_TIMEOUT"
+  | "ANALYZE_TIMEOUT"
   | "DOWNLOAD_TIMEOUT"
   | "FFMPEG_MISSING"
   | "INSUFFICIENT_DISK_SPACE"
@@ -33,6 +34,11 @@ const ERROR_DEFINITIONS: Record<NormalizedErrorCode, NormalizedYtDlpError> = {
   NETWORK_TIMEOUT: {
     code: "NETWORK_TIMEOUT",
     message: "網路連線逾時，請稍後再試。",
+    retryable: true
+  },
+  ANALYZE_TIMEOUT: {
+    code: "ANALYZE_TIMEOUT",
+    message: "分析處理逾時，請稍後再試。",
     retryable: true
   },
   DOWNLOAD_TIMEOUT: {
@@ -84,6 +90,10 @@ function classifyError(text: string): NormalizedErrorCode {
 
   if (/not available in your country|geo.?restricted|geoblock|region/.test(normalized)) {
     return "GEO_RESTRICTED";
+  }
+
+  if (/analyze timed out|analysis timed out/.test(normalized)) {
+    return "ANALYZE_TIMEOUT";
   }
 
   if (/process timed out|download timed out|timeout after|timed out after/.test(normalized)) {
