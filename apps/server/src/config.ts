@@ -2,8 +2,10 @@ import { resolve } from "node:path";
 
 export interface AppConfig {
   port: number;
+  publicBaseUrl?: string;
   dataDir: string;
   adminToken?: string;
+  jobConcurrency: number;
   analyzeTimeoutMs: number;
   downloadTimeoutMs: number;
   fileTtlHours: number;
@@ -11,6 +13,8 @@ export interface AppConfig {
   minFreeDiskBytes: number;
   rateLimitAnalyzePerMinute: number;
   rateLimitJobCreatePerMinute: number;
+  enableSse: boolean;
+  enableRangeRequests: boolean;
   ytDlpBinary: string;
   ffmpegBinary: string;
   ffprobeBinary: string;
@@ -20,13 +24,14 @@ export type ConfigInput = Record<string, string | undefined>;
 
 const DEFAULTS = {
   port: 8787,
+  jobConcurrency: 1,
   analyzeTimeoutSeconds: 60,
-  downloadTimeoutSeconds: 60 * 60,
+  downloadTimeoutSeconds: 2 * 60 * 60,
   fileTtlHours: 24,
-  cleanupIntervalMinutes: 15,
-  minFreeDiskBytes: 1024 * 1024 * 1024,
-  rateLimitAnalyzePerMinute: 20,
-  rateLimitJobCreatePerMinute: 10,
+  cleanupIntervalMinutes: 60,
+  minFreeDiskBytes: 5 * 1024 * 1024 * 1024,
+  rateLimitAnalyzePerMinute: 10,
+  rateLimitJobCreatePerMinute: 5,
   ytDlpBinary: "yt-dlp",
   ffmpegBinary: "ffmpeg",
   ffprobeBinary: "ffprobe"
@@ -41,8 +46,10 @@ export function loadConfig(env: ConfigInput = process.env): AppConfig {
 
   return {
     port: readNumber(env.PORT, "PORT", DEFAULTS.port),
+    publicBaseUrl: normalizeOptional(env.PUBLIC_BASE_URL),
     dataDir: resolve(env.DATA_DIR ?? "data"),
     adminToken,
+    jobConcurrency: readNumber(env.JOB_CONCURRENCY, "JOB_CONCURRENCY", DEFAULTS.jobConcurrency),
     analyzeTimeoutMs:
       readNumber(env.ANALYZE_TIMEOUT_SECONDS, "ANALYZE_TIMEOUT_SECONDS", DEFAULTS.analyzeTimeoutSeconds) * 1000,
     downloadTimeoutMs:
@@ -61,6 +68,8 @@ export function loadConfig(env: ConfigInput = process.env): AppConfig {
       "RATE_LIMIT_JOB_CREATE_PER_MINUTE",
       DEFAULTS.rateLimitJobCreatePerMinute
     ),
+    enableSse: readBoolean(env.ENABLE_SSE),
+    enableRangeRequests: readBoolean(env.ENABLE_RANGE_REQUESTS),
     ytDlpBinary: env.YT_DLP_BINARY ?? DEFAULTS.ytDlpBinary,
     ffmpegBinary: env.FFMPEG_BINARY ?? DEFAULTS.ffmpegBinary,
     ffprobeBinary: env.FFPROBE_BINARY ?? DEFAULTS.ffprobeBinary
@@ -91,4 +100,8 @@ function readNumber(value: string | undefined, key: string, fallback: number) {
 function normalizeOptional(value: string | undefined) {
   const normalized = value?.trim();
   return normalized ? normalized : undefined;
+}
+
+function readBoolean(value: string | undefined) {
+  return value === "true";
 }

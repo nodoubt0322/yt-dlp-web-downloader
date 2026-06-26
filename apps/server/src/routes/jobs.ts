@@ -22,7 +22,7 @@ export async function registerJobsRoutes(app: FastifyInstance, options: Register
       dataDir: options.config.dataDir,
       ytDlpBinary: options.config.ytDlpBinary,
       timeoutMs: options.config.downloadTimeoutMs,
-      publicBaseUrl: "",
+      publicBaseUrl: options.config.publicBaseUrl,
       fileTtlHours: options.config.fileTtlHours,
       now: options.now
     });

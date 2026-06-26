@@ -8,18 +8,37 @@ describe("loadConfig", () => {
     const config = loadConfig({ NODE_ENV: "test" });
 
     expect(config.port).toBe(8787);
+    expect(config.publicBaseUrl).toBeUndefined();
     expect(config.dataDir).toContain("data");
     expect(config.adminToken).toBeUndefined();
+    expect(config.jobConcurrency).toBe(1);
     expect(config.analyzeTimeoutMs).toBe(60_000);
-    expect(config.downloadTimeoutMs).toBe(3_600_000);
+    expect(config.downloadTimeoutMs).toBe(7_200_000);
     expect(config.fileTtlHours).toBe(24);
-    expect(config.cleanupIntervalMs).toBe(15 * 60_000);
-    expect(config.minFreeDiskBytes).toBe(1_073_741_824);
-    expect(config.rateLimitAnalyzePerMinute).toBe(20);
-    expect(config.rateLimitJobCreatePerMinute).toBe(10);
+    expect(config.cleanupIntervalMs).toBe(60 * 60_000);
+    expect(config.minFreeDiskBytes).toBe(5_368_709_120);
+    expect(config.rateLimitAnalyzePerMinute).toBe(10);
+    expect(config.rateLimitJobCreatePerMinute).toBe(5);
+    expect(config.enableSse).toBe(false);
+    expect(config.enableRangeRequests).toBe(false);
     expect(config.ytDlpBinary).toBe("yt-dlp");
     expect(config.ffmpegBinary).toBe("ffmpeg");
     expect(config.ffprobeBinary).toBe("ffprobe");
+  });
+
+  it("parses optional MVP env keys", () => {
+    const config = loadConfig({
+      NODE_ENV: "test",
+      PUBLIC_BASE_URL: "https://video.example.com",
+      JOB_CONCURRENCY: "1",
+      ENABLE_SSE: "true",
+      ENABLE_RANGE_REQUESTS: "true"
+    });
+
+    expect(config.publicBaseUrl).toBe("https://video.example.com");
+    expect(config.jobConcurrency).toBe(1);
+    expect(config.enableSse).toBe(true);
+    expect(config.enableRangeRequests).toBe(true);
   });
 
   it("requires ADMIN_TOKEN in production", () => {

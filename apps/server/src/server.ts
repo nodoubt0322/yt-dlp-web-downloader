@@ -1,4 +1,5 @@
 import Fastify from "fastify";
+import fastifyStatic from "@fastify/static";
 import type { AppConfig } from "./config.js";
 import { mergeConfig } from "./config.js";
 import { registerAuthPlugin } from "./plugins/auth.js";
@@ -14,6 +15,7 @@ import type { DnsResolver } from "./services/urlSafety.js";
 
 interface BuildServerOptions {
   config?: Partial<AppConfig>;
+  staticDir?: string;
   services?: {
     systemService?: SystemService;
     jobStore?: JobStore;
@@ -32,6 +34,21 @@ export async function buildServer(options: BuildServerOptions = {}) {
     });
   const app = Fastify({
     logger: false
+  });
+  app.addHook("onRequest", async (request, reply) => {
+    if (
+      config.adminToken &&
+      request.url.startsWith("/api/") &&
+      !request.url.startsWith("/api/download/") &&
+      request.headers.authorization !== `Bearer ${config.adminToken}`
+    ) {
+      return reply.code(401).send({
+        error: {
+          code: "UNAUTHORIZED",
+          message: "Missing or invalid bearer token"
+        }
+      });
+    }
   });
   app.addHook("onClose", async () => {
     if (!options.services?.jobStore) {
@@ -71,6 +88,25 @@ export async function buildServer(options: BuildServerOptions = {}) {
     },
     { prefix: "/api" }
   );
+  if (options.staticDir) {
+    await app.register(fastifyStatic, {
+      root: options.staticDir,
+      wildcard: false
+    });
+
+    app.setNotFoundHandler((request, reply) => {
+      if (request.url.startsWith("/api/") || request.method !== "GET") {
+        return reply.code(404).send({
+          error: {
+            code: "NOT_FOUND",
+            message: "Not found"
+          }
+        });
+      }
+
+      return reply.type("text/html; charset=utf-8").sendFile("index.html");
+    });
+  }
 
   return app;
 }
