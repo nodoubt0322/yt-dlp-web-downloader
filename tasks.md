@@ -52,17 +52,17 @@ Scope: P0/MVP only. P1/P2 features remain deferred unless a task explicitly says
 ## Milestone 5: Frontend MVP
 
 - [x] Add React/Vite app.
-- [ ] Store app token in `sessionStorage`, not `localStorage`.
-- [ ] Add system status banner.
-- [ ] Add URL input and analyze button.
-- [ ] Show required safety copy: `請只下載你擁有權利或已取得授權的內容；本工具不支援 DRM 或付費牆繞過。`
-- [ ] Render analysis metadata card.
-- [ ] Allow default-quality download without manual format selection.
-- [ ] Route job status to `/jobs/{jobId}`.
-- [ ] Poll `GET /api/jobs/{jobId}` every 1-3 seconds while queued or running.
-- [ ] Show queued, running, completed, failed, canceled, and expired states.
-- [ ] Show signed download link and expiration copy after completion.
-- [ ] Show sanitized Chinese error messages.
+- [x] Store app token in `sessionStorage`, not `localStorage`.
+- [x] Add system status banner.
+- [x] Add URL input and analyze button.
+- [x] Show required safety copy: `請只下載你擁有權利或已取得授權的內容；本工具不支援 DRM 或付費牆繞過。`
+- [x] Render analysis metadata card.
+- [x] Allow default-quality download without manual format selection.
+- [x] Route job status to `/jobs/{jobId}`.
+- [x] Poll `GET /api/jobs/{jobId}` every 1-3 seconds while queued or running.
+- [x] Show queued, running, completed, failed, canceled, and expired states.
+- [x] Show signed download link and expiration copy after completion.
+- [x] Show sanitized Chinese error messages.
 
 ## Milestone 6: Verification and Documentation
 
