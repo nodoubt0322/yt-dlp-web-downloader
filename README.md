@@ -1,70 +1,70 @@
 # yt-dlp Web Downloader
 
-Local single-owner web app for analyzing a video URL with `yt-dlp`, running an asynchronous download job, and serving the completed file through an expiring signed link.
+本專案是一個本機單一擁有者使用的 Web App：輸入影片 URL 後，後端使用 `yt-dlp` 分析影片、建立非同步下載任務，並透過有期限的簽章連結提供完成後的檔案下載。
 
-## What It Does
+## 功能概要
 
-1. Enter one video URL in the web UI.
-2. The backend validates the URL, blocks private-network targets, and analyzes metadata with `yt-dlp --dump-json`.
-3. Start a default-quality download job.
-4. The backend runs the job asynchronously with concurrency `1`, writes files under `DATA_DIR/jobs/{jobId}`, and tracks progress.
-5. When complete, the app shows a signed download URL that expires after the configured TTL.
+1. 在 Web UI 輸入一個影片 URL。
+2. 後端驗證 URL、阻擋 private network 目標，並用 `yt-dlp --dump-json` 分析 metadata。
+3. 建立預設品質的下載任務。
+4. 後端以 concurrency `1` 非同步執行任務，將檔案寫入 `DATA_DIR/jobs/{jobId}`，並追蹤進度。
+5. 任務完成後，App 顯示有期限的 signed download URL。
 
-This is built for a single owner running the backend locally, optionally exposed through Cloudflare Tunnel. It is not an anonymous public downloader.
+此工具設計給單一擁有者在本機執行，也可選擇透過 Cloudflare Tunnel 對外存取。它不是匿名公開下載服務。
 
-## Requirements
+## 系統需求
 
-- Node.js 22+ with `node:sqlite` support. Development was verified on Node `v26.4.0`.
+- Node.js 22+，且需支援 `node:sqlite`。目前開發驗證環境為 Node `v26.4.0`。
 - pnpm 11+
 - `yt-dlp`
 - `ffmpeg`
 - `ffprobe`
 
-Install media tools on macOS:
+在 macOS 安裝影音工具：
 
 ```bash
 brew install yt-dlp ffmpeg
 ```
 
-Update `yt-dlp` when a site changes:
+當網站規則變更時，更新 `yt-dlp`：
 
 ```bash
 brew upgrade yt-dlp
 ```
 
-## Setup
+## 安裝
 
 ```bash
 pnpm install
 cp .env.example .env
 ```
 
-Set `ADMIN_TOKEN` in `.env` to a long random value. API routes require:
+請在 `.env` 裡把 `ADMIN_TOKEN` 設成足夠長的隨機值。API route 需要：
 
 ```text
 Authorization: Bearer <ADMIN_TOKEN>
 ```
 
-The browser UI stores this token in `sessionStorage`, not `localStorage`.
+瀏覽器 UI 會把 token 存在 `sessionStorage`，不會寫入 `localStorage`。
 
-## Quick Start
+## 快速啟動
 
-For local development:
+本機開發：
 
 ```bash
 pnpm install
 ADMIN_TOKEN=dev-token pnpm dev
 ```
 
-Open:
+開啟：
 
 ```text
 http://127.0.0.1:8787
 ```
 
-Enter `dev-token` in the UI token field before using protected API actions.
+使用受保護的 API 操作前，先在 UI token 欄位輸入 `dev-token`。
 
-## Development
+## 開發指令
 
 ```bash
 pnpm test
@@ -73,9 +73,9 @@ pnpm build
 pnpm dev
 ```
 
-The backend listens on `http://127.0.0.1:8787` by default.
+後端預設監聽 `http://127.0.0.1:8787`。
 
-## Testing
+## 測試
 
 ```bash
 pnpm install --frozen-lockfile
@@ -84,16 +84,16 @@ pnpm typecheck
 pnpm build
 ```
 
-The automated tests include:
+自動化測試涵蓋：
 
-- URL safety and SSRF protection.
-- Command builder argument-array checks.
-- Mock `yt-dlp` analyze and download flows.
-- Job queue and progress parsing.
-- Signed download token validation and expiry.
-- Frontend token, analyze, job creation, polling, completion, and sanitized error flows.
+- URL safety 與 SSRF 防護。
+- Command builder 的 argument-array 檢查。
+- Mock `yt-dlp` 分析與下載流程。
+- Job queue 與 progress parsing。
+- Signed download token 驗證與過期。
+- 前端 token、分析、建立任務、polling、完成狀態與 sanitized error 流程。
 
-Tests use mock executables and do not download external media.
+測試使用 mock executable，不會下載外部媒體。
 
 ## Production
 
@@ -102,13 +102,13 @@ pnpm build
 NODE_ENV=production ADMIN_TOKEN=<long-token> pnpm --filter @yt-dlp-web-downloader/server start
 ```
 
-The server serves built frontend assets from `apps/web/dist` by default. Override with `STATIC_DIR=/path/to/dist` if needed.
+server 預設會提供 `apps/web/dist` 裡的 built frontend assets。需要時可用 `STATIC_DIR=/path/to/dist` 覆寫。
 
-Production startup also starts TTL cleanup on the configured interval.
+production 啟動時也會依設定的 interval 啟動 TTL cleanup。
 
-## Configuration
+## 設定
 
-See `.env.example` for all keys. Important defaults:
+所有設定鍵請參考 `.env.example`。重要預設值：
 
 - `DATA_DIR=./data`
 - `JOB_CONCURRENCY=1`
@@ -118,23 +118,23 @@ See `.env.example` for all keys. Important defaults:
 - `ENABLE_SSE=false`
 - `ENABLE_RANGE_REQUESTS=false`
 
-Downloaded files are stored under `DATA_DIR/jobs/{jobId}` and removed after TTL cleanup.
+下載完成的檔案會存放在 `DATA_DIR/jobs/{jobId}`，並在 TTL cleanup 後移除。
 
-## API Summary
+## API 摘要
 
-Public:
+公開 endpoint：
 
-- `GET /health` returns `{ ok, time }`.
-- `GET /api/download/{token}` streams a completed file when the signed token is valid.
+- `GET /health` 回傳 `{ ok, time }`。
+- `GET /api/download/{token}` 在 signed token 有效時串流完成檔案。
 
-Protected by `Authorization: Bearer <ADMIN_TOKEN>`:
+需要 `Authorization: Bearer <ADMIN_TOKEN>` 保護：
 
 - `GET /api/system/check`
 - `POST /api/analyze`
 - `POST /api/jobs`
 - `GET /api/jobs/{jobId}`
 
-Error responses use:
+錯誤回應格式：
 
 ```json
 {
@@ -146,50 +146,50 @@ Error responses use:
 }
 ```
 
-Frontend-visible errors are normalized and should not include stack traces, local filesystem paths, shell commands, or token values.
+前端可見錯誤都會 normalized，不應包含 stack trace、本機檔案路徑、shell command 或 token 值。
 
 ## Cloudflare Tunnel
 
-Recommended tunnel target:
+建議 tunnel target：
 
 ```text
 Public hostname: video.example.com
 Service URL: http://localhost:8787
 ```
 
-Use Cloudflare Access as the outer protection layer, and keep `ADMIN_TOKEN` enabled as app-level protection. Do not expose this service anonymously.
+建議使用 Cloudflare Access 作為外層保護，並保留 `ADMIN_TOKEN` 作為 app-level 防護。不要把此服務匿名公開。
 
-## Data Retention
+## 資料保留
 
-- Analysis records expire after a short TTL.
-- Download jobs and files expire after `FILE_TTL_HOURS`.
-- Cleanup runs every `CLEANUP_INTERVAL_MINUTES`.
-- Cleanup only deletes server-generated job directories under `DATA_DIR/jobs`.
-- Download tokens are stored as SHA-256 hashes, not plaintext.
+- Analysis record 會在短 TTL 後過期。
+- Download job 與檔案會在 `FILE_TTL_HOURS` 後過期。
+- Cleanup 每 `CLEANUP_INTERVAL_MINUTES` 執行一次。
+- Cleanup 只會刪除 `DATA_DIR/jobs` 底下由 server 產生的 job 目錄。
+- Download token 只儲存 SHA-256 hash，不儲存明文 token。
 
-## Legal and Safety
+## 法務與安全
 
-Use this only for content you own, are authorized to download, or are allowed to save under the source site's terms. This app does not implement DRM bypass, paywall bypass, browser cookie import, playlist downloads, or multi-user access.
+請只用此工具下載你擁有、已取得授權，或來源網站條款允許保存的內容。本 App 不提供 DRM 繞過、付費牆繞過、瀏覽器 cookie 匯入、playlist 下載或多使用者存取。
 
-The server rejects non-HTTP URLs, localhost/private-network targets, unsafe DNS resolutions, shell-string command execution, user-controlled filesystem paths, and expired download tokens.
+server 會拒絕非 HTTP URL、localhost/private-network 目標、不安全 DNS 解析結果、shell-string command execution、使用者控制的檔案路徑，以及過期 download token。
 
-## Current MVP Limits
+## 目前 MVP 限制
 
-- Default quality only: best under 1080p, prefer mp4.
-- No playlist or batch download.
-- No browser cookie import.
-- No multi-user accounts.
-- No SSE; the frontend uses polling.
-- No HTTP range request support yet.
+- 只支援預設品質：best under 1080p，prefer mp4。
+- 不支援 playlist 或批次下載。
+- 不支援瀏覽器 cookie 匯入。
+- 不支援多使用者帳號。
+- 不支援 SSE；前端使用 polling。
+- 尚未支援 HTTP range request。
 
-## Troubleshooting
+## 疑難排解
 
-- `GET /api/system/check` shows `yt-dlp`, `ffmpeg`, `ffprobe`, storage writability, and disk space.
-- `YTDLP_FAILED`: update `yt-dlp`, then retry.
-- `FFMPEG_MISSING`: install `ffmpeg`.
-- `INSUFFICIENT_DISK_SPACE`: free disk space or lower `MIN_FREE_DISK_BYTES`.
-- `UNSAFE_URL`: the URL points to a blocked local/private network target.
+- `GET /api/system/check` 會顯示 `yt-dlp`、`ffmpeg`、`ffprobe`、storage writable 狀態與磁碟空間。
+- `YTDLP_FAILED`：更新 `yt-dlp` 後重試。
+- `FFMPEG_MISSING`：安裝 `ffmpeg`。
+- `INSUFFICIENT_DISK_SPACE`：釋放磁碟空間，或降低 `MIN_FREE_DISK_BYTES`。
+- `UNSAFE_URL`：URL 指向被阻擋的 local/private network 目標。
 
 ## Manual QA
 
-See `docs/manual-qa.md`.
+請參考 `docs/manual-qa.md`。
