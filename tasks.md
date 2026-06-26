@@ -32,20 +32,20 @@ Scope: P0/MVP only. P1/P2 features remain deferred unless a task explicitly says
 - [x] Add job state machine with `queued`, `running`, `completed`, `failed`, `canceled`, and `expired`.
 - [x] Add durable job store.
 - [x] Add download command builder using argument arrays, server-generated job paths, `--`, `--newline`, progress template, best-under-1080p sorting, and mp4 merge preference.
-- [ ] Add progress parser for percent, downloaded bytes, total bytes, speed, eta, and phase.
-- [ ] Add in-process queue with default concurrency 1.
-- [ ] Add protected `POST /api/jobs`.
-- [ ] Add protected `GET /api/jobs/{jobId}`.
-- [ ] Reject new jobs when free disk space is below threshold.
+- [x] Add progress parser for percent, downloaded bytes, total bytes, speed, eta, and phase.
+- [x] Add in-process queue with default concurrency 1.
+- [x] Add protected `POST /api/jobs`.
+- [x] Add protected `GET /api/jobs/{jobId}`.
+- [x] Reject new jobs when free disk space is below threshold.
 
 ## Milestone 4: Signed Download and Cleanup
 
-- [ ] Add signed download token generation with at least 128-bit entropy.
-- [ ] Store only token hashes.
-- [ ] Add protected job result shape with download URL and expiration.
-- [ ] Add `GET /api/download/{token}` streaming endpoint.
-- [ ] Add download headers: `Content-Disposition`, `Content-Type`, `Content-Length`, and `Cache-Control: private, no-store`.
-- [ ] Reject expired, unknown, or expired-job download tokens without exposing file paths.
+- [x] Add signed download token generation with at least 128-bit entropy.
+- [x] Store only token hashes.
+- [x] Add protected job result shape with download URL and expiration.
+- [x] Add `GET /api/download/{token}` streaming endpoint.
+- [x] Add download headers: `Content-Disposition`, `Content-Type`, `Content-Length`, and `Cache-Control: private, no-store`.
+- [x] Reject expired, unknown, or expired-job download tokens without exposing file paths.
 - [x] Add TTL cleanup that marks jobs expired.
 - [x] Ensure cleanup only deletes server-generated job directories under `DATA_DIR/jobs`.
 
