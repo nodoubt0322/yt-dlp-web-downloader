@@ -28,9 +28,9 @@ Scope: P0/MVP only. P1/P2 features remain deferred unless a task explicitly says
 
 ## Milestone 3: Job Queue and Download Execution
 
-- [ ] Add SQLite schema for `jobs`, `download_tokens`, and `analyses`.
-- [ ] Add job state machine with `queued`, `running`, `completed`, `failed`, `canceled`, and `expired`.
-- [ ] Add durable job store.
+- [x] Add SQLite schema for `jobs`, `download_tokens`, and `analyses`.
+- [x] Add job state machine with `queued`, `running`, `completed`, `failed`, `canceled`, and `expired`.
+- [x] Add durable job store.
 - [x] Add download command builder using argument arrays, server-generated job paths, `--`, `--newline`, progress template, best-under-1080p sorting, and mp4 merge preference.
 - [ ] Add progress parser for percent, downloaded bytes, total bytes, speed, eta, and phase.
 - [ ] Add in-process queue with default concurrency 1.
@@ -46,8 +46,8 @@ Scope: P0/MVP only. P1/P2 features remain deferred unless a task explicitly says
 - [ ] Add `GET /api/download/{token}` streaming endpoint.
 - [ ] Add download headers: `Content-Disposition`, `Content-Type`, `Content-Length`, and `Cache-Control: private, no-store`.
 - [ ] Reject expired, unknown, or expired-job download tokens without exposing file paths.
-- [ ] Add TTL cleanup that marks jobs expired.
-- [ ] Ensure cleanup only deletes server-generated job directories under `DATA_DIR/jobs`.
+- [x] Add TTL cleanup that marks jobs expired.
+- [x] Ensure cleanup only deletes server-generated job directories under `DATA_DIR/jobs`.
 
 ## Milestone 5: Frontend MVP
 
