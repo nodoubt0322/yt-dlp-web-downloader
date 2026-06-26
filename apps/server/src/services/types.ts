@@ -13,6 +13,8 @@ export interface JobResult {
   fileName: string;
   size: number;
   contentType: string;
+  downloadUrl?: string;
+  expiresAt?: string;
 }
 
 export interface NormalizedJobError {

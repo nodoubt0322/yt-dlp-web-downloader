@@ -4,7 +4,9 @@ import { mergeConfig } from "./config.js";
 import { registerAuthPlugin } from "./plugins/auth.js";
 import { registerRateLimitPlugin } from "./plugins/rateLimit.js";
 import { registerAnalyzeRoutes } from "./routes/analyze.js";
+import { registerDownloadRoutes } from "./routes/download.js";
 import { registerHealthRoutes } from "./routes/health.js";
+import { registerJobsRoutes } from "./routes/jobs.js";
 import { registerSystemRoutes } from "./routes/system.js";
 import { createJobStore, type JobStore } from "./services/jobStore.js";
 import { createSystemService, type SystemService } from "./services/systemService.js";
@@ -16,6 +18,7 @@ interface BuildServerOptions {
     systemService?: SystemService;
     jobStore?: JobStore;
     urlResolver?: DnsResolver;
+    getFreeBytes?: (dataDir: string) => Promise<number>;
     now?: () => Date;
   };
 }
@@ -38,6 +41,16 @@ export async function buildServer(options: BuildServerOptions = {}) {
 
   await registerHealthRoutes(app);
   await app.register(
+    async (downloadApi) => {
+      await registerDownloadRoutes(downloadApi, {
+        config,
+        jobStore: defaultJobStore,
+        now: options.services?.now
+      });
+    },
+    { prefix: "/api" }
+  );
+  await app.register(
     async (api) => {
       await registerAuthPlugin(api, config);
       await registerRateLimitPlugin(api, config);
@@ -45,6 +58,13 @@ export async function buildServer(options: BuildServerOptions = {}) {
         config,
         jobStore: defaultJobStore,
         urlResolver: options.services?.urlResolver,
+        now: options.services?.now
+      });
+      await registerJobsRoutes(api, {
+        config,
+        jobStore: defaultJobStore,
+        urlResolver: options.services?.urlResolver,
+        getFreeBytes: options.services?.getFreeBytes,
         now: options.services?.now
       });
       await registerSystemRoutes(api, options.services?.systemService ?? createSystemService({ config }));

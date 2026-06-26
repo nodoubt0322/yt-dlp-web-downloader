@@ -47,6 +47,7 @@ export interface JobStore {
   listExpiredTerminalJobs(now: Date): JobRecord[];
   updateJobStatus(id: string, status: JobStatus, options?: UpdateStatusOptions): JobRecord;
   updateJobProgress(id: string, progress: JobProgress): JobRecord;
+  updateJobResult(id: string, result: JobResult): JobRecord;
   completeJob(id: string, result: JobResult, completedAt?: Date): JobRecord;
   failJob(id: string, error: NormalizedJobError, completedAt?: Date): JobRecord;
   expireJob(id: string): JobRecord;
@@ -231,6 +232,12 @@ export function createJobStore(options: CreateJobStoreOptions): JobStore {
       return requireJob(db, id);
     },
 
+    updateJobResult(id, result) {
+      requireJob(db, id);
+      db.prepare("UPDATE jobs SET result_json = ?, updated_at = ? WHERE id = ?").run(JSON.stringify(result), now(), id);
+      return requireJob(db, id);
+    },
+
     completeJob(id, result, completedAt = new Date()) {
       const existing = requireJob(db, id);
       assertTransition(existing.status, "completed");
@@ -303,7 +310,8 @@ function requireJob(db: DatabaseSync, id: string): JobRecord {
 }
 
 function getJobOrNull(db: DatabaseSync, id: string): JobRecord | null {
-  return mapJob(db.prepare("SELECT * FROM jobs WHERE id = ?").get(id));
+  const row = db.prepare("SELECT * FROM jobs WHERE id = ?").get(id);
+  return row ? mapJob(row) : null;
 }
 
 function assertTransition(from: JobStatus, to: JobStatus) {
