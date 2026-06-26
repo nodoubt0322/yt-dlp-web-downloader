@@ -135,7 +135,7 @@ function analysisResponse() {
 
 function runningProgress() {
   return {
-    phase: "download",
+    phase: "downloading",
     percent: 42,
     downloadedBytes: 42_000_000,
     totalBytes: 100_000_000,

@@ -68,7 +68,7 @@ Scope: P0/MVP only. P1/P2 features remain deferred unless a task explicitly says
 
 - [x] Add unit tests for URL validator, command builder, job state machine, token service, storage guardrails, cleanup, and error normalizer.
 - [x] Add integration tests for unauthorized API rejection, analyze with mock yt-dlp, job progress with mock yt-dlp, completed download, system check, and missing dependency cases.
-- [x] Add E2E test for token entry, analyze, job creation, progress, completed download action, and readable failure path.
+- [x] Add mocked UI flow tests for token entry, analyze, job creation, progress, completed download action, and readable failure path.
 - [x] Add README with install, dependencies, env, auth, local start, production build, Cloudflare Tunnel, data retention, legal constraints, and troubleshooting.
 - [x] Add manual QA checklist for local browser and Cloudflare Tunnel validation.
-- [x] Verify final MVP with `pnpm test`, `pnpm typecheck`, `pnpm build`, and E2E tests.
+- [x] Verify final MVP with `pnpm test`, `pnpm typecheck`, `pnpm build`, backend mock-yt-dlp integration, and production smoke.

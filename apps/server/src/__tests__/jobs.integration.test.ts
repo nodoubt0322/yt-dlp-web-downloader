@@ -62,8 +62,9 @@ describe("jobs routes", () => {
 
     expect(completed).toMatchObject({
       id: jobId,
+      jobId,
       status: "completed",
-      progress: { phase: "download", percent: 100 },
+      progress: { phase: "downloading", percent: 100 },
       result: {
         fileName: "mock-video.mp4",
         size: 12,

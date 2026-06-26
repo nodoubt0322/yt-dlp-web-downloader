@@ -8,7 +8,7 @@ describe("parseProgressLine", () => {
     );
 
     expect(progress).toEqual({
-      phase: "download",
+      phase: "downloading",
       percent: 50,
       downloadedBytes: 512,
       totalBytes: 1024,
@@ -19,10 +19,10 @@ describe("parseProgressLine", () => {
 
   it("returns indeterminate progress for non-progress or unparseable lines", () => {
     expect(parseProgressLine("[download] Destination: video.mp4")).toEqual({
-      phase: "download"
+      phase: "downloading"
     });
     expect(parseProgressLine("download:{not-json")).toEqual({
-      phase: "download"
+      phase: "downloading"
     });
   });
 });

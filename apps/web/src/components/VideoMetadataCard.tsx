@@ -29,10 +29,10 @@ export function VideoMetadataCard({ analysis, creatingJob, onStartDownload }: Vi
               <dd>長度：{formatDuration(analysis.durationSeconds)}</dd>
             </>
           ) : null}
-          {analysis.formatSummary ? (
+          {formatSummaryLabel(analysis.formatSummary) ? (
             <>
               <dt>格式</dt>
-              <dd>{analysis.formatSummary}</dd>
+              <dd>{formatSummaryLabel(analysis.formatSummary)}</dd>
             </>
           ) : null}
         </dl>
@@ -44,9 +44,31 @@ export function VideoMetadataCard({ analysis, creatingJob, onStartDownload }: Vi
   );
 }
 
+function formatSummaryLabel(summary: AnalysisResult["formatSummary"]) {
+  if (!summary) {
+    return null;
+  }
+
+  const parts: string[] = [];
+  if (summary.ext) {
+    parts.push(summary.ext);
+  }
+  if (typeof summary.maxHeight === "number") {
+    parts.push(`最高 ${summary.maxHeight}p`);
+  }
+  if (summary.hasVideo && summary.hasAudio) {
+    parts.push("含影像與音訊");
+  } else if (summary.hasVideo) {
+    parts.push("含影像");
+  } else if (summary.hasAudio) {
+    parts.push("含音訊");
+  }
+
+  return parts.length > 0 ? `格式：${parts.join("，")}` : null;
+}
+
 function formatDuration(seconds: number) {
   const minutes = Math.floor(seconds / 60);
   const remainingSeconds = seconds % 60;
   return `${minutes}:${String(remainingSeconds).padStart(2, "0")}`;
 }
-

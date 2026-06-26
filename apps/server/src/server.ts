@@ -9,7 +9,9 @@ import { registerDownloadRoutes } from "./routes/download.js";
 import { registerHealthRoutes } from "./routes/health.js";
 import { registerJobsRoutes } from "./routes/jobs.js";
 import { registerSystemRoutes } from "./routes/system.js";
+import { createCleanupService } from "./services/cleanupService.js";
 import { createJobStore, type JobStore } from "./services/jobStore.js";
+import { createStorageService } from "./services/storageService.js";
 import { createSystemService, type SystemService } from "./services/systemService.js";
 import type { DnsResolver } from "./services/urlSafety.js";
 
@@ -22,6 +24,7 @@ interface BuildServerOptions {
     urlResolver?: DnsResolver;
     getFreeBytes?: (dataDir: string) => Promise<number>;
     now?: () => Date;
+    cleanupService?: ReturnType<typeof createCleanupService>;
   };
 }
 
@@ -35,6 +38,15 @@ export async function buildServer(options: BuildServerOptions = {}) {
   const app = Fastify({
     logger: false
   });
+  const cleanupService =
+    options.services?.cleanupService ??
+    (options.staticDir
+      ? createCleanupService({
+          store: defaultJobStore,
+          storage: createStorageService({ dataDir: config.dataDir })
+        })
+      : undefined);
+  const stopCleanup = cleanupService?.start(config.cleanupIntervalMs);
   app.addHook("onRequest", async (request, reply) => {
     if (
       config.adminToken &&
@@ -51,6 +63,7 @@ export async function buildServer(options: BuildServerOptions = {}) {
     }
   });
   app.addHook("onClose", async () => {
+    stopCleanup?.();
     if (!options.services?.jobStore) {
       defaultJobStore.close();
     }

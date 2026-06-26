@@ -87,7 +87,17 @@ describe("home downloader flow", () => {
   it("renders analysis metadata and the default download action", async () => {
     fetchMock
       .mockResolvedValueOnce(jsonResponse(systemOk()))
-      .mockResolvedValueOnce(jsonResponse(analysisResponse()));
+      .mockResolvedValueOnce(
+        jsonResponse({
+          ...analysisResponse(),
+          formatSummary: {
+            hasVideo: true,
+            hasAudio: true,
+            maxHeight: 1080,
+            ext: "mp4"
+          }
+        })
+      );
     sessionStorage.setItem("yt-dlp-admin-token", "admin-token");
 
     render(<App />);
@@ -98,6 +108,7 @@ describe("home downloader flow", () => {
     expect(await screen.findByRole("heading", { name: "Demo Video" })).toBeInTheDocument();
     expect(screen.getByText("來源：youtube")).toBeInTheDocument();
     expect(screen.getByText("長度：2:03")).toBeInTheDocument();
+    expect(screen.getByText("格式：mp4，最高 1080p，含影像與音訊")).toBeInTheDocument();
     expect(screen.getByAltText("Demo Video 縮圖")).toHaveAttribute("src", "https://example.com/thumb.jpg");
     expect(screen.getByRole("button", { name: "開始下載預設品質" })).toBeInTheDocument();
   });

@@ -30,7 +30,12 @@ export interface AnalysisResult {
   extractor?: string;
   webpageUrl?: string;
   recommendedOptions?: Record<string, unknown>;
-  formatSummary?: string;
+  formatSummary?: {
+    hasVideo?: boolean;
+    hasAudio?: boolean;
+    maxHeight?: number | null;
+    ext?: string | null;
+  };
 }
 
 export type JobStatus = "queued" | "running" | "completed" | "failed" | "canceled" | "expired";
@@ -53,6 +58,7 @@ export interface JobResult {
 }
 
 export interface JobDetails {
+  jobId: string;
   id: string;
   analysisId: string | null;
   url: string;

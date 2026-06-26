@@ -1,7 +1,7 @@
 import { mkdtemp, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { buildServer } from "../server.js";
 
 const tempDirs: string[] = [];
@@ -30,5 +30,24 @@ describe("static frontend serving", () => {
     expect(apiFallbackAttempt.statusCode).toBe(401);
     expect(apiFallbackAttempt.body).not.toContain("yt-dlp 影片下載器");
   });
-});
 
+  it("starts and stops the cleanup scheduler when provided", async () => {
+    const stopCleanup = vi.fn();
+    const cleanupService = {
+      runCleanupOnce: vi.fn(async () => ({ expiredJobs: 0, deletedDirectories: 0 })),
+      start: vi.fn(() => stopCleanup)
+    };
+    const app = await buildServer({
+      config: { cleanupIntervalMs: 1234 },
+      services: {
+        cleanupService
+      }
+    });
+
+    expect(app).toBeDefined();
+    expect(cleanupService.start).toHaveBeenCalledWith(1234);
+
+    await app.close();
+    expect(stopCleanup).toHaveBeenCalledOnce();
+  });
+});

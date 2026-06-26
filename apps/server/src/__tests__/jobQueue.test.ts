@@ -58,7 +58,7 @@ describe("jobQueue", () => {
     expect(store.getJob(first.id)).toMatchObject({
       status: "completed",
       progress: {
-        phase: "download",
+        phase: "downloading",
         percent: 100,
         downloadedBytes: 12,
         totalBytes: 12,

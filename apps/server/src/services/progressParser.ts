@@ -2,13 +2,13 @@ import type { JobProgress } from "./types.js";
 
 export function parseProgressLine(line: string): JobProgress {
   if (!line.startsWith("download:")) {
-    return { phase: "download" };
+    return { phase: "downloading" };
   }
 
   try {
     const raw = JSON.parse(line.slice("download:".length)) as Record<string, unknown>;
     return {
-      phase: "download",
+      phase: "downloading",
       ...readPercent(raw),
       ...readNumberField(raw.downloaded_bytes, "downloadedBytes" as const),
       ...readNumberField(raw.total_bytes ?? raw.total_bytes_estimate, "totalBytes" as const),
@@ -16,7 +16,7 @@ export function parseProgressLine(line: string): JobProgress {
       ...readNumberField(raw.eta, "etaSeconds" as const)
     };
   } catch {
-    return { phase: "download" };
+    return { phase: "downloading" };
   }
 }
 

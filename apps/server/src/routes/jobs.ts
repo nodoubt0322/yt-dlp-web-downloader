@@ -72,6 +72,7 @@ export async function registerJobsRoutes(app: FastifyInstance, options: Register
     }
 
     return reply.send({
+      jobId: job.id,
       id: job.id,
       analysisId: job.analysisId,
       url: job.normalizedUrl ?? job.url,
