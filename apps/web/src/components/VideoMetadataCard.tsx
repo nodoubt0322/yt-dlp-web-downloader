@@ -15,7 +15,13 @@ export function VideoMetadataCard({ analysis, creatingJob, onStartDownload }: Vi
         <div className="thumbnail placeholder">無縮圖</div>
       )}
       <div className="metadata-body">
-        <h2>{analysis.title}</h2>
+        <div className="panel-heading compact-heading">
+          <div>
+            <h2>{analysis.title}</h2>
+            <p>{analysis.webpageUrl ?? analysis.url}</p>
+          </div>
+          <span className="status-pill neutral">已分析</span>
+        </div>
         <dl className="metadata-list">
           {analysis.extractor ? (
             <>
@@ -36,9 +42,12 @@ export function VideoMetadataCard({ analysis, creatingJob, onStartDownload }: Vi
             </>
           ) : null}
         </dl>
-        <button type="button" onClick={onStartDownload} disabled={creatingJob}>
-          {creatingJob ? "建立下載中" : "開始下載預設品質"}
-        </button>
+        <div className="action-row">
+          <button type="button" onClick={onStartDownload} disabled={creatingJob}>
+            {creatingJob ? "建立下載中" : "開始下載預設品質"}
+          </button>
+          <span>預設：1080p 以下最佳品質，優先 mp4。</span>
+        </div>
       </div>
     </article>
   );

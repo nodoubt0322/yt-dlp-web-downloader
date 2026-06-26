@@ -24,6 +24,12 @@ export function UrlSubmitForm({ disabled, loading, error, onSubmit }: UrlSubmitF
 
   return (
     <form className="panel url-form" onSubmit={handleSubmit} noValidate>
+      <div className="panel-heading">
+        <div>
+          <h2>分析影片連結</h2>
+          <p>先讀取 metadata；確認後才會建立下載任務。</p>
+        </div>
+      </div>
       <label htmlFor="video-url">影片 URL</label>
       <div className="input-row">
         <input
@@ -61,4 +67,3 @@ function validateUrl(value: string) {
 
   return null;
 }
-

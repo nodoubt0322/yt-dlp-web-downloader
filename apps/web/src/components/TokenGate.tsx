@@ -15,6 +15,13 @@ export function TokenGate({ token, onSave }: TokenGateProps) {
 
   return (
     <form className="panel token-panel" onSubmit={handleSubmit}>
+      <div className="panel-heading compact-heading">
+        <div>
+          <h2>管理 Token</h2>
+          <p>只儲存在目前瀏覽器 session。</p>
+        </div>
+        <span className={token ? "status-pill success" : "status-pill neutral"}>{token ? "已設定" : "未設定"}</span>
+      </div>
       <label htmlFor="admin-token">管理 Token</label>
       <div className="input-row compact">
         <input
@@ -30,4 +37,3 @@ export function TokenGate({ token, onSave }: TokenGateProps) {
     </form>
   );
 }
-

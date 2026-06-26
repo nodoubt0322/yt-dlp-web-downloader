@@ -55,12 +55,17 @@ export function JobPage({ jobId }: JobPageProps) {
   return (
     <main className="app-shell">
       <section className="workspace">
-        <a className="back-link" href="/" onClick={handleBackClick}>
-          返回分析
-        </a>
-        {job ? <JobProgressCard job={job} /> : <div className="alert alert-neutral">正在讀取下載任務...</div>}
-        {job?.status === "completed" && job.result ? <DownloadResultCard result={job.result} /> : null}
-        <ErrorAlert message={error} />
+        <header className="page-bar">
+          <a className="back-link" href="/" onClick={handleBackClick}>
+            返回分析
+          </a>
+          <span className="job-id">{jobId}</span>
+        </header>
+        <div className="primary-stack">
+          {job ? <JobProgressCard job={job} /> : <div className="panel skeleton-panel">正在讀取下載任務...</div>}
+          {job?.status === "completed" && job.result ? <DownloadResultCard result={job.result} /> : null}
+          <ErrorAlert message={error} />
+        </div>
       </section>
     </main>
   );

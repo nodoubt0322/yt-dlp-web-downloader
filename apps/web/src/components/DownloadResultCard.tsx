@@ -7,8 +7,13 @@ interface DownloadResultCardProps {
 export function DownloadResultCard({ result }: DownloadResultCardProps) {
   return (
     <article className="panel result-card">
-      <h2>檔案已準備好</h2>
-      <p>{result.fileName}</p>
+      <div className="panel-heading compact-heading">
+        <div>
+          <h2>檔案已準備好</h2>
+          <p>{result.fileName}</p>
+        </div>
+        <span className="status-pill success">{formatBytes(result.size)}</span>
+      </div>
       {result.downloadUrl ? (
         <a className="button-link" href={result.downloadUrl}>
           下載檔案
@@ -17,6 +22,19 @@ export function DownloadResultCard({ result }: DownloadResultCardProps) {
       {result.expiresAt ? <p className="muted">檔案會在 {formatDateTime(result.expiresAt)} 後過期，請盡快下載。</p> : null}
     </article>
   );
+}
+
+function formatBytes(bytes: number) {
+  if (bytes >= 1_000_000_000) {
+    return `${Math.round(bytes / 1_000_000_000)} GB`;
+  }
+  if (bytes >= 1_000_000) {
+    return `${Math.round(bytes / 1_000_000)} MB`;
+  }
+  if (bytes >= 1_000) {
+    return `${Math.round(bytes / 1_000)} KB`;
+  }
+  return `${bytes} B`;
 }
 
 function formatDateTime(value: string) {
@@ -35,4 +53,3 @@ function formatDateTime(value: string) {
   const part = (type: string) => parts.find((item) => item.type === type)?.value ?? "";
   return `${part("year")}-${part("month")}-${part("day")} ${part("hour")}:${part("minute")}`;
 }
-

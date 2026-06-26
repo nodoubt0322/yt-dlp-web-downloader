@@ -93,17 +93,36 @@ export function HomePage({ onNavigateToJob }: HomePageProps) {
     <main className="app-shell">
       <section className="workspace">
         <header className="masthead">
-          <p className="eyebrow">Local Video Link Downloader</p>
-          <h1>yt-dlp 影片下載器</h1>
+          <div>
+            <p className="eyebrow">Local Video Link Downloader</p>
+            <h1>yt-dlp 影片下載器</h1>
+            <p className="lede">分析授權影片連結、建立本機下載任務，並用有期限的 signed URL 取回完成檔案。</p>
+          </div>
+          <div className="masthead-status" aria-label="目前模式">
+            <span>單一擁有者</span>
+            <strong>本機後端</strong>
+          </div>
         </header>
 
-        <TokenGate token={token} onSave={handleSaveToken} />
-        <SystemStatusBanner status={systemStatus} loading={systemLoading} hasToken={Boolean(token)} />
-        <UrlSubmitForm disabled={false} loading={analysisLoading} error={analysisError} onSubmit={handleAnalyze} />
-        {analysis ? (
-          <VideoMetadataCard analysis={analysis} creatingJob={creatingJob} onStartDownload={handleStartDownload} />
-        ) : null}
-        <ErrorAlert message={jobError} />
+        <div className="workflow-grid">
+          <aside className="sidebar-stack" aria-label="系統狀態">
+            <TokenGate token={token} onSave={handleSaveToken} />
+            <SystemStatusBanner status={systemStatus} loading={systemLoading} hasToken={Boolean(token)} />
+          </aside>
+
+          <div className="primary-stack">
+            <UrlSubmitForm disabled={false} loading={analysisLoading} error={analysisError} onSubmit={handleAnalyze} />
+            {analysis ? (
+              <VideoMetadataCard analysis={analysis} creatingJob={creatingJob} onStartDownload={handleStartDownload} />
+            ) : (
+              <section className="panel empty-panel" aria-label="尚未分析影片">
+                <h2>貼上 URL 後先分析，再建立下載任務</h2>
+                <p>分析只讀取 metadata，不會直接下載影片。完成後你可以用預設品質建立非同步 job。</p>
+              </section>
+            )}
+            <ErrorAlert message={jobError} />
+          </div>
+        </div>
       </section>
     </main>
   );

@@ -10,8 +10,13 @@ export function JobProgressCard({ job }: JobProgressCardProps) {
 
   return (
     <article className="panel job-card">
-      <p className="eyebrow">{statusLabel(job.status)}</p>
-      <h1>{job.title ?? "下載任務"}</h1>
+      <div className="panel-heading">
+        <div>
+          <p className="eyebrow">下載狀態</p>
+          <h1>{job.title ?? "下載任務"}</h1>
+        </div>
+        <span className={`status-pill ${statusTone(job.status)}`}>{statusLabel(job.status)}</span>
+      </div>
       {percent !== null ? (
         <div className="progress-block">
           <div className="progress-bar" aria-label="下載進度">
@@ -23,6 +28,11 @@ export function JobProgressCard({ job }: JobProgressCardProps) {
       <div className="status-grid">
         {typeof progress?.speedBytesPerSecond === "number" ? <span>速度：{formatBytes(progress.speedBytesPerSecond)}/s</span> : null}
         {typeof progress?.etaSeconds === "number" ? <span>剩餘：約 {formatEta(progress.etaSeconds)}</span> : null}
+        {typeof progress?.downloadedBytes === "number" && typeof progress.totalBytes === "number" ? (
+          <span>
+            已下載：{formatBytes(progress.downloadedBytes)} / {formatBytes(progress.totalBytes)}
+          </span>
+        ) : null}
       </div>
     </article>
   );
@@ -45,6 +55,20 @@ function statusLabel(status: JobDetails["status"]) {
   }
 }
 
+function statusTone(status: JobDetails["status"]) {
+  switch (status) {
+    case "completed":
+      return "success";
+    case "failed":
+    case "expired":
+      return "danger";
+    case "canceled":
+      return "warning";
+    default:
+      return "neutral";
+  }
+}
+
 function formatBytes(bytes: number) {
   if (bytes >= 1_000_000) {
     return `${Math.round(bytes / 1_000_000)} MB`;
@@ -63,4 +87,3 @@ function formatEta(seconds: number) {
   }
   return `${seconds} 秒`;
 }
-
