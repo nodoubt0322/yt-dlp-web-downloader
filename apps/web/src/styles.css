@@ -1,0 +1,85 @@
+:root {
+  color: #1c2430;
+  background: #f6f7f9;
+  font-family:
+    Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+body {
+  margin: 0;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+.app-shell {
+  min-height: 100vh;
+  padding: 48px 20px;
+}
+
+.workspace {
+  width: min(760px, 100%);
+  margin: 0 auto;
+}
+
+.masthead {
+  margin-bottom: 28px;
+}
+
+.eyebrow {
+  margin: 0 0 8px;
+  color: #586474;
+  font-size: 0.9rem;
+}
+
+h1 {
+  margin: 0;
+  font-size: clamp(2rem, 4vw, 3.5rem);
+  line-height: 1.1;
+}
+
+.url-form {
+  display: grid;
+  gap: 12px;
+}
+
+.url-form label {
+  font-weight: 700;
+}
+
+.input-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px;
+}
+
+.input-row input {
+  min-width: 0;
+  border: 1px solid #bdc6d0;
+  border-radius: 6px;
+  padding: 12px 14px;
+}
+
+.input-row button {
+  border: 0;
+  border-radius: 6px;
+  padding: 12px 18px;
+  color: #ffffff;
+  background: #216e5f;
+  font-weight: 700;
+}
+
+.policy-copy {
+  margin: 0;
+  color: #5d6673;
+  line-height: 1.5;
+}
+
+@media (max-width: 560px) {
+  .input-row {
+    grid-template-columns: 1fr;
+  }
+}
+
