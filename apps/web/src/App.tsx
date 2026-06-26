@@ -1,22 +1,29 @@
+import { useEffect, useState } from "react";
+import { HomePage } from "./routes/HomePage";
+import { JobPage } from "./routes/JobPage";
+
 export function App() {
-  return (
-    <main className="app-shell">
-      <section className="workspace">
-        <header className="masthead">
-          <p className="eyebrow">Local Video Link Downloader</p>
-          <h1>yt-dlp 影片下載器</h1>
-        </header>
+  const [path, setPath] = useState(window.location.pathname);
 
-        <form className="url-form">
-          <label htmlFor="video-url">影片 URL</label>
-          <div className="input-row">
-            <input id="video-url" name="url" type="url" placeholder="https://example.com/watch?v=..." />
-            <button type="submit">分析</button>
-          </div>
-          <p className="policy-copy">請只下載你擁有權利或已取得授權的內容；本工具不支援 DRM 或付費牆繞過。</p>
-        </form>
-      </section>
-    </main>
-  );
+  useEffect(() => {
+    function syncPath() {
+      setPath(window.location.pathname);
+    }
+
+    window.addEventListener("popstate", syncPath);
+    return () => window.removeEventListener("popstate", syncPath);
+  }, []);
+
+  function navigateToJob(jobId: string) {
+    window.history.pushState(null, "", `/jobs/${jobId}`);
+    setPath(window.location.pathname);
+  }
+
+  const jobMatch = /^\/jobs\/([^/]+)$/.exec(path);
+  const jobId = jobMatch?.[1];
+  if (jobId) {
+    return <JobPage jobId={jobId} />;
+  }
+
+  return <HomePage onNavigateToJob={navigateToJob} />;
 }
-
