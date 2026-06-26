@@ -20,11 +20,11 @@ Scope: P0/MVP only. P1/P2 features remain deferred unless a task explicitly says
 ## Milestone 2: yt-dlp Analysis
 
 - [x] Add yt-dlp analyze command builder using argument arrays.
-- [ ] Add yt-dlp adapter with analyze timeout.
-- [ ] Add metadata normalization for title, thumbnail, duration, extractor, webpage URL, recommended options, and format summary.
+- [x] Add yt-dlp adapter with analyze timeout.
+- [x] Add metadata normalization for title, thumbnail, duration, extractor, webpage URL, recommended options, and format summary.
 - [x] Add normalized error mapping for unsupported URL, auth required, geo restriction, network timeout, analyze timeout, disk space, and unknown yt-dlp failures.
-- [ ] Add protected `POST /api/analyze`.
-- [ ] Test analyze with a mock executable or adapter mock.
+- [x] Add protected `POST /api/analyze`.
+- [x] Test analyze with a mock executable or adapter mock.
 
 ## Milestone 3: Job Queue and Download Execution
 
