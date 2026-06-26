@@ -95,12 +95,24 @@ export function HomePage({ onNavigateToJob }: HomePageProps) {
         <header className="masthead">
           <div>
             <p className="eyebrow">Local Video Link Downloader</p>
-            <h1>yt-dlp 影片下載器</h1>
+            <h1>
+              <span>yt-dlp</span> <span>影片下載器</span>
+            </h1>
             <p className="lede">分析授權影片連結、建立本機下載任務，並用有期限的 signed URL 取回完成檔案。</p>
           </div>
-          <div className="masthead-status" aria-label="目前模式">
-            <span>單一擁有者</span>
-            <strong>本機後端</strong>
+          <div className="workflow-stage" aria-hidden="true">
+            <div className="masthead-status">
+              <span>單一擁有者</span>
+              <strong>本機後端</strong>
+            </div>
+            <div className="flow-map">
+              <span className="flow-line flow-line-primary" />
+              <span className="flow-line flow-line-secondary" />
+              <span className="flow-node node-source">URL</span>
+              <span className="flow-node node-analyze">metadata</span>
+              <span className="flow-node node-job">job</span>
+              <span className="flow-node node-file">signed URL</span>
+            </div>
           </div>
         </header>
 
