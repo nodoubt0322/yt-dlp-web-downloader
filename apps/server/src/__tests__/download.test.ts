@@ -14,7 +14,7 @@ afterEach(async () => {
   await Promise.all(tempDirs.splice(0).map((dir) => rm(dir, { force: true, recursive: true })));
 });
 
-async function createCompletedDownload(now = new Date("2026-06-27T00:00:00.000Z")) {
+async function createCompletedDownload(now = new Date("2026-06-27T00:00:00.000Z"), fileName = "demo video.mp4") {
   const dataDir = await mkdtemp(join(tmpdir(), "yt-dlp-download-"));
   tempDirs.push(dataDir);
   const store = createJobStore({ dbPath: join(dataDir, "state.sqlite"), now: () => now });
@@ -27,11 +27,11 @@ async function createCompletedDownload(now = new Date("2026-06-27T00:00:00.000Z"
   store.updateJobStatus(job.id, "running", { startedAt: now });
   const jobDir = join(dataDir, "jobs", job.id);
   await import("node:fs/promises").then(({ mkdir }) => mkdir(jobDir, { recursive: true }));
-  await writeFile(join(jobDir, "demo video.mp4"), "media-bytes");
+  await writeFile(join(jobDir, fileName), "media-bytes");
   store.completeJob(
     job.id,
     {
-      fileName: "demo video.mp4",
+      fileName,
       size: 11,
       contentType: "video/mp4",
       downloadUrl: "",
@@ -63,7 +63,34 @@ describe("download route", () => {
     expect(response.headers["content-type"]).toBe("video/mp4");
     expect(response.headers["content-length"]).toBe("11");
     expect(response.headers["cache-control"]).toBe("private, no-store");
-    expect(response.headers["content-disposition"]).toBe('attachment; filename="demo video.mp4"');
+    expect(response.headers["content-disposition"]).toBe(
+      "attachment; filename=\"demo video.mp4\"; filename*=UTF-8''demo%20video.mp4"
+    );
+    expect(response.body).toBe("media-bytes");
+  });
+
+  it("streams non-ASCII filenames with an ASCII fallback and encoded filename star", async () => {
+    const { dataDir, store, token } = await createCompletedDownload(
+      new Date("2026-06-27T00:00:00.000Z"),
+      "測試 影片.mp4"
+    );
+    const app = await buildServer({
+      config: { dataDir },
+      services: {
+        jobStore: store,
+        now: () => new Date("2026-06-27T00:00:00.000Z")
+      }
+    });
+
+    const response = await app.inject({
+      method: "GET",
+      url: `/api/download/${token}`
+    });
+
+    expect(response.statusCode).toBe(200);
+    expect(response.headers["content-disposition"]).toBe(
+      "attachment; filename=\"download.mp4\"; filename*=UTF-8''%E6%B8%AC%E8%A9%A6%20%E5%BD%B1%E7%89%87.mp4"
+    );
     expect(response.body).toBe("media-bytes");
   });
 

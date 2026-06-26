@@ -49,7 +49,7 @@ export async function registerDownloadRoutes(app: FastifyInstance, options: Regi
     const fileStat = await stat(filePath);
 
     return reply
-      .header("Content-Disposition", `attachment; filename="${sanitizeHeaderFilename(fileName)}"`)
+      .header("Content-Disposition", buildContentDisposition(fileName))
       .header("Content-Type", result.contentType)
       .header("Content-Length", fileStat.size)
       .header("Cache-Control", "private, no-store")
@@ -61,6 +61,25 @@ function notFound(reply: FastifyReply) {
   return reply.code(404).send({ error: { code: "DOWNLOAD_NOT_FOUND", message: "Download not found" } });
 }
 
-function sanitizeHeaderFilename(filename: string) {
-  return filename.replace(/["\r\n]/g, "_");
+function buildContentDisposition(filename: string) {
+  const fallback = asciiFallbackFilename(filename);
+  return `attachment; filename="${fallback}"; filename*=UTF-8''${encodeRfc5987Value(filename)}`;
+}
+
+function asciiFallbackFilename(filename: string) {
+  const extensionMatch = filename.match(/\.[A-Za-z0-9]{1,12}$/);
+  const extension = extensionMatch?.[0] ?? "";
+  const base = filename
+    .slice(0, extension ? -extension.length : undefined)
+    .replace(/[^\x20-\x7E]/g, "")
+    .replace(/["\\;,\r\n]/g, "_")
+    .trim();
+
+  return `${base || "download"}${extension}`;
+}
+
+function encodeRfc5987Value(value: string) {
+  return encodeURIComponent(value).replace(/['()*]/g, (character) =>
+    `%${character.charCodeAt(0).toString(16).toUpperCase()}`
+  );
 }
