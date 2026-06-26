@@ -7,22 +7,22 @@ Scope: P0/MVP only. P1/P2 features remain deferred unless a task explicitly says
 ## Milestone 1: Project Skeleton and Security Foundation
 
 - [x] Create pnpm workspace with `apps/server` and `apps/web`.
-- [ ] Add `.env.example` with all PRD MVP config keys.
-- [ ] Implement server config loading and validation.
+- [x] Add `.env.example` with all PRD MVP config keys.
+- [x] Implement server config loading and validation.
 - [x] Add Fastify app bootstrap.
 - [x] Add public `GET /health`.
-- [ ] Add bearer-token auth for all `/api/*` routes.
-- [ ] Add same-origin CORS default and explicit dev-origin support only through config.
-- [ ] Add rate limits for analyze and job creation.
-- [ ] Add URL safety validator for protocols, localhost, private IPv4, private IPv6, link-local, metadata IP, and DNS-resolved private addresses.
-- [ ] Add system dependency and storage checks for `yt-dlp`, `ffmpeg`, `ffprobe`, writable data dir, and free disk space.
+- [x] Add bearer-token auth for all `/api/*` routes.
+- [x] Add same-origin CORS default and explicit dev-origin support only through config.
+- [x] Add rate limits for analyze and job creation.
+- [x] Add URL safety validator for protocols, localhost, private IPv4, private IPv6, link-local, metadata IP, and DNS-resolved private addresses.
+- [x] Add system dependency and storage checks for `yt-dlp`, `ffmpeg`, `ffprobe`, writable data dir, and free disk space.
 
 ## Milestone 2: yt-dlp Analysis
 
-- [ ] Add yt-dlp analyze command builder using argument arrays.
+- [x] Add yt-dlp analyze command builder using argument arrays.
 - [ ] Add yt-dlp adapter with analyze timeout.
 - [ ] Add metadata normalization for title, thumbnail, duration, extractor, webpage URL, recommended options, and format summary.
-- [ ] Add normalized error mapping for unsupported URL, auth required, geo restriction, network timeout, analyze timeout, disk space, and unknown yt-dlp failures.
+- [x] Add normalized error mapping for unsupported URL, auth required, geo restriction, network timeout, analyze timeout, disk space, and unknown yt-dlp failures.
 - [ ] Add protected `POST /api/analyze`.
 - [ ] Test analyze with a mock executable or adapter mock.
 
@@ -31,7 +31,7 @@ Scope: P0/MVP only. P1/P2 features remain deferred unless a task explicitly says
 - [ ] Add SQLite schema for `jobs`, `download_tokens`, and `analyses`.
 - [ ] Add job state machine with `queued`, `running`, `completed`, `failed`, `canceled`, and `expired`.
 - [ ] Add durable job store.
-- [ ] Add download command builder using argument arrays, server-generated job paths, `--`, `--newline`, progress template, best-under-1080p sorting, and mp4 merge preference.
+- [x] Add download command builder using argument arrays, server-generated job paths, `--`, `--newline`, progress template, best-under-1080p sorting, and mp4 merge preference.
 - [ ] Add progress parser for percent, downloaded bytes, total bytes, speed, eta, and phase.
 - [ ] Add in-process queue with default concurrency 1.
 - [ ] Add protected `POST /api/jobs`.
