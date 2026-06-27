@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { createApiClient, type AnalysisResult, type SystemCheck } from "../apiClient";
+import { createApiClient, type AnalysisResult, type QualityPreset, type SystemCheck } from "../apiClient";
 import { readAdminToken, saveAdminToken } from "../auth";
 import { ErrorAlert } from "../components/ErrorAlert";
 import { SystemStatusBanner } from "../components/SystemStatusBanner";
@@ -74,7 +74,7 @@ export function HomePage({ activeJobId, onNavigateToJob }: HomePageProps) {
     }
   }
 
-  async function handleStartDownload() {
+  async function handleStartDownload(qualityPreset: QualityPreset) {
     if (!analysis) {
       return;
     }
@@ -82,7 +82,7 @@ export function HomePage({ activeJobId, onNavigateToJob }: HomePageProps) {
     setCreatingJob(true);
     setJobError(null);
     try {
-      const job = await api.createJob(analysis);
+      const job = await api.createJob(analysis, { qualityPreset });
       onNavigateToJob(job.jobId);
     } catch (error) {
       setJobError(messageForError(error, "job"));

@@ -20,7 +20,7 @@ afterEach(() => {
 });
 
 describe("job flow", () => {
-  it("creates a default-quality job from an analysis and keeps the job status on the home page", async () => {
+  it("creates a selected-quality job from an analysis and keeps compact job status on the home page", async () => {
     fetchMock
       .mockResolvedValueOnce(jsonResponse(systemOk()))
       .mockResolvedValueOnce(jsonResponse(analysisResponse()))
@@ -31,12 +31,15 @@ describe("job flow", () => {
 
     await userEvent.type(screen.getByLabelText("影片 URL"), "https://example.com/watch?v=demo");
     await userEvent.click(screen.getByRole("button", { name: "分析" }));
-    await userEvent.click(await screen.findByRole("button", { name: "開始下載預設品質" }));
+    await userEvent.selectOptions(await screen.findByLabelText("下載品質"), "bestUnder720p");
+    await userEvent.click(screen.getByRole("button", { name: "開始下載" }));
 
     await screen.findByText("等待下載開始");
 
     expect(window.location.pathname).toBe("/");
     expect(screen.getByRole("heading", { name: "分析影片連結" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "下載狀態" })).toBeInTheDocument();
+    expect(screen.queryByRole("heading", { level: 1, name: "Demo Video" })).not.toBeInTheDocument();
     expect(fetchMock).toHaveBeenNthCalledWith(
       3,
       "/api/jobs",
@@ -46,7 +49,7 @@ describe("job flow", () => {
         body: JSON.stringify({
           analysisId: "ana_123",
           url: "https://example.com/watch?v=demo",
-          options: { qualityPreset: "bestUnder1080p", preferMp4: true }
+          options: { qualityPreset: "bestUnder720p", preferMp4: true }
         })
       })
     );

@@ -1,5 +1,5 @@
 import { join } from "node:path";
-import { buildDownloadArgs } from "./commandBuilder.js";
+import { buildDownloadArgs, type QualityPreset } from "./commandBuilder.js";
 import { normalizeYtDlpError } from "./errors.js";
 import type { JobStore } from "./jobStore.js";
 import { ProcessRunnerError, runProcessStreaming } from "./processRunner.js";
@@ -52,7 +52,8 @@ export function createJobQueue(options: CreateJobQueueOptions): JobQueue {
           url: job.normalizedUrl ?? job.url,
           homePath: jobDir,
           tempPath: tempDir,
-          outputTemplate: "%(title).200B.%(ext)s"
+          outputTemplate: "%(title).200B.%(ext)s",
+          qualityPreset: readQualityPreset(job.options.qualityPreset)
         }),
         {
           timeoutMs: options.timeoutMs,
@@ -92,4 +93,11 @@ export function createJobQueue(options: CreateJobQueueOptions): JobQueue {
       }
     }
   }
+}
+
+function readQualityPreset(value: unknown): QualityPreset {
+  if (value === "bestAvailable" || value === "bestUnder1080p" || value === "bestUnder720p" || value === "bestUnder480p") {
+    return value;
+  }
+  return "bestUnder1080p";
 }

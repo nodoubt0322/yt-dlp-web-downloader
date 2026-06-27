@@ -14,7 +14,7 @@ NODE_ENV=production ADMIN_TOKEN=test-admin-token pnpm --filter @yt-dlp-web-downl
 
 - [ ] Open `http://127.0.0.1:8787`.
 - [ ] Enter the admin token; refresh and confirm the token remains only for this browser session.
-- [ ] Confirm system status shows `yt-dlp 版本`, `ffmpeg`, and `ffprobe`, without a storage row.
+- [ ] Confirm system status shows `yt-dlp 版本號`, `ffmpeg`, and `ffprobe`, without a storage row.
 - [ ] Submit an invalid URL and confirm a Chinese validation error.
 - [ ] Submit `http://127.0.0.1/` and confirm SSRF protection rejects it.
 - [ ] Submit a URL you have permission to download and confirm analysis metadata renders.

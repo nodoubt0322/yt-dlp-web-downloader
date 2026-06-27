@@ -71,7 +71,8 @@ body::before {
 }
 
 button,
-input {
+input,
+select {
   font: inherit;
 }
 
@@ -416,7 +417,8 @@ h2 {
   margin-top: 0;
 }
 
-.input-row input {
+.input-row input,
+.download-controls select {
   min-width: 0;
   min-height: 52px;
   border: 1px solid rgb(229 231 235 / 0.28);
@@ -435,7 +437,9 @@ h2 {
 }
 
 .input-row input:hover,
-.input-row input:focus {
+.input-row input:focus,
+.download-controls select:hover,
+.download-controls select:focus {
   border-color: rgb(7 122 199 / 0.84);
   background: rgb(13 10 25 / 0.72);
   box-shadow: rgb(107 33 239 / 0.3) 0 0 0 4px;
@@ -668,6 +672,37 @@ h2 {
   line-height: 1.45;
 }
 
+.download-controls {
+  display: grid;
+  grid-template-columns: minmax(180px, 230px) auto minmax(16ch, 1fr);
+  gap: var(--space-3);
+  align-items: end;
+}
+
+.download-controls label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+}
+
+.download-controls select {
+  appearance: none;
+  color: var(--cloud-white);
+  background:
+    linear-gradient(45deg, transparent 50%, var(--fog-text) 50%) right 16px center / 7px 7px no-repeat,
+    linear-gradient(135deg, var(--fog-text) 50%, transparent 50%) right 11px center / 7px 7px no-repeat,
+    rgb(13 10 25 / 0.56);
+}
+
+.download-controls span {
+  align-self: center;
+  color: var(--fog-text);
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+
 .back-link {
   color: var(--cloud-white);
   font-weight: 400;
@@ -692,7 +727,11 @@ h2 {
 }
 
 .job-card {
-  gap: var(--space-5);
+  gap: var(--space-4);
+}
+
+.compact-job-card {
+  padding: var(--space-4);
 }
 
 .progress-block {
@@ -877,7 +916,8 @@ h2 {
   }
 
   .input-row,
-  .metadata-card {
+  .metadata-card,
+  .download-controls {
     grid-template-columns: 1fr;
   }
 

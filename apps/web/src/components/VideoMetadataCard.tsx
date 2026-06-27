@@ -1,12 +1,16 @@
+import { useState } from "react";
 import type { AnalysisResult } from "../apiClient";
+import type { QualityPreset } from "../apiClient";
 
 interface VideoMetadataCardProps {
   analysis: AnalysisResult;
   creatingJob: boolean;
-  onStartDownload: () => void;
+  onStartDownload: (qualityPreset: QualityPreset) => void;
 }
 
 export function VideoMetadataCard({ analysis, creatingJob, onStartDownload }: VideoMetadataCardProps) {
+  const [qualityPreset, setQualityPreset] = useState<QualityPreset>("bestUnder1080p");
+
   return (
     <article className="panel metadata-card">
       {analysis.thumbnail ? (
@@ -42,11 +46,22 @@ export function VideoMetadataCard({ analysis, creatingJob, onStartDownload }: Vi
             </>
           ) : null}
         </dl>
-        <div className="action-row">
-          <button type="button" onClick={onStartDownload} disabled={creatingJob}>
-            {creatingJob ? "建立下載中" : "開始下載預設品質"}
+        <div className="download-controls">
+          <label htmlFor="quality-preset">下載品質</label>
+          <select
+            id="quality-preset"
+            value={qualityPreset}
+            onChange={(event) => setQualityPreset(event.target.value as QualityPreset)}
+          >
+            <option value="bestAvailable">最佳可用</option>
+            <option value="bestUnder1080p">1080p 以下最佳</option>
+            <option value="bestUnder720p">720p 以下最佳</option>
+            <option value="bestUnder480p">480p 以下最佳</option>
+          </select>
+          <button type="button" onClick={() => onStartDownload(qualityPreset)} disabled={creatingJob}>
+            {creatingJob ? "建立下載中" : "開始下載"}
           </button>
-          <span>預設：1080p 以下最佳品質，優先 mp4。</span>
+          <span>優先 mp4，依所選上限建立下載任務。</span>
         </div>
       </div>
     </article>

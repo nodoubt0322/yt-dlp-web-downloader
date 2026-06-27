@@ -1,5 +1,6 @@
 import type { FastifyInstance } from "fastify";
 import type { AppConfig } from "../config.js";
+import type { QualityPreset } from "../services/commandBuilder.js";
 import { normalizeYtDlpError } from "../services/errors.js";
 import { createJobQueue, type JobQueue } from "../services/jobQueue.js";
 import type { JobStore } from "../services/jobStore.js";
@@ -28,7 +29,7 @@ export async function registerJobsRoutes(app: FastifyInstance, options: Register
     });
 
   app.post("/jobs", async (request, reply) => {
-    const body = request.body as { url?: unknown; analysisId?: unknown } | undefined;
+    const body = request.body as { url?: unknown; analysisId?: unknown; options?: unknown } | undefined;
     const prepared = await prepareJobInput(body, options);
 
     if ("error" in prepared) {
@@ -44,7 +45,7 @@ export async function registerJobsRoutes(app: FastifyInstance, options: Register
 
     const job = options.jobStore.createJob({
       ...prepared.input,
-      options: { qualityPreset: "bestUnder1080p", preferMp4: true },
+      options: readDownloadOptions(body?.options),
       expiresAt: new Date((options.now ?? (() => new Date()))().getTime() + options.config.fileTtlMinutes * 60_000)
     });
 
@@ -148,6 +149,21 @@ function validationError(message: string) {
       retryable: false
     }
   };
+}
+
+function readDownloadOptions(value: unknown) {
+  const input = value && typeof value === "object" ? (value as { qualityPreset?: unknown; preferMp4?: unknown }) : {};
+  return {
+    qualityPreset: readQualityPreset(input.qualityPreset),
+    preferMp4: true
+  };
+}
+
+function readQualityPreset(value: unknown): QualityPreset {
+  if (value === "bestAvailable" || value === "bestUnder1080p" || value === "bestUnder720p" || value === "bestUnder480p") {
+    return value;
+  }
+  return "bestUnder1080p";
 }
 
 async function readFreeBytes(options: RegisterJobsRoutesOptions) {

@@ -55,7 +55,7 @@ export function JobPage({ jobId, embedded = false }: JobPageProps) {
 
   const jobContent = (
     <div className="primary-stack job-status-stack">
-      {job ? <JobProgressCard job={job} /> : <div className="panel skeleton-panel">正在讀取下載任務...</div>}
+      {job ? <JobProgressCard job={job} compact={embedded} /> : <div className="panel skeleton-panel">正在讀取下載任務...</div>}
       {job?.status === "completed" && job.result ? <DownloadResultCard result={job.result} /> : null}
       <ErrorAlert message={error} />
     </div>

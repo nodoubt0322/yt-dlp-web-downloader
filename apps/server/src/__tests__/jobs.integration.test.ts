@@ -96,7 +96,7 @@ describe("jobs routes", () => {
       method: "POST",
       url: "/api/jobs",
       headers: { authorization: "Bearer test-token" },
-      payload: { analysisId: analysis.id }
+      payload: { analysisId: analysis.id, options: { qualityPreset: "bestUnder720p", preferMp4: true } }
     });
 
     expect(response.statusCode).toBe(202);
@@ -104,7 +104,8 @@ describe("jobs routes", () => {
       analysisId: analysis.id,
       url: "https://example.com/watch?v=analysis",
       title: "Analyzed Video",
-      extractor: "mock"
+      extractor: "mock",
+      options: { qualityPreset: "bestUnder720p", preferMp4: true }
     });
   });
 

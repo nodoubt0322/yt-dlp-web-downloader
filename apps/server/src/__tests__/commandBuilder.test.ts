@@ -19,7 +19,8 @@ describe("commandBuilder", () => {
       url,
       homePath: "/srv/data/jobs/job-1",
       tempPath: "/srv/data/tmp/job-1",
-      outputTemplate: "%(title).200B-%(id)s.%(ext)s"
+      outputTemplate: "%(title).200B-%(id)s.%(ext)s",
+      qualityPreset: "bestUnder1080p"
     });
 
     expect(typeof args).not.toBe("string");
@@ -37,5 +38,17 @@ describe("commandBuilder", () => {
     expect(args).toContain("-o");
     expect(args).toContain("%(title).200B-%(id)s.%(ext)s");
     expect(args.slice(-2)).toEqual(["--", url]);
+  });
+
+  it("maps lower quality presets to the selected yt-dlp resolution sort", () => {
+    const args = buildDownloadArgs({
+      url: "https://example.com/watch?v=123",
+      homePath: "/srv/data/jobs/job-1",
+      tempPath: "/srv/data/tmp/job-1",
+      outputTemplate: "%(title).200B-%(id)s.%(ext)s",
+      qualityPreset: "bestUnder720p"
+    });
+
+    expect(args).toContain("res:720");
   });
 });

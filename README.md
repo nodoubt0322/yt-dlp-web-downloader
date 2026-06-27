@@ -6,7 +6,7 @@
 
 1. 在 Web UI 輸入一個影片 URL。
 2. 後端驗證 URL、阻擋 private network 目標，並用 `yt-dlp --dump-json` 分析 metadata。
-3. 建立預設品質的下載任務。
+3. 選擇品質後建立下載任務。
 4. 後端以 concurrency `1` 非同步執行任務，將檔案寫入 `DATA_DIR/jobs/{jobId}`，並追蹤進度。
 5. 任務完成後，App 顯示有期限的 signed download URL。
 
@@ -175,7 +175,7 @@ server 會拒絕非 HTTP URL、localhost/private-network 目標、不安全 DNS 
 
 ## 目前 MVP 限制
 
-- 只支援預設品質：best under 1080p，prefer mp4。
+- 支援品質選項：最佳可用、1080p 以下最佳、720p 以下最佳、480p 以下最佳；輸出仍優先合併為 mp4。
 - 不支援 playlist 或批次下載。
 - 不支援瀏覽器 cookie 匯入。
 - 不支援多使用者帳號。

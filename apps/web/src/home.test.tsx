@@ -85,14 +85,14 @@ describe("home downloader flow", () => {
     expect(screen.queryByText(/儲存空間目前不可寫入或容量不足。/)).not.toBeInTheDocument();
   });
 
-  it("labels yt-dlp output as a version and omits storage from the status panel", async () => {
+  it("labels yt-dlp output as a version number and omits storage from the status panel", async () => {
     fetchMock.mockResolvedValueOnce(jsonResponse(systemOk()));
     sessionStorage.setItem("yt-dlp-admin-token", "admin-token");
 
     render(<App />);
 
-    expect(await screen.findByText("yt-dlp 版本")).toBeInTheDocument();
-    expect(screen.getByText("2026.01.01")).toBeInTheDocument();
+    expect(await screen.findByText("yt-dlp 版本號")).toBeInTheDocument();
+    expect(screen.getByText("v2026.01.01")).toBeInTheDocument();
     expect(screen.queryByText(/storage/i)).not.toBeInTheDocument();
   });
 
@@ -122,7 +122,8 @@ describe("home downloader flow", () => {
     expect(screen.getByText("長度：2:03")).toBeInTheDocument();
     expect(screen.getByText("格式：mp4，最高 1080p，含影像與音訊")).toBeInTheDocument();
     expect(screen.getByAltText("Demo Video 縮圖")).toHaveAttribute("src", "https://example.com/thumb.jpg");
-    expect(screen.getByRole("button", { name: "開始下載預設品質" })).toBeInTheDocument();
+    expect(screen.getByLabelText("下載品質")).toHaveValue("bestUnder1080p");
+    expect(screen.getByRole("button", { name: "開始下載" })).toBeInTheDocument();
   });
 
   it("shows sanitized Chinese API errors", async () => {

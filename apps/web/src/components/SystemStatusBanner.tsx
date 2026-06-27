@@ -33,7 +33,7 @@ export function SystemStatusBanner({ status, loading, hasToken }: SystemStatusBa
         </span>
       </div>
       <div className="dependency-grid" aria-label="依賴檢查結果">
-        <DependencyItem label="yt-dlp 版本" ok={status.ytDlp.ok} version={status.ytDlp.version} />
+        <DependencyItem label="yt-dlp 版本號" ok={status.ytDlp.ok} version={formatVersion(status.ytDlp.version)} />
         <DependencyItem label="ffmpeg" ok={status.ffmpeg.ok} version={status.ffmpeg.version} />
         <DependencyItem label="ffprobe" ok={status.ffprobe.ok} version={status.ffprobe.version} />
       </div>
@@ -46,6 +46,10 @@ export function SystemStatusBanner({ status, loading, hasToken }: SystemStatusBa
       ) : null}
     </section>
   );
+}
+
+function formatVersion(version: string | null) {
+  return version ? `v${version}` : null;
 }
 
 function DependencyItem({ label, ok, version }: { label: string; ok: boolean; version: string | null }) {

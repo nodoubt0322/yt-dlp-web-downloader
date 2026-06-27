@@ -2,18 +2,19 @@ import type { JobDetails } from "../apiClient";
 
 interface JobProgressCardProps {
   job: JobDetails;
+  compact?: boolean;
 }
 
-export function JobProgressCard({ job }: JobProgressCardProps) {
+export function JobProgressCard({ job, compact = false }: JobProgressCardProps) {
   const progress = job.progress;
   const percent = typeof progress?.percent === "number" ? Math.round(progress.percent) : null;
 
   return (
-    <article className="panel job-card">
-      <div className="panel-heading">
+    <article className={compact ? "panel job-card compact-job-card" : "panel job-card"}>
+      <div className="panel-heading compact-heading">
         <div>
-          <p className="eyebrow">下載狀態</p>
-          <h1>{job.title ?? "下載任務"}</h1>
+          <h2>下載狀態</h2>
+          <p>{job.title ?? "下載任務"}</p>
         </div>
         <span className={`status-pill ${statusTone(job.status)}`}>{statusLabel(job.status)}</span>
       </div>
