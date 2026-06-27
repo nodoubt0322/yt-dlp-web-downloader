@@ -22,6 +22,7 @@ export async function registerJobsRoutes(app: FastifyInstance, options: Register
       store: options.jobStore,
       dataDir: options.config.dataDir,
       ytDlpBinary: options.config.ytDlpBinary,
+      ffmpegBinary: options.config.ffmpegBinary,
       timeoutMs: options.config.downloadTimeoutMs,
       publicBaseUrl: options.config.publicBaseUrl,
       fileTtlMinutes: options.config.fileTtlMinutes,
@@ -163,7 +164,7 @@ function readQualityPreset(value: unknown): QualityPreset {
   if (value === "bestAvailable" || value === "bestUnder1080p" || value === "bestUnder720p" || value === "bestUnder480p") {
     return value;
   }
-  return "bestUnder1080p";
+  return "bestAvailable";
 }
 
 async function readFreeBytes(options: RegisterJobsRoutesOptions) {

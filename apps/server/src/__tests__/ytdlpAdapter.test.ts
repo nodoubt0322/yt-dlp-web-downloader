@@ -29,14 +29,20 @@ describe("analyzeWithYtDlp", () => {
       extractor: "mock",
       webpageUrl: "https://example.com/watch?v=123",
       recommendedOptions: {
-        qualityPreset: "bestUnder1080p",
+        qualityPreset: "bestAvailable",
         preferMp4: true
       },
       formatSummary: {
         hasVideo: true,
         hasAudio: true,
         maxHeight: 1080,
-        ext: "mp4"
+        ext: "mp4",
+        qualityEstimates: [
+          { preset: "bestAvailable", height: 1080, sizeBytes: 19_000_000, approximate: false },
+          { preset: "bestUnder1080p", height: 1080, sizeBytes: 19_000_000, approximate: false },
+          { preset: "bestUnder720p", height: 720, sizeBytes: 11_000_000, approximate: true },
+          { preset: "bestUnder480p", height: 480, sizeBytes: 7_000_000, approximate: false }
+        ]
       }
     });
   });

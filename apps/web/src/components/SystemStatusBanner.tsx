@@ -12,7 +12,7 @@ export function SystemStatusBanner({ status, loading, hasToken }: SystemStatusBa
   }
 
   if (loading) {
-    return <div className="panel status-panel">正在檢查 yt-dlp、ffmpeg 與儲存空間...</div>;
+    return <div className="panel status-panel">正在檢查系統狀態...</div>;
   }
 
   if (!status) {
@@ -26,16 +26,11 @@ export function SystemStatusBanner({ status, loading, hasToken }: SystemStatusBa
       <div className="panel-heading compact-heading">
         <div>
           <h2>系統狀態</h2>
-          <p>{problems.length === 0 ? "依賴檢查正常，可以開始分析網址。" : "需要處理下列項目。"}</p>
+          <p>{problems.length === 0 ? "系統正常，可以開始分析網址。" : "系統檢查未通過，請查看伺服器設定。"}</p>
         </div>
         <span className={problems.length === 0 ? "status-pill success" : "status-pill warning"}>
           {problems.length === 0 ? "可用" : "注意"}
         </span>
-      </div>
-      <div className="dependency-grid" aria-label="依賴檢查結果">
-        <DependencyItem label="yt-dlp 版本號" ok={status.ytDlp.ok} version={formatVersion(status.ytDlp.version)} />
-        <DependencyItem label="ffmpeg" ok={status.ffmpeg.ok} version={status.ffmpeg.version} />
-        <DependencyItem label="ffprobe" ok={status.ffprobe.ok} version={status.ffprobe.version} />
       </div>
       {problems.length > 0 ? (
         <div className="problem-list">
@@ -48,30 +43,16 @@ export function SystemStatusBanner({ status, loading, hasToken }: SystemStatusBa
   );
 }
 
-function formatVersion(version: string | null) {
-  return version ? `v${version}` : null;
-}
-
-function DependencyItem({ label, ok, version }: { label: string; ok: boolean; version: string | null }) {
-  return (
-    <div className="dependency-item">
-      <span className={ok ? "dot ok" : "dot bad"} />
-      <span>{label}</span>
-      <small>{version ?? "未偵測"}</small>
-    </div>
-  );
-}
-
 function collectProblems(status: SystemCheck) {
   const problems: string[] = [];
   if (!status.ytDlp.ok) {
-    problems.push("yt-dlp 無法使用，請先確認伺服器設定。");
+    problems.push("影片分析服務目前不可用。");
   }
   if (!status.ffmpeg.ok) {
-    problems.push("ffmpeg 無法使用，完成下載可能會失敗。");
+    problems.push("影片下載服務目前不可用。");
   }
   if (!status.ffprobe.ok) {
-    problems.push("ffprobe 無法使用，媒體資訊檢查可能會失敗。");
+    problems.push("媒體資訊檢查目前不可用。");
   }
   return problems;
 }

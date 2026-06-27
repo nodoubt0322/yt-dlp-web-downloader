@@ -8,6 +8,7 @@ import { createJobStore, type JobStore } from "../services/jobStore.js";
 
 const testDir = dirname(fileURLToPath(import.meta.url));
 const mockYtDlp = resolve(testDir, "../../test-fixtures/mock-ytdlp.mjs");
+const mockFfmpeg = resolve(testDir, "../../test-fixtures/mock-ffmpeg.mjs");
 const tempDirs: string[] = [];
 const stores: JobStore[] = [];
 
@@ -26,7 +27,7 @@ async function createStore() {
 
 describe("jobQueue", () => {
   it("runs one FIFO download at a time, records progress, and stores signed result metadata", async () => {
-    await chmod(mockYtDlp, 0o755);
+    await Promise.all([chmod(mockYtDlp, 0o755), chmod(mockFfmpeg, 0o755)]);
     const { store, dataDir } = await createStore();
     const first = store.createJob({
       url: "https://example.com/watch?v=first",
@@ -42,9 +43,11 @@ describe("jobQueue", () => {
       store,
       dataDir,
       ytDlpBinary: mockYtDlp,
+      ffmpegBinary: mockFfmpeg,
       timeoutMs: 5_000,
       publicBaseUrl: "",
-      fileTtlMinutes: 3
+      fileTtlMinutes: 3,
+      retryDelayMs: 1
     });
 
     const firstRun = queue.enqueue(first.id);
@@ -67,7 +70,7 @@ describe("jobQueue", () => {
       },
       result: {
         fileName: "mock-video.mp4",
-        size: 12,
+        size: 5,
         contentType: "video/mp4",
         downloadUrl: expect.stringMatching(new RegExp(`^/api/download/dl_`)),
         expiresAt: expect.any(String)
@@ -77,7 +80,7 @@ describe("jobQueue", () => {
   });
 
   it("fails the job with a normalized error when yt-dlp exits unsuccessfully", async () => {
-    await chmod(mockYtDlp, 0o755);
+    await Promise.all([chmod(mockYtDlp, 0o755), chmod(mockFfmpeg, 0o755)]);
     const { store, dataDir } = await createStore();
     const job = store.createJob({
       url: "https://example.com/watch?v=fail",
@@ -88,6 +91,7 @@ describe("jobQueue", () => {
       store,
       dataDir,
       ytDlpBinary: mockYtDlp,
+      ffmpegBinary: mockFfmpeg,
       timeoutMs: 5_000,
       publicBaseUrl: "",
       fileTtlMinutes: 3
@@ -103,6 +107,100 @@ describe("jobQueue", () => {
         retryable: false
       }
     });
+  });
+
+  it("retries transient yt-dlp download failures and exposes retry progress", async () => {
+    await Promise.all([chmod(mockYtDlp, 0o755), chmod(mockFfmpeg, 0o755)]);
+    const { store, dataDir } = await createStore();
+    const job = store.createJob({
+      url: "https://example.com/watch?v=flaky-once",
+      options: {},
+      expiresAt: new Date(Date.now() + 60_000)
+    });
+    const queue = createJobQueue({
+      store,
+      dataDir,
+      ytDlpBinary: mockYtDlp,
+      ffmpegBinary: mockFfmpeg,
+      timeoutMs: 5_000,
+      publicBaseUrl: "",
+      fileTtlMinutes: 3,
+      retryDelayMs: 50
+    });
+
+    const run = queue.enqueue(job.id);
+    await waitFor(() => store.getJob(job.id)?.progress?.phase === "retrying");
+
+    expect(store.getJob(job.id)?.progress).toMatchObject({
+      phase: "retrying",
+      message: "下載失敗，正在重試（第 1/3 次）",
+      retryAttempt: 1,
+      retryMax: 3
+    });
+
+    await run;
+
+    expect(store.getJob(job.id)?.status).toBe("completed");
+  });
+
+  it("keeps the original download when ffmpeg output is not smaller", async () => {
+    await Promise.all([chmod(mockYtDlp, 0o755), chmod(mockFfmpeg, 0o755)]);
+    const { store, dataDir } = await createStore();
+    const job = store.createJob({
+      url: "https://example.com/watch?v=original-smaller",
+      options: {},
+      expiresAt: new Date(Date.now() + 60_000)
+    });
+    const queue = createJobQueue({
+      store,
+      dataDir,
+      ytDlpBinary: mockYtDlp,
+      ffmpegBinary: mockFfmpeg,
+      timeoutMs: 5_000,
+      publicBaseUrl: "",
+      fileTtlMinutes: 3,
+      env: { FFMPEG_MOCK_MODE: "larger" }
+    });
+
+    await queue.enqueue(job.id);
+
+    expect(store.getJob(job.id)).toMatchObject({
+      status: "completed",
+      result: {
+        fileName: "mock-video.mp4",
+        size: 12
+      }
+    });
+  });
+
+  it("exposes an optimization progress message before completing", async () => {
+    await Promise.all([chmod(mockYtDlp, 0o755), chmod(mockFfmpeg, 0o755)]);
+    const { store, dataDir } = await createStore();
+    const job = store.createJob({
+      url: "https://example.com/watch?v=optimize",
+      options: {},
+      expiresAt: new Date(Date.now() + 60_000)
+    });
+    const queue = createJobQueue({
+      store,
+      dataDir,
+      ytDlpBinary: mockYtDlp,
+      ffmpegBinary: mockFfmpeg,
+      timeoutMs: 5_000,
+      publicBaseUrl: "",
+      fileTtlMinutes: 3
+    });
+
+    const run = queue.enqueue(job.id);
+    await waitFor(() => store.getJob(job.id)?.progress?.phase === "optimizing");
+
+    expect(store.getJob(job.id)?.progress).toMatchObject({
+      phase: "optimizing",
+      message: "正在壓縮影片，降低檔案大小..."
+    });
+
+    await run;
+    expect(store.getJob(job.id)?.status).toBe("completed");
   });
 });
 

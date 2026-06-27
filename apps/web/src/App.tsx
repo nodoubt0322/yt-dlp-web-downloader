@@ -23,11 +23,15 @@ export function App() {
     }
   }
 
+  function clearActiveJob() {
+    setActiveJobId(null);
+  }
+
   const jobMatch = /^\/jobs\/([^/]+)$/.exec(path);
   const jobId = jobMatch?.[1];
   if (jobId) {
     return <JobPage jobId={jobId} />;
   }
 
-  return <HomePage activeJobId={activeJobId} onNavigateToJob={navigateToJob} />;
+  return <HomePage activeJobId={activeJobId} onClearActiveJob={clearActiveJob} onNavigateToJob={navigateToJob} />;
 }

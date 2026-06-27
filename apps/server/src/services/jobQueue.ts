@@ -1,19 +1,24 @@
+import { mkdir, rename, rm, stat } from "node:fs/promises";
 import { join } from "node:path";
-import { buildDownloadArgs, type QualityPreset } from "./commandBuilder.js";
+import { buildDownloadArgs, buildOptimizeVideoArgs, type QualityPreset } from "./commandBuilder.js";
 import { normalizeYtDlpError } from "./errors.js";
 import type { JobStore } from "./jobStore.js";
-import { ProcessRunnerError, runProcessStreaming } from "./processRunner.js";
+import { ProcessRunnerError, runProcess, runProcessStreaming } from "./processRunner.js";
 import { parseProgressLine } from "./progressParser.js";
 import { createStorageService } from "./storageService.js";
 import { createTokenService } from "./tokenService.js";
+import type { JobProgress } from "./types.js";
 
 export interface CreateJobQueueOptions {
   store: JobStore;
   dataDir: string;
   ytDlpBinary: string;
+  ffmpegBinary: string;
   timeoutMs: number;
   publicBaseUrl?: string;
   fileTtlMinutes: number;
+  retryDelayMs?: number;
+  env?: Record<string, string | undefined>;
   now?: () => Date;
 }
 
@@ -25,6 +30,8 @@ export function createJobQueue(options: CreateJobQueueOptions): JobQueue {
   const storage = createStorageService({ dataDir: options.dataDir });
   const tokenService = createTokenService({ store: options.store, now: options.now });
   const now = options.now ?? (() => new Date());
+  const retryMax = 3;
+  const retryDelayMs = options.retryDelayMs ?? 1_000;
   let tail = Promise.resolve();
 
   return {
@@ -46,27 +53,18 @@ export function createJobQueue(options: CreateJobQueueOptions): JobQueue {
       const tempDir = join(jobDir, ".tmp");
       options.store.updateJobStatus(job.id, "running", { startedAt: now() });
 
-      await runProcessStreaming(
-        options.ytDlpBinary,
-        buildDownloadArgs({
-          url: job.normalizedUrl ?? job.url,
-          homePath: jobDir,
-          tempPath: tempDir,
-          outputTemplate: "%(title).200B.%(ext)s",
-          qualityPreset: readQualityPreset(job.options.qualityPreset)
-        }),
-        {
-          timeoutMs: options.timeoutMs,
-          onStdoutLine: (line) => {
-            options.store.updateJobProgress(job.id, parseProgressLine(line));
-          }
-        }
-      );
+      await runDownloadWithRetries(job.id, {
+        url: job.normalizedUrl ?? job.url,
+        homePath: jobDir,
+        tempPath: tempDir,
+        qualityPreset: readQualityPreset(job.options.qualityPreset)
+      });
 
-      const resultFile = await storage.findResultFile(job.id);
+      let resultFile = await storage.findResultFile(job.id);
       if (!resultFile) {
         throw normalizeYtDlpError("yt-dlp completed without a result file");
       }
+      resultFile = await optimizeResultFile(job.id, resultFile, tempDir);
 
       options.store.completeJob(job.id, {
         fileName: resultFile.filename,
@@ -93,11 +91,109 @@ export function createJobQueue(options: CreateJobQueueOptions): JobQueue {
       }
     }
   }
+
+  async function runDownloadWithRetries(
+    jobId: string,
+    download: { url: string; homePath: string; tempPath: string; qualityPreset: QualityPreset }
+  ) {
+    const args = buildDownloadArgs({
+      url: download.url,
+      homePath: download.homePath,
+      tempPath: download.tempPath,
+      outputTemplate: "%(title).200B.%(ext)s",
+      qualityPreset: download.qualityPreset
+    });
+
+    for (let attempt = 1; attempt <= retryMax + 1; attempt += 1) {
+      try {
+        await runProcessStreaming(options.ytDlpBinary, args, {
+          timeoutMs: options.timeoutMs,
+          env: options.env,
+          onStdoutLine: (line) => {
+            options.store.updateJobProgress(jobId, parseProgressLine(line));
+          }
+        });
+        return;
+      } catch (error) {
+        if (attempt > retryMax) {
+          throw error;
+        }
+
+        const retryAttempt = attempt;
+        options.store.updateJobProgress(jobId, {
+          phase: "retrying",
+          message: `下載失敗，正在重試（第 ${retryAttempt}/${retryMax} 次）`,
+          retryAttempt,
+          retryMax
+        });
+        console.warn(`yt-dlp download failed for ${jobId}; retrying ${retryAttempt}/${retryMax}: ${readProcessErrorMessage(error)}`);
+        await sleep(retryDelayMs);
+      }
+    }
+  }
+
+  async function optimizeResultFile(jobId: string, resultFile: Awaited<ReturnType<typeof storage.findResultFile>>, tempDir: string) {
+    if (!resultFile) {
+      throw normalizeYtDlpError("yt-dlp completed without a result file");
+    }
+
+    const progressBeforeOptimize = options.store.getJob(jobId)?.progress;
+    await mkdir(tempDir, { recursive: true });
+    const optimizedPath = join(tempDir, `${resultFile.filename}.optimized.mp4`);
+    options.store.updateJobProgress(jobId, {
+      phase: "optimizing",
+      message: "正在壓縮影片，降低檔案大小..."
+    });
+
+    await runProcess(
+      options.ffmpegBinary,
+      buildOptimizeVideoArgs({
+        inputPath: resultFile.path,
+        outputPath: optimizedPath
+      }),
+      {
+        timeoutMs: options.timeoutMs,
+        env: options.env
+      }
+    );
+
+    const optimizedStat = await stat(optimizedPath);
+    if (optimizedStat.size < resultFile.size) {
+      await rm(resultFile.path, { force: true });
+      await rename(optimizedPath, resultFile.path);
+      restoreProgressAfterOptimize(jobId, progressBeforeOptimize);
+      return {
+        ...resultFile,
+        size: optimizedStat.size
+      };
+    }
+
+    await rm(optimizedPath, { force: true });
+    restoreProgressAfterOptimize(jobId, progressBeforeOptimize);
+    return resultFile;
+  }
+
+  function restoreProgressAfterOptimize(jobId: string, progress: JobProgress | null | undefined) {
+    // The optimizing message is live-only. Completed jobs should show final file metadata, not stale processing copy.
+    options.store.updateJobProgress(jobId, progress ?? { phase: "downloading", percent: 100 });
+  }
+}
+
+function readProcessErrorMessage(error: unknown) {
+  if (error instanceof ProcessRunnerError) {
+    const details = [error.message, error.stderr, error.stdout].filter(Boolean).join(" ");
+    return details.replace(/\s+/g, " ").trim();
+  }
+  return error instanceof Error ? error.message : String(error);
+}
+
+function sleep(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 function readQualityPreset(value: unknown): QualityPreset {
   if (value === "bestAvailable" || value === "bestUnder1080p" || value === "bestUnder720p" || value === "bestUnder480p") {
     return value;
   }
-  return "bestUnder1080p";
+  return "bestAvailable";
 }

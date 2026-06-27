@@ -329,16 +329,19 @@ h2 {
   margin-top: 0;
   position: relative;
   z-index: 2;
+  min-width: 0;
 }
 
 .sidebar-stack,
 .primary-stack {
   display: grid;
   gap: var(--space-4);
+  min-width: 0;
 }
 
 .panel {
   position: relative;
+  min-width: 0;
   border-radius: var(--radius);
   background:
     linear-gradient(180deg, rgb(255 255 255 / 0.026), rgb(255 255 255 / 0)),
@@ -537,41 +540,6 @@ h2 {
   color: #ffd8d2;
 }
 
-.dependency-grid {
-  display: grid;
-  gap: var(--space-2);
-}
-
-.dependency-item {
-  display: grid;
-  grid-template-columns: auto minmax(66px, 1fr) auto;
-  gap: var(--space-2);
-  align-items: center;
-  color: var(--ash-text);
-  font-size: 0.92rem;
-}
-
-.dependency-item small {
-  color: var(--fog-text);
-  font-size: 0.8rem;
-}
-
-.dot {
-  width: 9px;
-  height: 9px;
-  border-radius: 999px;
-}
-
-.dot.ok {
-  background: var(--success);
-  box-shadow: rgb(86 213 167 / 0.55) 0 0 18px;
-}
-
-.dot.bad {
-  background: var(--danger);
-  box-shadow: rgb(255 107 90 / 0.48) 0 0 18px;
-}
-
 .problem-list {
   display: grid;
   gap: var(--space-2);
@@ -615,6 +583,7 @@ h2 {
   display: grid;
   grid-template-columns: minmax(190px, 300px) minmax(0, 1fr);
   gap: var(--space-5);
+  min-width: 0;
 }
 
 .thumbnail {
@@ -636,6 +605,7 @@ h2 {
   display: grid;
   align-content: start;
   gap: var(--space-4);
+  min-width: 0;
 }
 
 .metadata-card h2 {
@@ -685,9 +655,13 @@ h2 {
 
 .download-controls {
   display: grid;
-  grid-template-columns: minmax(170px, 250px) minmax(128px, auto);
+  grid-template-columns: minmax(180px, 260px) minmax(150px, 190px);
   gap: var(--space-3);
   align-items: stretch;
+  justify-content: start;
+  width: 100%;
+  max-width: 470px;
+  min-width: 0;
 }
 
 .download-controls label {
@@ -716,6 +690,7 @@ h2 {
 }
 
 .download-controls button {
+  min-width: 0;
   white-space: nowrap;
 }
 
@@ -743,11 +718,16 @@ h2 {
 }
 
 .job-card {
+  display: grid;
   gap: var(--space-4);
 }
 
 .compact-job-card {
   padding: var(--space-4);
+}
+
+.job-card .button-link {
+  justify-self: end;
 }
 
 .progress-block {
@@ -785,16 +765,61 @@ h2 {
   color: var(--fog-text);
 }
 
-.status-grid span {
+.status-grid > span {
   border: 1px solid rgb(255 255 255 / 0.1);
   border-radius: 999px;
   padding: 7px 11px;
   background: rgb(13 10 25 / 0.48);
 }
 
-.result-card p {
-  margin: 0;
-  overflow-wrap: anywhere;
+.job-heading-actions {
+  display: flex;
+  flex: 0 0 auto;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.job-title-line {
+  display: flex;
+  min-width: 0;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  align-items: center;
+}
+
+.elapsed-time {
+  border: 1px solid rgb(255 255 255 / 0.1);
+  border-radius: 999px;
+  padding: 7px 11px;
+  background: rgb(13 10 25 / 0.48);
+  color: var(--fog-text);
+  font-size: 0.86rem;
+  white-space: nowrap;
+}
+
+.time-value {
+  display: inline-block;
+  min-width: 3.2rem;
+  color: var(--cloud-white);
+  font-variant-numeric: tabular-nums;
+}
+
+.result-meta {
+  display: flex;
+  min-width: 0;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  justify-content: flex-start;
+  align-items: center;
+  color: var(--fog-text);
+  font-size: 0.86rem;
+}
+
+.retry-message {
+  border-color: rgb(255 177 93 / 0.22);
+  color: #ffd8aa;
 }
 
 .empty-panel {
@@ -873,61 +898,118 @@ h2 {
 
 @media (max-width: 620px) {
   .app-shell {
-    padding: 20px 14px 36px;
+    padding: 16px 12px 32px;
   }
 
   .workspace {
-    gap: var(--space-5);
+    gap: var(--space-4);
   }
 
   .masthead {
-    gap: var(--space-5);
-    padding-top: var(--space-5);
+    gap: var(--space-3);
+    padding: var(--space-3) 0 0;
   }
 
   h1 {
-    font-size: clamp(2.85rem, 15vw, 4.2rem);
+    font-size: clamp(2.2rem, 12vw, 3rem);
+    letter-spacing: -0.035em;
+  }
+
+  h2 {
+    font-size: 1.18rem;
+    line-height: 1.18;
+  }
+
+  .eyebrow {
+    margin-bottom: var(--space-2);
+    font-size: 0.72rem;
   }
 
   .lede {
-    max-width: 100%;
+    margin-top: var(--space-2);
+    font-size: 0.95rem;
+    line-height: 1.5;
   }
 
   .workflow-stage {
-    min-height: 250px;
+    display: none;
   }
 
-  .masthead-status {
-    left: 18px;
-    right: auto;
-    text-align: left;
+  .workflow-grid {
+    gap: var(--space-3);
   }
 
-  .flow-map {
-    inset: 70px 18px 22px;
+  .primary-stack {
+    order: -1;
+    gap: var(--space-3);
   }
 
-  .flow-node {
-    min-width: 82px;
-    min-height: 48px;
-    font-size: 0.72rem;
+  .sidebar-stack {
+    gap: var(--space-3);
+  }
+
+  .panel,
+  .url-form {
+    padding: var(--space-4);
+    border-radius: 14px;
   }
 
   .page-bar,
   .panel-heading {
     display: grid;
+    gap: var(--space-3);
   }
 
   .input-row,
   .metadata-card,
   .download-controls {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .metadata-card {
+    max-width: none;
+  }
+
+  .download-controls {
+    width: calc(100vw - 56px);
+    max-width: calc(100vw - 56px);
+    justify-self: start;
   }
 
   .input-row button,
   .metadata-body button,
-  .button-link {
+  .button-link,
+  .download-controls select {
     width: 100%;
+    max-width: 100%;
+  }
+
+  .thumbnail {
+    max-height: 190px;
+  }
+
+  .metadata-card h2 {
+    max-width: 100%;
+    font-size: 1.08rem;
+    -webkit-line-clamp: 3;
+  }
+
+  .metadata-list,
+  .metadata-body {
+    gap: var(--space-3);
+  }
+
+  .job-heading-actions,
+  .result-meta {
+    justify-content: flex-start;
+  }
+
+  .elapsed-time {
+    width: fit-content;
+  }
+
+  .job-card .button-link {
+    justify-self: stretch;
   }
 
   .empty-panel h2 {

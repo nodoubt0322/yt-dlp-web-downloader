@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { buildAnalyzeArgs, buildDownloadArgs } from "../services/commandBuilder.js";
+import { buildAnalyzeArgs, buildDownloadArgs, buildOptimizeVideoArgs } from "../services/commandBuilder.js";
 
 describe("commandBuilder", () => {
   it("builds analyze arguments without shell strings or output paths", () => {
@@ -51,5 +51,35 @@ describe("commandBuilder", () => {
     });
 
     expect(args).toContain("res:720");
+  });
+
+  it("builds ffmpeg optimization arguments for smaller compatible mp4 output", () => {
+    const args = buildOptimizeVideoArgs({
+      inputPath: "/srv/data/jobs/job-1/source.mp4",
+      outputPath: "/srv/data/jobs/job-1/source.optimized.mp4"
+    });
+
+    expect(args).toEqual([
+      "-y",
+      "-i",
+      "/srv/data/jobs/job-1/source.mp4",
+      "-map",
+      "0:v:0",
+      "-map",
+      "0:a?",
+      "-c:v",
+      "libx264",
+      "-preset",
+      "medium",
+      "-crf",
+      "28",
+      "-c:a",
+      "aac",
+      "-b:a",
+      "128k",
+      "-movflags",
+      "+faststart",
+      "/srv/data/jobs/job-1/source.optimized.mp4"
+    ]);
   });
 });

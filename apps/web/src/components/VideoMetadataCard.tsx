@@ -9,7 +9,7 @@ interface VideoMetadataCardProps {
 }
 
 export function VideoMetadataCard({ analysis, creatingJob, onStartDownload }: VideoMetadataCardProps) {
-  const [qualityPreset, setQualityPreset] = useState<QualityPreset>("bestUnder1080p");
+  const [qualityPreset, setQualityPreset] = useState<QualityPreset>("bestAvailable");
   const fallbackNotice = getFallbackNotice(qualityPreset, analysis.formatSummary);
 
   return (
@@ -25,7 +25,6 @@ export function VideoMetadataCard({ analysis, creatingJob, onStartDownload }: Vi
             <h2 title={analysis.title}>{analysis.title}</h2>
             <p>{analysis.webpageUrl ?? analysis.url}</p>
           </div>
-          <span className="status-pill neutral">已分析</span>
         </div>
         <dl className="metadata-list">
           {analysis.extractor ? (

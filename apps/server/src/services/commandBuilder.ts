@@ -13,7 +13,7 @@ export interface BuildDownloadArgsOptions {
 }
 
 export function buildDownloadArgs(options: BuildDownloadArgsOptions): string[] {
-  const preset = options.qualityPreset ?? "bestUnder1080p";
+  const preset = options.qualityPreset ?? "bestAvailable";
   const formatSelector = formatSelectorForPreset(preset);
   const sort = sortForPreset(preset);
 
@@ -36,6 +36,36 @@ export function buildDownloadArgs(options: BuildDownloadArgsOptions): string[] {
     options.outputTemplate,
     "--",
     options.url
+  ];
+}
+
+export interface BuildOptimizeVideoArgsOptions {
+  inputPath: string;
+  outputPath: string;
+}
+
+export function buildOptimizeVideoArgs(options: BuildOptimizeVideoArgsOptions): string[] {
+  return [
+    "-y",
+    "-i",
+    options.inputPath,
+    "-map",
+    "0:v:0",
+    "-map",
+    "0:a?",
+    "-c:v",
+    "libx264",
+    "-preset",
+    "medium",
+    "-crf",
+    "28",
+    "-c:a",
+    "aac",
+    "-b:a",
+    "128k",
+    "-movflags",
+    "+faststart",
+    options.outputPath
   ];
 }
 

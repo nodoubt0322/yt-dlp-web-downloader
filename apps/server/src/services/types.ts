@@ -2,6 +2,9 @@ export type JobStatus = "queued" | "running" | "completed" | "failed" | "cancele
 
 export interface JobProgress {
   phase?: string;
+  message?: string;
+  retryAttempt?: number;
+  retryMax?: number;
   percent?: number;
   downloadedBytes?: number;
   totalBytes?: number;

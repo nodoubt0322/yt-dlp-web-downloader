@@ -10,7 +10,7 @@ export interface NormalizedVideoMetadata {
   extractor: string | null;
   webpageUrl: string | null;
   recommendedOptions: {
-    qualityPreset: "bestUnder1080p";
+    qualityPreset: "bestAvailable";
     preferMp4: true;
   };
   formatSummary: {
@@ -18,6 +18,12 @@ export interface NormalizedVideoMetadata {
     hasAudio: boolean;
     maxHeight: number | null;
     ext: string | null;
+    qualityEstimates: Array<{
+      preset: "bestAvailable" | "bestUnder1080p" | "bestUnder720p" | "bestUnder480p";
+      height: number | null;
+      sizeBytes: number;
+      approximate: boolean;
+    }>;
   };
 }
 
@@ -67,16 +73,73 @@ function normalizeMetadata(raw: Record<string, unknown>, fallbackUrl: string): N
     extractor: readString(raw.extractor_key) ?? readString(raw.extractor),
     webpageUrl: readString(raw.webpage_url),
     recommendedOptions: {
-      qualityPreset: "bestUnder1080p",
+      qualityPreset: "bestAvailable",
       preferMp4: true
     },
     formatSummary: {
       hasVideo: videoFormats.length > 0,
       hasAudio: audioFormats.length > 0,
       maxHeight: heights.length > 0 ? Math.max(...heights) : null,
-      ext: readString(raw.ext) ?? readString(videoFormats[0]?.ext)
+      ext: readString(raw.ext) ?? readString(videoFormats[0]?.ext),
+      qualityEstimates: buildQualityEstimates(videoFormats, audioFormats)
     }
   };
+}
+
+function buildQualityEstimates(videoFormats: Record<string, unknown>[], audioFormats: Record<string, unknown>[]) {
+  const bestAudio = audioFormats
+    .map((format) => ({ format, size: readFormatSize(format), bitrate: readNumber(format.abr) ?? readNumber(format.tbr) ?? 0 }))
+    .filter((item): item is { format: Record<string, unknown>; size: FormatSize; bitrate: number } => item.size !== null)
+    .sort((a, b) => b.bitrate - a.bitrate)[0];
+
+  return [
+    buildQualityEstimate("bestAvailable", null, videoFormats, bestAudio),
+    buildQualityEstimate("bestUnder1080p", 1080, videoFormats, bestAudio),
+    buildQualityEstimate("bestUnder720p", 720, videoFormats, bestAudio),
+    buildQualityEstimate("bestUnder480p", 480, videoFormats, bestAudio)
+  ].filter((estimate) => estimate !== null);
+}
+
+function buildQualityEstimate(
+  preset: "bestAvailable" | "bestUnder1080p" | "bestUnder720p" | "bestUnder480p",
+  maxHeight: number | null,
+  videoFormats: Record<string, unknown>[],
+  bestAudio: { size: FormatSize } | undefined
+) {
+  const candidates = videoFormats
+    .map((format) => ({ format, height: readNumber(format.height), size: readFormatSize(format) }))
+    .filter((item) => item.height !== null && item.size !== null)
+    .filter((item) => maxHeight === null || item.height! <= maxHeight)
+    .sort((a, b) => b.height! - a.height!);
+  const selected = candidates[0];
+  if (!selected?.size) {
+    return null;
+  }
+
+  const audioBytes = bestAudio?.size.bytes ?? 0;
+  return {
+    preset,
+    height: selected.height,
+    sizeBytes: selected.size.bytes + audioBytes,
+    approximate: selected.size.approximate || Boolean(bestAudio?.size.approximate)
+  };
+}
+
+interface FormatSize {
+  bytes: number;
+  approximate: boolean;
+}
+
+function readFormatSize(format: Record<string, unknown>): FormatSize | null {
+  const exact = readNumber(format.filesize);
+  if (exact !== null && exact > 0) {
+    return { bytes: exact, approximate: false };
+  }
+  const approximate = readNumber(format.filesize_approx);
+  if (approximate !== null && approximate > 0) {
+    return { bytes: approximate, approximate: true };
+  }
+  return null;
 }
 
 function normalizeAnalyzeError(error: unknown): NormalizedYtDlpError {

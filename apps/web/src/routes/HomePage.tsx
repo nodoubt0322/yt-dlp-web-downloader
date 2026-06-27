@@ -12,10 +12,11 @@ import { messageForError } from "./messages";
 
 interface HomePageProps {
   activeJobId: string | null;
+  onClearActiveJob: () => void;
   onNavigateToJob: (jobId: string) => void;
 }
 
-export function HomePage({ activeJobId, onNavigateToJob }: HomePageProps) {
+export function HomePage({ activeJobId, onClearActiveJob, onNavigateToJob }: HomePageProps) {
   const rootRef = useRef<HTMLElement | null>(null);
   const [token, setToken] = useState(readAdminToken);
   const [systemStatus, setSystemStatus] = useState<SystemCheck | null>(null);
@@ -67,6 +68,7 @@ export function HomePage({ activeJobId, onNavigateToJob }: HomePageProps) {
     setAnalysisLoading(true);
     setAnalysisError(null);
     setJobError(null);
+    onClearActiveJob();
     try {
       setAnalysis(await api.analyze(url));
     } catch (error) {
@@ -99,15 +101,14 @@ export function HomePage({ activeJobId, onNavigateToJob }: HomePageProps) {
       <section className="workspace">
         <header className="masthead">
           <div className="masthead-copy">
-            <p className="eyebrow">Local Video Link Downloader</p>
+            <p className="eyebrow">Video Link Downloader</p>
             <h1>
-              <span>yt-dlp</span> <span>影片下載器</span>
+              <span>影片下載器</span>
             </h1>
-            <p className="lede">貼上授權影片連結，先看 metadata，再建立本機下載任務。</p>
           </div>
           <div className="workflow-stage" aria-hidden="true">
             <div className="masthead-status">
-              <span>單一擁有者</span>
+              <span>私人工具</span>
               <strong>本機後端</strong>
             </div>
             <div className="flow-map">

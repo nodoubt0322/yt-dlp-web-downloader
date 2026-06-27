@@ -36,7 +36,7 @@ function messageForCode(code: string, context: ErrorContext) {
     case "DOWNLOAD_TIMEOUT":
       return "下載處理逾時，請稍後再試。";
     case "FFMPEG_MISSING":
-      return "伺服器缺少 ffmpeg，無法完成影片合併。";
+      return "伺服器影片處理工具未就緒，無法完成影片合併。";
     case "INSUFFICIENT_DISK_SPACE":
       return "伺服器磁碟空間不足，無法儲存檔案。";
     case "JOB_NOT_FOUND":
@@ -45,4 +45,3 @@ function messageForCode(code: string, context: ErrorContext) {
       return context === "analyze" ? "分析失敗，請稍後再試。" : "下載失敗，請稍後再試。";
   }
 }
-

@@ -8,6 +8,7 @@ import { createJobStore, type JobStore } from "../services/jobStore.js";
 
 const testDir = dirname(fileURLToPath(import.meta.url));
 const mockYtDlp = resolve(testDir, "../../test-fixtures/mock-ytdlp.mjs");
+const mockFfmpeg = resolve(testDir, "../../test-fixtures/mock-ffmpeg.mjs");
 const tempDirs: string[] = [];
 const stores: JobStore[] = [];
 
@@ -26,13 +27,14 @@ async function createStore() {
 
 describe("jobs routes", () => {
   it("creates an authenticated queued job from a URL and exposes polling state through completion", async () => {
-    await chmod(mockYtDlp, 0o755);
+    await Promise.all([chmod(mockYtDlp, 0o755), chmod(mockFfmpeg, 0o755)]);
     const { store, dataDir } = await createStore();
     const app = await buildServer({
       config: {
         adminToken: "test-token",
         dataDir,
         ytDlpBinary: mockYtDlp,
+        ffmpegBinary: mockFfmpeg,
         minFreeDiskBytes: 1,
         downloadTimeoutMs: 5_000
       },
@@ -67,7 +69,7 @@ describe("jobs routes", () => {
       progress: { phase: "downloading", percent: 100 },
       result: {
         fileName: "mock-video.mp4",
-        size: 12,
+        size: 5,
         contentType: "video/mp4",
         downloadUrl: expect.stringMatching(/^\/api\/download\/dl_/),
         expiresAt: expect.any(String)
@@ -77,7 +79,7 @@ describe("jobs routes", () => {
   });
 
   it("creates a job from a stored analysisId", async () => {
-    await chmod(mockYtDlp, 0o755);
+    await Promise.all([chmod(mockYtDlp, 0o755), chmod(mockFfmpeg, 0o755)]);
     const { store, dataDir } = await createStore();
     const analysis = store.createAnalysis({
       url: "https://example.com/watch?v=analysis",
@@ -85,7 +87,7 @@ describe("jobs routes", () => {
       expiresAt: new Date(Date.now() + 60_000)
     });
     const app = await buildServer({
-      config: { adminToken: "test-token", dataDir, ytDlpBinary: mockYtDlp, minFreeDiskBytes: 1 },
+      config: { adminToken: "test-token", dataDir, ytDlpBinary: mockYtDlp, ffmpegBinary: mockFfmpeg, minFreeDiskBytes: 1 },
       services: {
         jobStore: store,
         getFreeBytes: async () => 10_000

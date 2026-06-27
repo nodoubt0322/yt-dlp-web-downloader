@@ -55,10 +55,6 @@ describe("home downloader flow", () => {
   it("shows client-side URL validation and the required safety copy", async () => {
     render(<App />);
 
-    expect(
-      screen.getByText("請只下載你擁有權利或已取得授權的內容；本工具不支援 DRM 或付費牆繞過。")
-    ).toBeInTheDocument();
-
     await userEvent.click(screen.getByRole("button", { name: "分析" }));
     expect(await screen.findByText("請先輸入影片網址。")).toBeInTheDocument();
 
@@ -68,7 +64,7 @@ describe("home downloader flow", () => {
     expect(fetchMock).not.toHaveBeenCalledWith("/api/analyze", expect.anything());
   });
 
-  it("shows system dependency problems in Chinese, including ffmpeg copy", async () => {
+  it("shows system problems without exposing implementation dependency names", async () => {
     fetchMock.mockResolvedValueOnce(
       jsonResponse({
         ...systemOk(),
@@ -80,19 +76,23 @@ describe("home downloader flow", () => {
 
     render(<App />);
 
-    expect(await screen.findByText(/ffmpeg 無法使用，完成下載可能會失敗。/)).toBeInTheDocument();
+    expect(await screen.findByText(/影片下載服務目前不可用。/)).toBeInTheDocument();
+    expect(screen.queryByText(/ffmpeg/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/storage/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/儲存空間目前不可寫入或容量不足。/)).not.toBeInTheDocument();
   });
 
-  it("labels yt-dlp output as a version number and omits storage from the status panel", async () => {
+  it("shows a simple system status and hides dependency details", async () => {
     fetchMock.mockResolvedValueOnce(jsonResponse(systemOk()));
     sessionStorage.setItem("yt-dlp-admin-token", "admin-token");
 
     render(<App />);
 
-    expect(await screen.findByText("yt-dlp 版本號")).toBeInTheDocument();
-    expect(screen.getByText("v2026.01.01")).toBeInTheDocument();
+    expect(await screen.findByText("系統正常，可以開始分析網址。")).toBeInTheDocument();
+    expect(screen.queryByText("yt-dlp 版本號")).not.toBeInTheDocument();
+    expect(screen.queryByText("v2026.01.01")).not.toBeInTheDocument();
+    expect(screen.queryByText(/ffmpeg/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/ffprobe/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/storage/i)).not.toBeInTheDocument();
   });
 
@@ -122,7 +122,7 @@ describe("home downloader flow", () => {
     expect(screen.getByText("長度：2:03")).toBeInTheDocument();
     expect(screen.getByText("格式：mp4，1080p，含影像與音訊")).toBeInTheDocument();
     expect(screen.getByAltText("Demo Video 縮圖")).toHaveAttribute("src", "https://example.com/thumb.jpg");
-    expect(screen.getByLabelText("下載品質")).toHaveValue("bestUnder1080p");
+    expect(screen.getByLabelText("下載品質")).toHaveValue("bestAvailable");
     expect(screen.getByRole("option", { name: "原始畫質" })).toBeInTheDocument();
     expect(screen.getByRole("option", { name: "1080p" })).toBeInTheDocument();
     expect(screen.getByRole("option", { name: "720p" })).toBeInTheDocument();
@@ -151,8 +151,41 @@ describe("home downloader flow", () => {
 
     await userEvent.type(screen.getByLabelText("影片 URL"), "https://example.com/watch?v=demo");
     await userEvent.click(screen.getByRole("button", { name: "分析" }));
+    await userEvent.selectOptions(await screen.findByLabelText("下載品質"), "bestUnder1080p");
 
     expect(await screen.findByText("這支影片沒有 1080p，會改用可取得的 720p。")).toBeInTheDocument();
+  });
+
+  it("keeps quality labels simple when yt-dlp metadata includes format sizes", async () => {
+    fetchMock
+      .mockResolvedValueOnce(jsonResponse(systemOk()))
+      .mockResolvedValueOnce(
+        jsonResponse({
+          ...analysisResponse(),
+          formatSummary: {
+            hasVideo: true,
+            hasAudio: true,
+            maxHeight: 1080,
+            ext: "mp4",
+            qualityEstimates: [
+              { preset: "bestAvailable", height: 1080, sizeBytes: 19_000_000, approximate: false },
+              { preset: "bestUnder1080p", height: 1080, sizeBytes: 19_000_000, approximate: false },
+              { preset: "bestUnder720p", height: 720, sizeBytes: 11_000_000, approximate: true },
+              { preset: "bestUnder480p", height: 480, sizeBytes: 7_000_000, approximate: false }
+            ]
+          }
+        })
+      );
+    sessionStorage.setItem("yt-dlp-admin-token", "admin-token");
+
+    render(<App />);
+
+    await userEvent.type(screen.getByLabelText("影片 URL"), "https://example.com/watch?v=demo");
+    await userEvent.click(screen.getByRole("button", { name: "分析" }));
+
+    expect(await screen.findByRole("option", { name: "原始畫質" })).toBeInTheDocument();
+    expect(screen.getByRole("option", { name: "720p" })).toBeInTheDocument();
+    expect(screen.queryByRole("option", { name: /MB/ })).not.toBeInTheDocument();
   });
 
   it("shows sanitized Chinese API errors", async () => {
@@ -201,7 +234,7 @@ function analysisResponse() {
     durationSeconds: 123,
     extractor: "youtube",
     webpageUrl: "https://example.com/watch?v=demo",
-    recommendedOptions: { qualityPreset: "bestUnder1080p", preferMp4: true },
+    recommendedOptions: { qualityPreset: "bestAvailable", preferMp4: true },
     formatSummary: "mp4 up to 1080p"
   };
 }

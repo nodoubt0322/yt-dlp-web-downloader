@@ -34,11 +34,11 @@ describe("job flow", () => {
     await userEvent.selectOptions(await screen.findByLabelText("下載品質"), "bestUnder720p");
     await userEvent.click(screen.getByRole("button", { name: "開始下載" }));
 
-    await screen.findByText("等待下載開始");
+    await screen.findByText("等待準備");
 
     expect(window.location.pathname).toBe("/");
     expect(screen.getByRole("heading", { name: "分析影片連結" })).toBeInTheDocument();
-    expect(screen.getByRole("heading", { name: "下載狀態" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "準備檔案中" })).toBeInTheDocument();
     expect(screen.queryByRole("heading", { level: 1, name: "Demo Video" })).not.toBeInTheDocument();
     expect(fetchMock).toHaveBeenNthCalledWith(
       3,
@@ -55,8 +55,33 @@ describe("job flow", () => {
     );
   });
 
+  it("hides the previous processing and result cards when analyzing a new URL", async () => {
+    fetchMock
+      .mockResolvedValueOnce(jsonResponse(systemOk()))
+      .mockResolvedValueOnce(jsonResponse(analysisResponse()))
+      .mockResolvedValueOnce(jsonResponse({ jobId: "job_123", status: "queued", statusUrl: "/api/jobs/job_123" }))
+      .mockResolvedValueOnce(jsonResponse(jobResponse({ status: "completed", progress: { percent: 100 }, result: completedResult() })))
+      .mockResolvedValueOnce(jsonResponse({ ...analysisResponse(), analysisId: "ana_456", title: "Next Video" }));
+
+    render(<App />);
+
+    await userEvent.type(screen.getByLabelText("影片 URL"), "https://example.com/watch?v=demo");
+    await userEvent.click(screen.getByRole("button", { name: "分析" }));
+    await userEvent.click(await screen.findByRole("button", { name: "開始下載" }));
+
+    expect(await screen.findByRole("heading", { name: "檔案可下載" })).toBeInTheDocument();
+
+    await userEvent.clear(screen.getByLabelText("影片 URL"));
+    await userEvent.type(screen.getByLabelText("影片 URL"), "https://example.com/watch?v=next");
+    await userEvent.click(screen.getByRole("button", { name: "分析" }));
+
+    expect(await screen.findByRole("heading", { name: "Next Video" })).toBeInTheDocument();
+    expect(screen.queryByRole("heading", { name: "檔案可下載" })).not.toBeInTheDocument();
+  });
+
   it("polls running jobs every 1-3 seconds and stops after completion", async () => {
     vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-06-27T00:00:00.000Z"));
     fetchMock
       .mockResolvedValueOnce(jsonResponse(jobResponse({ status: "running", progress: runningProgress() })))
       .mockResolvedValueOnce(
@@ -68,17 +93,31 @@ describe("job flow", () => {
 
     await act(async () => undefined);
 
-    expect(screen.getByText("下載進行中")).toBeInTheDocument();
+    expect(screen.getByText("準備中")).toBeInTheDocument();
     expect(screen.getByText("42%")).toBeInTheDocument();
+    expect(screen.getByText("0.0秒")).toBeInTheDocument();
     expect(screen.getByText("速度：2 MB/s")).toBeInTheDocument();
     expect(screen.getByText("剩餘：約 1 分 5 秒")).toBeInTheDocument();
+    const timeValue = screen.getByText("0.0秒");
 
     await act(async () => {
-      vi.advanceTimersByTime(2000);
+      vi.advanceTimersByTime(1000);
+    });
+    expect(screen.getByText("1.0秒")).toBe(timeValue);
+
+    await act(async () => {
+      vi.advanceTimersByTime(1000);
     });
 
     expect(screen.getByRole("link", { name: "下載檔案" })).toHaveAttribute("href", "/api/download/dl_123");
-    expect(screen.getByText(/檔案會在 2026-06-28 08:00 後過期/)).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "檔案可下載" })).toBeInTheDocument();
+    expect(screen.getByText("12B")).toBeInTheDocument();
+    expect(screen.getByText("(2026-06-28 08:00 後過期)")).toBeInTheDocument();
+    expect(screen.getByText("0.0秒")).toBeInTheDocument();
+    expect(screen.getByText("12B").closest(".panel-heading")).toBe(screen.getByRole("heading", { name: "檔案可下載" }).closest(".panel-heading"));
+    expect(screen.getByText("12B").closest(".job-title-line")).toBe(screen.getByRole("heading", { name: "檔案可下載" }).closest(".job-title-line"));
+    expect(screen.getByText("0.0秒").closest(".panel-heading")).toBe(screen.getByRole("heading", { name: "檔案可下載" }).closest(".panel-heading"));
+    expect(screen.queryByText("demo.mp4")).not.toBeInTheDocument();
 
     await act(async () => {
       vi.advanceTimersByTime(6000);
@@ -113,6 +152,53 @@ describe("job flow", () => {
       vi.advanceTimersByTime(6000);
     });
     expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+
+  it("shows server retry messages while a job is retrying", async () => {
+    fetchMock.mockResolvedValueOnce(
+      jsonResponse(
+        jobResponse({
+          status: "running",
+          progress: {
+            phase: "retrying",
+            message: "下載失敗，正在重試（第 1/3 次）",
+            retryAttempt: 1,
+            retryMax: 3
+          }
+        })
+      )
+    );
+    window.history.replaceState(null, "", "/jobs/job_123");
+
+    render(<App />);
+
+    expect(await screen.findByText("下載失敗，正在重試（第 1/3 次）")).toBeInTheDocument();
+  });
+
+  it("shows an inline expired-link message instead of navigating to the download JSON error", async () => {
+    fetchMock
+      .mockResolvedValueOnce(jsonResponse(jobResponse({ status: "completed", progress: { percent: 100 }, result: completedResult() })))
+      .mockResolvedValueOnce(
+        jsonResponse(
+          {
+            error: {
+              code: "DOWNLOAD_EXPIRED",
+              message: "Download link expired"
+            }
+          },
+          410
+        )
+      );
+    window.history.replaceState(null, "", "/jobs/job_123");
+
+    render(<App />);
+
+    await userEvent.click(await screen.findByRole("link", { name: "下載檔案" }));
+
+    expect(await screen.findByText("下載連結已過期，請重新建立下載任務。")).toBeInTheDocument();
+    expect(window.location.pathname).toBe("/jobs/job_123");
+    expect(screen.queryByText(/DOWNLOAD_EXPIRED/)).not.toBeInTheDocument();
+    expect(fetchMock).toHaveBeenNthCalledWith(2, "/api/download/dl_123");
   });
 });
 

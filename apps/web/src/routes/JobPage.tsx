@@ -2,7 +2,6 @@ import { useEffect, useMemo, useState } from "react";
 import type { MouseEvent } from "react";
 import { createApiClient, type JobDetails } from "../apiClient";
 import { readAdminToken } from "../auth";
-import { DownloadResultCard } from "../components/DownloadResultCard";
 import { ErrorAlert } from "../components/ErrorAlert";
 import { JobProgressCard } from "../components/JobProgressCard";
 import { messageForError } from "./messages";
@@ -56,7 +55,6 @@ export function JobPage({ jobId, embedded = false }: JobPageProps) {
   const jobContent = (
     <div className="primary-stack job-status-stack">
       {job ? <JobProgressCard job={job} compact={embedded} /> : <div className="panel skeleton-panel">正在讀取下載任務...</div>}
-      {job?.status === "completed" && job.result ? <DownloadResultCard result={job.result} /> : null}
       <ErrorAlert message={error} />
     </div>
   );

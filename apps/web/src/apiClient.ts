@@ -35,6 +35,12 @@ export interface AnalysisResult {
     hasAudio?: boolean;
     maxHeight?: number | null;
     ext?: string | null;
+    qualityEstimates?: Array<{
+      preset: QualityPreset;
+      height: number | null;
+      sizeBytes: number;
+      approximate: boolean;
+    }>;
   };
 }
 
@@ -44,6 +50,9 @@ export type JobStatus = "queued" | "running" | "completed" | "failed" | "cancele
 
 export interface JobProgress {
   phase?: string;
+  message?: string;
+  retryAttempt?: number;
+  retryMax?: number;
   percent?: number;
   downloadedBytes?: number;
   totalBytes?: number;
