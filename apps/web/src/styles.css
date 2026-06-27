@@ -112,10 +112,10 @@ button:disabled {
   position: relative;
   display: grid;
   grid-template-columns: minmax(0, 0.95fr) minmax(360px, 0.82fr);
-  gap: clamp(24px, 6vw, 88px);
+  gap: clamp(24px, 5vw, 72px);
   align-items: center;
-  min-height: min(520px, calc(68dvh - 40px));
-  padding: clamp(18px, 4vw, 48px) 0 clamp(16px, 3vw, 32px);
+  min-height: 340px;
+  padding: clamp(14px, 3vw, 28px) 0 18px;
 }
 
 .page-bar {
@@ -144,8 +144,8 @@ h2 {
 
 h1 {
   margin: 0;
-  font-size: clamp(3.25rem, 7vw, 6.35rem);
-  line-height: 0.96;
+  font-size: clamp(2.85rem, 5.35vw, 4.95rem);
+  line-height: 1.02;
   letter-spacing: -0.055em;
 }
 
@@ -154,11 +154,11 @@ h1 span {
 }
 
 h1 span:first-child {
-  font-size: 0.78em;
+  font-size: 0.66em;
 }
 
 h1 span + span {
-  margin-top: 0.02em;
+  margin-top: 0.14em;
 }
 
 h2 {
@@ -169,17 +169,17 @@ h2 {
 }
 
 .lede {
-  max-width: 42rem;
-  margin: var(--space-5) 0 0;
+  max-width: 38rem;
+  margin: var(--space-4) 0 0;
   color: var(--ash-text);
-  font-size: clamp(1rem, 1.5vw, 1.15rem);
-  line-height: 1.7;
+  font-size: clamp(0.98rem, 1.35vw, 1.08rem);
+  line-height: 1.62;
   text-wrap: pretty;
 }
 
 .workflow-stage {
   position: relative;
-  min-height: 360px;
+  min-height: 286px;
   border-radius: var(--radius-lg);
   background:
     radial-gradient(circle at 72% 22%, rgb(255 73 44 / 0.28), transparent 13rem),
@@ -326,7 +326,7 @@ h2 {
   grid-template-columns: minmax(260px, 330px) minmax(0, 1fr);
   gap: var(--space-5);
   align-items: start;
-  margin-top: clamp(-64px, -5vw, -24px);
+  margin-top: 0;
   position: relative;
   z-index: 2;
 }
@@ -613,7 +613,7 @@ h2 {
 
 .metadata-card {
   display: grid;
-  grid-template-columns: minmax(190px, 270px) minmax(0, 1fr);
+  grid-template-columns: minmax(190px, 300px) minmax(0, 1fr);
   gap: var(--space-5);
 }
 
@@ -636,6 +636,17 @@ h2 {
   display: grid;
   align-content: start;
   gap: var(--space-4);
+}
+
+.metadata-card h2 {
+  display: -webkit-box;
+  max-width: 44ch;
+  overflow: hidden;
+  font-size: clamp(1.1rem, 1.45vw, 1.35rem);
+  line-height: 1.2;
+  letter-spacing: 0;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
 }
 
 .metadata-list {
@@ -674,9 +685,9 @@ h2 {
 
 .download-controls {
   display: grid;
-  grid-template-columns: minmax(180px, 230px) auto minmax(16ch, 1fr);
+  grid-template-columns: minmax(170px, 250px) minmax(128px, auto);
   gap: var(--space-3);
-  align-items: end;
+  align-items: stretch;
 }
 
 .download-controls label {
@@ -696,11 +707,16 @@ h2 {
     rgb(13 10 25 / 0.56);
 }
 
-.download-controls span {
-  align-self: center;
+.quality-note {
+  grid-column: 1 / -1;
+  margin: 0;
   color: var(--fog-text);
   font-size: 0.9rem;
   line-height: 1.45;
+}
+
+.download-controls button {
+  white-space: nowrap;
 }
 
 .back-link {
@@ -801,20 +817,6 @@ h2 {
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  .masthead > div:first-child,
-  .workflow-stage,
-  .panel {
-    animation: rise-in 620ms cubic-bezier(0.16, 1, 0.3, 1) both;
-  }
-
-  .workflow-stage {
-    animation-delay: 80ms;
-  }
-
-  .panel {
-    animation-delay: 120ms;
-  }
-
   .flow-line-primary {
     animation: current-pulse 3.4s ease-in-out infinite;
   }
@@ -856,11 +858,12 @@ h2 {
   }
 
   .workflow-stage {
-    min-height: 320px;
+    min-height: 260px;
   }
 
   .workflow-grid {
     grid-template-columns: 1fr;
+    margin-top: 0;
   }
 
   .sidebar-stack {
@@ -883,7 +886,7 @@ h2 {
   }
 
   h1 {
-    font-size: clamp(3.1rem, 17vw, 4.85rem);
+    font-size: clamp(2.85rem, 15vw, 4.2rem);
   }
 
   .lede {
@@ -891,7 +894,7 @@ h2 {
   }
 
   .workflow-stage {
-    min-height: 280px;
+    min-height: 250px;
   }
 
   .masthead-status {

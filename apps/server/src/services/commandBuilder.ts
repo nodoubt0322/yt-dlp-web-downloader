@@ -1,7 +1,7 @@
 export type QualityPreset = "bestAvailable" | "bestUnder1080p" | "bestUnder720p" | "bestUnder480p";
 
 export function buildAnalyzeArgs(url: string): string[] {
-  return ["--dump-json", "--no-playlist", "--no-warnings", "--", url];
+  return ["--dump-json", "--no-playlist", "--playlist-items", "1", "--no-warnings", "--", url];
 }
 
 export interface BuildDownloadArgsOptions {

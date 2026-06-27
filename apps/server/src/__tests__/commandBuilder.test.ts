@@ -7,7 +7,8 @@ describe("commandBuilder", () => {
 
     const args = buildAnalyzeArgs(url);
 
-    expect(args).toEqual(["--dump-json", "--no-playlist", "--no-warnings", "--", url]);
+    expect(args).toEqual(["--dump-json", "--no-playlist", "--playlist-items", "1", "--no-warnings", "--", url]);
+    expect(args).toContain("--playlist-items");
     expect(args).not.toContain("-o");
     expect(args).not.toContain("--paths");
     expect(typeof args).not.toBe("string");

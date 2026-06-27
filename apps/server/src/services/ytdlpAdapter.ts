@@ -36,6 +36,7 @@ export async function analyzeWithYtDlp(options: AnalyzeWithYtDlpOptions): Promis
     });
     return normalizeMetadata(parseSingleJsonObject(result.stdout), options.url);
   } catch (error) {
+    logAnalyzeFailure(error);
     throw normalizeAnalyzeError(error);
   }
 }
@@ -104,6 +105,21 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 
 function isNormalizedError(value: unknown): value is NormalizedYtDlpError {
   return isRecord(value) && typeof value.code === "string" && typeof value.message === "string";
+}
+
+function logAnalyzeFailure(error: unknown) {
+  if (!(error instanceof ProcessRunnerError)) {
+    return;
+  }
+
+  console.error(`[yt-dlp analyze failed] exitCode=${error.exitCode ?? "unknown"} timedOut=${error.timedOut}`);
+  if (error.stderr.trim()) {
+    console.error(`[yt-dlp stderr]\n${error.stderr.trim()}`);
+    return;
+  }
+  if (error.stdout.trim()) {
+    console.error(`[yt-dlp stdout]\n${error.stdout.trim().slice(0, 2000)}`);
+  }
 }
 
 function readString(value: unknown) {

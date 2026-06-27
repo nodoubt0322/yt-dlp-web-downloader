@@ -10,6 +10,7 @@ interface VideoMetadataCardProps {
 
 export function VideoMetadataCard({ analysis, creatingJob, onStartDownload }: VideoMetadataCardProps) {
   const [qualityPreset, setQualityPreset] = useState<QualityPreset>("bestUnder1080p");
+  const fallbackNotice = getFallbackNotice(qualityPreset, analysis.formatSummary);
 
   return (
     <article className="panel metadata-card">
@@ -21,7 +22,7 @@ export function VideoMetadataCard({ analysis, creatingJob, onStartDownload }: Vi
       <div className="metadata-body">
         <div className="panel-heading compact-heading">
           <div>
-            <h2>{analysis.title}</h2>
+            <h2 title={analysis.title}>{analysis.title}</h2>
             <p>{analysis.webpageUrl ?? analysis.url}</p>
           </div>
           <span className="status-pill neutral">已分析</span>
@@ -53,19 +54,43 @@ export function VideoMetadataCard({ analysis, creatingJob, onStartDownload }: Vi
             value={qualityPreset}
             onChange={(event) => setQualityPreset(event.target.value as QualityPreset)}
           >
-            <option value="bestAvailable">最佳可用</option>
-            <option value="bestUnder1080p">1080p 以下最佳</option>
-            <option value="bestUnder720p">720p 以下最佳</option>
-            <option value="bestUnder480p">480p 以下最佳</option>
+            <option value="bestAvailable">原始畫質</option>
+            <option value="bestUnder1080p">1080p</option>
+            <option value="bestUnder720p">720p</option>
+            <option value="bestUnder480p">480p</option>
           </select>
           <button type="button" onClick={() => onStartDownload(qualityPreset)} disabled={creatingJob}>
             {creatingJob ? "建立下載中" : "開始下載"}
           </button>
-          <span>優先 mp4，依所選上限建立下載任務。</span>
+          {fallbackNotice ? <p className="quality-note">{fallbackNotice}</p> : null}
         </div>
       </div>
     </article>
   );
+}
+
+function getFallbackNotice(preset: QualityPreset, summary: AnalysisResult["formatSummary"]) {
+  const requestedHeight = getRequestedHeight(preset);
+  const availableHeight = typeof summary === "object" && summary ? summary.maxHeight : undefined;
+
+  if (!requestedHeight || typeof availableHeight !== "number" || availableHeight >= requestedHeight) {
+    return null;
+  }
+
+  return `這支影片沒有 ${requestedHeight}p，會改用可取得的 ${availableHeight}p。`;
+}
+
+function getRequestedHeight(preset: QualityPreset) {
+  switch (preset) {
+    case "bestUnder1080p":
+      return 1080;
+    case "bestUnder720p":
+      return 720;
+    case "bestUnder480p":
+      return 480;
+    default:
+      return null;
+  }
 }
 
 function formatSummaryLabel(summary: AnalysisResult["formatSummary"]) {
@@ -78,7 +103,7 @@ function formatSummaryLabel(summary: AnalysisResult["formatSummary"]) {
     parts.push(summary.ext);
   }
   if (typeof summary.maxHeight === "number") {
-    parts.push(`最高 ${summary.maxHeight}p`);
+    parts.push(`${summary.maxHeight}p`);
   }
   if (summary.hasVideo && summary.hasAudio) {
     parts.push("含影像與音訊");

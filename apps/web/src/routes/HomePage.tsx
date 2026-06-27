@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { createApiClient, type AnalysisResult, type QualityPreset, type SystemCheck } from "../apiClient";
 import { readAdminToken, saveAdminToken } from "../auth";
 import { ErrorAlert } from "../components/ErrorAlert";
@@ -6,6 +6,7 @@ import { SystemStatusBanner } from "../components/SystemStatusBanner";
 import { TokenGate } from "../components/TokenGate";
 import { UrlSubmitForm } from "../components/UrlSubmitForm";
 import { VideoMetadataCard } from "../components/VideoMetadataCard";
+import { useHomeMotion } from "../useHomeMotion";
 import { JobPage } from "./JobPage";
 import { messageForError } from "./messages";
 
@@ -15,6 +16,7 @@ interface HomePageProps {
 }
 
 export function HomePage({ activeJobId, onNavigateToJob }: HomePageProps) {
+  const rootRef = useRef<HTMLElement | null>(null);
   const [token, setToken] = useState(readAdminToken);
   const [systemStatus, setSystemStatus] = useState<SystemCheck | null>(null);
   const [systemLoading, setSystemLoading] = useState(false);
@@ -24,6 +26,7 @@ export function HomePage({ activeJobId, onNavigateToJob }: HomePageProps) {
   const [jobError, setJobError] = useState<string | null>(null);
   const [creatingJob, setCreatingJob] = useState(false);
   const api = useMemo(() => createApiClient(() => token), [token]);
+  useHomeMotion(rootRef);
 
   useEffect(() => {
     if (!token) {
@@ -92,15 +95,15 @@ export function HomePage({ activeJobId, onNavigateToJob }: HomePageProps) {
   }
 
   return (
-    <main className="app-shell">
+    <main className="app-shell" ref={rootRef}>
       <section className="workspace">
         <header className="masthead">
-          <div>
+          <div className="masthead-copy">
             <p className="eyebrow">Local Video Link Downloader</p>
             <h1>
               <span>yt-dlp</span> <span>影片下載器</span>
             </h1>
-            <p className="lede">分析授權影片連結、建立本機下載任務，並用有期限的 signed URL 取回完成檔案。</p>
+            <p className="lede">貼上授權影片連結，先看 metadata，再建立本機下載任務。</p>
           </div>
           <div className="workflow-stage" aria-hidden="true">
             <div className="masthead-status">

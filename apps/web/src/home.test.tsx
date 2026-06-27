@@ -120,10 +120,39 @@ describe("home downloader flow", () => {
     expect(await screen.findByRole("heading", { name: "Demo Video" })).toBeInTheDocument();
     expect(screen.getByText("來源：youtube")).toBeInTheDocument();
     expect(screen.getByText("長度：2:03")).toBeInTheDocument();
-    expect(screen.getByText("格式：mp4，最高 1080p，含影像與音訊")).toBeInTheDocument();
+    expect(screen.getByText("格式：mp4，1080p，含影像與音訊")).toBeInTheDocument();
     expect(screen.getByAltText("Demo Video 縮圖")).toHaveAttribute("src", "https://example.com/thumb.jpg");
     expect(screen.getByLabelText("下載品質")).toHaveValue("bestUnder1080p");
+    expect(screen.getByRole("option", { name: "原始畫質" })).toBeInTheDocument();
+    expect(screen.getByRole("option", { name: "1080p" })).toBeInTheDocument();
+    expect(screen.getByRole("option", { name: "720p" })).toBeInTheDocument();
+    expect(screen.getByRole("option", { name: "480p" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "開始下載" })).toBeInTheDocument();
+    expect(screen.queryByText("優先 mp4，依選擇的最高畫質建立任務。")).not.toBeInTheDocument();
+  });
+
+  it("explains when the selected quality will fall back to the highest available resolution", async () => {
+    fetchMock
+      .mockResolvedValueOnce(jsonResponse(systemOk()))
+      .mockResolvedValueOnce(
+        jsonResponse({
+          ...analysisResponse(),
+          formatSummary: {
+            hasVideo: true,
+            hasAudio: true,
+            maxHeight: 720,
+            ext: "mp4"
+          }
+        })
+      );
+    sessionStorage.setItem("yt-dlp-admin-token", "admin-token");
+
+    render(<App />);
+
+    await userEvent.type(screen.getByLabelText("影片 URL"), "https://example.com/watch?v=demo");
+    await userEvent.click(screen.getByRole("button", { name: "分析" }));
+
+    expect(await screen.findByText("這支影片沒有 1080p，會改用可取得的 720p。")).toBeInTheDocument();
   });
 
   it("shows sanitized Chinese API errors", async () => {

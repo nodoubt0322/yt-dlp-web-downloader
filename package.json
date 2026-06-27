@@ -4,7 +4,9 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "pnpm --filter @yt-dlp-web-downloader/server dev",
+    "dev": "concurrently -n api,web -c orange,cyan \"pnpm dev:api\" \"pnpm dev:web\"",
+    "dev:api": "pnpm --filter @yt-dlp-web-downloader/server dev",
+    "dev:web": "pnpm --filter @yt-dlp-web-downloader/web dev",
     "test": "pnpm -r test",
     "typecheck": "pnpm -r typecheck",
     "build": "pnpm -r build"
@@ -15,8 +17,8 @@
   },
   "devDependencies": {
     "@types/node": "^24.10.1",
+    "concurrently": "^10.0.3",
     "typescript": "^5.9.3",
     "vitest": "^4.0.15"
   }
 }
-

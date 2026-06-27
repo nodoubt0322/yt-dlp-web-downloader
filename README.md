@@ -59,7 +59,7 @@ ADMIN_TOKEN=dev-token pnpm dev
 開啟：
 
 ```text
-http://127.0.0.1:8787
+http://127.0.0.1:5173
 ```
 
 使用受保護的 API 操作前，先在 UI token 欄位輸入 `dev-token`。
@@ -73,7 +73,7 @@ pnpm build
 pnpm dev
 ```
 
-後端預設監聽 `http://127.0.0.1:8787`。
+`pnpm dev` 會同時啟動 Vite 前端與 API server。terminal 會分別列出 Vite `http://127.0.0.1:5173` 與後端 `http://127.0.0.1:8787`；前端開發請使用 `5173`，Vite 會提供 hot reload，並把 `/api` 代理到後端。
 
 ## 測試
 
@@ -175,7 +175,7 @@ server 會拒絕非 HTTP URL、localhost/private-network 目標、不安全 DNS 
 
 ## 目前 MVP 限制
 
-- 支援品質選項：最佳可用、1080p 以下最佳、720p 以下最佳、480p 以下最佳；輸出仍優先合併為 mp4。
+- 支援品質選項：原始畫質、1080p、720p、480p；若影片沒有選擇的解析度，前端會提示實際可用解析度。
 - 不支援 playlist 或批次下載。
 - 不支援瀏覽器 cookie 匯入。
 - 不支援多使用者帳號。
@@ -185,7 +185,7 @@ server 會拒絕非 HTTP URL、localhost/private-network 目標、不安全 DNS 
 ## 疑難排解
 
 - `GET /api/system/check` 會回傳 `yt-dlp`、`ffmpeg`、`ffprobe` 與 storage 狀態；前端只顯示工具版本。
-- `YTDLP_FAILED`：更新 `yt-dlp` 後重試。
+- `YTDLP_FAILED`：server terminal 會列出 `yt-dlp` 的 exit code 與 stderr；先依錯誤原因修正或更新 `yt-dlp` 後重試。
 - `FFMPEG_MISSING`：安裝 `ffmpeg`。
 - `INSUFFICIENT_DISK_SPACE`：釋放磁碟空間，或降低 `MIN_FREE_DISK_BYTES`。
 - `UNSAFE_URL`：URL 指向被阻擋的 local/private network 目標。

@@ -1,11 +1,15 @@
 import { chmod } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { analyzeWithYtDlp } from "../services/ytdlpAdapter.js";
 
 const testDir = dirname(fileURLToPath(import.meta.url));
 const mockYtDlp = resolve(testDir, "../../test-fixtures/mock-ytdlp.mjs");
+
+afterEach(() => {
+  vi.restoreAllMocks();
+});
 
 describe("analyzeWithYtDlp", () => {
   it("runs yt-dlp with analyze args and normalizes one JSON metadata object", async () => {
@@ -55,6 +59,7 @@ describe("analyzeWithYtDlp", () => {
 
   it("returns normalized client-safe failures without stderr path leakage", async () => {
     await chmod(mockYtDlp, 0o755);
+    const consoleError = vi.spyOn(console, "error").mockImplementation(() => undefined);
 
     await expect(
       analyzeWithYtDlp({
@@ -67,5 +72,8 @@ describe("analyzeWithYtDlp", () => {
       code: "UNSUPPORTED_URL",
       retryable: false
     });
+
+    expect(consoleError).toHaveBeenCalledWith(expect.stringContaining("[yt-dlp analyze failed] exitCode=1"));
+    expect(consoleError).toHaveBeenCalledWith(expect.stringContaining("ERROR: Unsupported URL"));
   });
 });
