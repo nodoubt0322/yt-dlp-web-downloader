@@ -14,7 +14,7 @@ describe("loadConfig", () => {
     expect(config.jobConcurrency).toBe(1);
     expect(config.analyzeTimeoutMs).toBe(60_000);
     expect(config.downloadTimeoutMs).toBe(7_200_000);
-    expect(config.fileTtlHours).toBe(24);
+    expect(config.fileTtlMinutes).toBe(3);
     expect(config.cleanupIntervalMs).toBe(60 * 60_000);
     expect(config.minFreeDiskBytes).toBe(5_368_709_120);
     expect(config.rateLimitAnalyzePerMinute).toBe(10);

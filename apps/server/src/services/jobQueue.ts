@@ -13,7 +13,7 @@ export interface CreateJobQueueOptions {
   ytDlpBinary: string;
   timeoutMs: number;
   publicBaseUrl?: string;
-  fileTtlHours: number;
+  fileTtlMinutes: number;
   now?: () => Date;
 }
 
@@ -72,7 +72,7 @@ export function createJobQueue(options: CreateJobQueueOptions): JobQueue {
         size: resultFile.size,
         contentType: resultFile.contentType
       }, now());
-      const expiresAt = new Date(now().getTime() + options.fileTtlHours * 60 * 60_000);
+      const expiresAt = new Date(now().getTime() + options.fileTtlMinutes * 60_000);
       const token = tokenService.createToken(job.id, expiresAt);
       options.store.updateJobResult(job.id, {
         fileName: resultFile.filename,

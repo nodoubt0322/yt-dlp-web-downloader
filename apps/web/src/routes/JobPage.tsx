@@ -12,9 +12,10 @@ const TERMINAL_STATUSES = new Set(["completed", "failed", "canceled", "expired"]
 
 interface JobPageProps {
   jobId: string;
+  embedded?: boolean;
 }
 
-export function JobPage({ jobId }: JobPageProps) {
+export function JobPage({ jobId, embedded = false }: JobPageProps) {
   const [token] = useState(readAdminToken);
   const [job, setJob] = useState<JobDetails | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -52,6 +53,18 @@ export function JobPage({ jobId }: JobPageProps) {
     };
   }, [api, jobId]);
 
+  const jobContent = (
+    <div className="primary-stack job-status-stack">
+      {job ? <JobProgressCard job={job} /> : <div className="panel skeleton-panel">正在讀取下載任務...</div>}
+      {job?.status === "completed" && job.result ? <DownloadResultCard result={job.result} /> : null}
+      <ErrorAlert message={error} />
+    </div>
+  );
+
+  if (embedded) {
+    return jobContent;
+  }
+
   return (
     <main className="app-shell">
       <section className="workspace">
@@ -61,11 +74,7 @@ export function JobPage({ jobId }: JobPageProps) {
           </a>
           <span className="job-id">{jobId}</span>
         </header>
-        <div className="primary-stack">
-          {job ? <JobProgressCard job={job} /> : <div className="panel skeleton-panel">正在讀取下載任務...</div>}
-          {job?.status === "completed" && job.result ? <DownloadResultCard result={job.result} /> : null}
-          <ErrorAlert message={error} />
-        </div>
+        {jobContent}
       </section>
     </main>
   );

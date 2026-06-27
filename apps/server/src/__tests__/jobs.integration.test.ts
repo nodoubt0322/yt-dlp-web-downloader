@@ -108,6 +108,31 @@ describe("jobs routes", () => {
     });
   });
 
+  it("expires created jobs after the configured three-minute TTL", async () => {
+    const { store, dataDir } = await createStore();
+    const now = new Date("2026-06-27T01:00:00.000Z");
+    const app = await buildServer({
+      config: { adminToken: "test-token", dataDir, minFreeDiskBytes: 1 },
+      services: {
+        jobStore: store,
+        queue: { enqueue: async () => undefined },
+        urlResolver: async () => ["93.184.216.34"],
+        getFreeBytes: async () => 10_000,
+        now: () => now
+      }
+    });
+
+    const response = await app.inject({
+      method: "POST",
+      url: "/api/jobs",
+      headers: { authorization: "Bearer test-token" },
+      payload: { url: "https://example.com/watch?v=ttl" }
+    });
+
+    expect(response.statusCode).toBe(202);
+    expect(store.getJob(response.json().jobId)?.expiresAt).toBe("2026-06-27T01:03:00.000Z");
+  });
+
   it("rejects invalid input, unsafe URLs, insufficient disk space, and missing jobs", async () => {
     const { store, dataDir } = await createStore();
     const app = await buildServer({

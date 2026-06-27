@@ -8,7 +8,7 @@ export interface AppConfig {
   jobConcurrency: number;
   analyzeTimeoutMs: number;
   downloadTimeoutMs: number;
-  fileTtlHours: number;
+  fileTtlMinutes: number;
   cleanupIntervalMs: number;
   minFreeDiskBytes: number;
   rateLimitAnalyzePerMinute: number;
@@ -27,7 +27,7 @@ const DEFAULTS = {
   jobConcurrency: 1,
   analyzeTimeoutSeconds: 60,
   downloadTimeoutSeconds: 2 * 60 * 60,
-  fileTtlHours: 24,
+  fileTtlMinutes: 3,
   cleanupIntervalMinutes: 60,
   minFreeDiskBytes: 5 * 1024 * 1024 * 1024,
   rateLimitAnalyzePerMinute: 10,
@@ -54,7 +54,7 @@ export function loadConfig(env: ConfigInput = process.env): AppConfig {
       readNumber(env.ANALYZE_TIMEOUT_SECONDS, "ANALYZE_TIMEOUT_SECONDS", DEFAULTS.analyzeTimeoutSeconds) * 1000,
     downloadTimeoutMs:
       readNumber(env.DOWNLOAD_TIMEOUT_SECONDS, "DOWNLOAD_TIMEOUT_SECONDS", DEFAULTS.downloadTimeoutSeconds) * 1000,
-    fileTtlHours: readNumber(env.FILE_TTL_HOURS, "FILE_TTL_HOURS", DEFAULTS.fileTtlHours),
+    fileTtlMinutes: readNumber(env.FILE_TTL_MINUTES, "FILE_TTL_MINUTES", DEFAULTS.fileTtlMinutes),
     cleanupIntervalMs:
       readNumber(env.CLEANUP_INTERVAL_MINUTES, "CLEANUP_INTERVAL_MINUTES", DEFAULTS.cleanupIntervalMinutes) * 60_000,
     minFreeDiskBytes: readNumber(env.MIN_FREE_DISK_BYTES, "MIN_FREE_DISK_BYTES", DEFAULTS.minFreeDiskBytes),

@@ -4,6 +4,7 @@ import { JobPage } from "./routes/JobPage";
 
 export function App() {
   const [path, setPath] = useState(window.location.pathname);
+  const [activeJobId, setActiveJobId] = useState<string | null>(null);
 
   useEffect(() => {
     function syncPath() {
@@ -15,8 +16,11 @@ export function App() {
   }, []);
 
   function navigateToJob(jobId: string) {
-    window.history.pushState(null, "", `/jobs/${jobId}`);
-    setPath(window.location.pathname);
+    setActiveJobId(jobId);
+    if (window.location.pathname !== "/") {
+      window.history.pushState(null, "", "/");
+      setPath(window.location.pathname);
+    }
   }
 
   const jobMatch = /^\/jobs\/([^/]+)$/.exec(path);
@@ -25,5 +29,5 @@ export function App() {
     return <JobPage jobId={jobId} />;
   }
 
-  return <HomePage onNavigateToJob={navigateToJob} />;
+  return <HomePage activeJobId={activeJobId} onNavigateToJob={navigateToJob} />;
 }

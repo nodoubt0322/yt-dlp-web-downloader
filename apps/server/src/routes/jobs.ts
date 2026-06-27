@@ -23,7 +23,7 @@ export async function registerJobsRoutes(app: FastifyInstance, options: Register
       ytDlpBinary: options.config.ytDlpBinary,
       timeoutMs: options.config.downloadTimeoutMs,
       publicBaseUrl: options.config.publicBaseUrl,
-      fileTtlHours: options.config.fileTtlHours,
+      fileTtlMinutes: options.config.fileTtlMinutes,
       now: options.now
     });
 
@@ -45,7 +45,7 @@ export async function registerJobsRoutes(app: FastifyInstance, options: Register
     const job = options.jobStore.createJob({
       ...prepared.input,
       options: { qualityPreset: "bestUnder1080p", preferMp4: true },
-      expiresAt: new Date((options.now ?? (() => new Date()))().getTime() + options.config.fileTtlHours * 60 * 60_000)
+      expiresAt: new Date((options.now ?? (() => new Date()))().getTime() + options.config.fileTtlMinutes * 60_000)
     });
 
     void queue.enqueue(job.id);

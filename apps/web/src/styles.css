@@ -113,8 +113,8 @@ button:disabled {
   grid-template-columns: minmax(0, 0.95fr) minmax(360px, 0.82fr);
   gap: clamp(24px, 6vw, 88px);
   align-items: center;
-  min-height: min(640px, calc(100dvh - 80px));
-  padding: clamp(18px, 6vw, 72px) 0 clamp(18px, 5vw, 56px);
+  min-height: min(520px, calc(68dvh - 40px));
+  padding: clamp(18px, 4vw, 48px) 0 clamp(16px, 3vw, 32px);
 }
 
 .page-bar {
@@ -178,7 +178,7 @@ h2 {
 
 .workflow-stage {
   position: relative;
-  min-height: 420px;
+  min-height: 360px;
   border-radius: var(--radius-lg);
   background:
     radial-gradient(circle at 72% 22%, rgb(255 73 44 / 0.28), transparent 13rem),
@@ -325,6 +325,9 @@ h2 {
   grid-template-columns: minmax(260px, 330px) minmax(0, 1fr);
   gap: var(--space-5);
   align-items: start;
+  margin-top: clamp(-64px, -5vw, -24px);
+  position: relative;
+  z-index: 2;
 }
 
 .sidebar-stack,

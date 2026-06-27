@@ -81,7 +81,19 @@ describe("home downloader flow", () => {
     render(<App />);
 
     expect(await screen.findByText(/ffmpeg 無法使用，完成下載可能會失敗。/)).toBeInTheDocument();
-    expect(screen.getByText(/儲存空間目前不可寫入或容量不足。/)).toBeInTheDocument();
+    expect(screen.queryByText(/storage/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/儲存空間目前不可寫入或容量不足。/)).not.toBeInTheDocument();
+  });
+
+  it("labels yt-dlp output as a version and omits storage from the status panel", async () => {
+    fetchMock.mockResolvedValueOnce(jsonResponse(systemOk()));
+    sessionStorage.setItem("yt-dlp-admin-token", "admin-token");
+
+    render(<App />);
+
+    expect(await screen.findByText("yt-dlp 版本")).toBeInTheDocument();
+    expect(screen.getByText("2026.01.01")).toBeInTheDocument();
+    expect(screen.queryByText(/storage/i)).not.toBeInTheDocument();
   });
 
   it("renders analysis metadata and the default download action", async () => {

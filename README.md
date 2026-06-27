@@ -112,7 +112,7 @@ production 啟動時也會依設定的 interval 啟動 TTL cleanup。
 
 - `DATA_DIR=./data`
 - `JOB_CONCURRENCY=1`
-- `FILE_TTL_HOURS=24`
+- `FILE_TTL_MINUTES=3`
 - `CLEANUP_INTERVAL_MINUTES=60`
 - `MIN_FREE_DISK_BYTES=5368709120`
 - `ENABLE_SSE=false`
@@ -162,7 +162,7 @@ Service URL: http://localhost:8787
 ## 資料保留
 
 - Analysis record 會在短 TTL 後過期。
-- Download job 與檔案會在 `FILE_TTL_HOURS` 後過期。
+- Download job 與檔案會在 `FILE_TTL_MINUTES` 後過期，預設 3 分鐘。
 - Cleanup 每 `CLEANUP_INTERVAL_MINUTES` 執行一次。
 - Cleanup 只會刪除 `DATA_DIR/jobs` 底下由 server 產生的 job 目錄。
 - Download token 只儲存 SHA-256 hash，不儲存明文 token。
@@ -184,7 +184,7 @@ server 會拒絕非 HTTP URL、localhost/private-network 目標、不安全 DNS 
 
 ## 疑難排解
 
-- `GET /api/system/check` 會顯示 `yt-dlp`、`ffmpeg`、`ffprobe`、storage writable 狀態與磁碟空間。
+- `GET /api/system/check` 會回傳 `yt-dlp`、`ffmpeg`、`ffprobe` 與 storage 狀態；前端只顯示工具版本。
 - `YTDLP_FAILED`：更新 `yt-dlp` 後重試。
 - `FFMPEG_MISSING`：安裝 `ffmpeg`。
 - `INSUFFICIENT_DISK_SPACE`：釋放磁碟空間，或降低 `MIN_FREE_DISK_BYTES`。

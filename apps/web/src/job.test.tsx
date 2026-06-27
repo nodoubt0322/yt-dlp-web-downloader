@@ -20,7 +20,7 @@ afterEach(() => {
 });
 
 describe("job flow", () => {
-  it("creates a default-quality job from an analysis and routes to the job page", async () => {
+  it("creates a default-quality job from an analysis and keeps the job status on the home page", async () => {
     fetchMock
       .mockResolvedValueOnce(jsonResponse(systemOk()))
       .mockResolvedValueOnce(jsonResponse(analysisResponse()))
@@ -35,7 +35,8 @@ describe("job flow", () => {
 
     await screen.findByText("等待下載開始");
 
-    expect(window.location.pathname).toBe("/jobs/job_123");
+    expect(window.location.pathname).toBe("/");
+    expect(screen.getByRole("heading", { name: "分析影片連結" })).toBeInTheDocument();
     expect(fetchMock).toHaveBeenNthCalledWith(
       3,
       "/api/jobs",

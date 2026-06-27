@@ -44,7 +44,7 @@ describe("jobQueue", () => {
       ytDlpBinary: mockYtDlp,
       timeoutMs: 5_000,
       publicBaseUrl: "",
-      fileTtlHours: 24
+      fileTtlMinutes: 3
     });
 
     const firstRun = queue.enqueue(first.id);
@@ -90,7 +90,7 @@ describe("jobQueue", () => {
       ytDlpBinary: mockYtDlp,
       timeoutMs: 5_000,
       publicBaseUrl: "",
-      fileTtlHours: 24
+      fileTtlMinutes: 3
     });
 
     await queue.enqueue(job.id);

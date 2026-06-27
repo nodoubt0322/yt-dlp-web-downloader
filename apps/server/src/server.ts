@@ -10,6 +10,7 @@ import { registerHealthRoutes } from "./routes/health.js";
 import { registerJobsRoutes } from "./routes/jobs.js";
 import { registerSystemRoutes } from "./routes/system.js";
 import { createCleanupService } from "./services/cleanupService.js";
+import type { JobQueue } from "./services/jobQueue.js";
 import { createJobStore, type JobStore } from "./services/jobStore.js";
 import { createStorageService } from "./services/storageService.js";
 import { createSystemService, type SystemService } from "./services/systemService.js";
@@ -21,6 +22,7 @@ interface BuildServerOptions {
   services?: {
     systemService?: SystemService;
     jobStore?: JobStore;
+    queue?: JobQueue;
     urlResolver?: DnsResolver;
     getFreeBytes?: (dataDir: string) => Promise<number>;
     now?: () => Date;
@@ -93,6 +95,7 @@ export async function buildServer(options: BuildServerOptions = {}) {
       await registerJobsRoutes(api, {
         config,
         jobStore: defaultJobStore,
+        queue: options.services?.queue,
         urlResolver: options.services?.urlResolver,
         getFreeBytes: options.services?.getFreeBytes,
         now: options.services?.now

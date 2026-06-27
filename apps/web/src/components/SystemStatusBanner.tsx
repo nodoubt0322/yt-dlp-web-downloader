@@ -33,10 +33,9 @@ export function SystemStatusBanner({ status, loading, hasToken }: SystemStatusBa
         </span>
       </div>
       <div className="dependency-grid" aria-label="依賴檢查結果">
-        <DependencyItem label="yt-dlp" ok={status.ytDlp.ok} version={status.ytDlp.version} />
+        <DependencyItem label="yt-dlp 版本" ok={status.ytDlp.ok} version={status.ytDlp.version} />
         <DependencyItem label="ffmpeg" ok={status.ffmpeg.ok} version={status.ffmpeg.version} />
         <DependencyItem label="ffprobe" ok={status.ffprobe.ok} version={status.ffprobe.version} />
-        <DependencyItem label="storage" ok={status.storage.ok} version={formatBytes(status.storage.freeBytes)} />
       </div>
       {problems.length > 0 ? (
         <div className="problem-list">
@@ -70,18 +69,5 @@ function collectProblems(status: SystemCheck) {
   if (!status.ffprobe.ok) {
     problems.push("ffprobe 無法使用，媒體資訊檢查可能會失敗。");
   }
-  if (!status.storage.ok) {
-    problems.push("儲存空間目前不可寫入或容量不足。");
-  }
   return problems;
-}
-
-function formatBytes(bytes: number) {
-  if (bytes >= 1_000_000_000) {
-    return `${Math.round(bytes / 1_000_000_000)} GB`;
-  }
-  if (bytes >= 1_000_000) {
-    return `${Math.round(bytes / 1_000_000)} MB`;
-  }
-  return `${Math.round(bytes / 1_000)} KB`;
 }
