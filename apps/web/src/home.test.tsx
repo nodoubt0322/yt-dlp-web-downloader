@@ -88,7 +88,9 @@ describe("home downloader flow", () => {
 
     render(<App />);
 
-    expect(await screen.findByText("系統正常，可以開始分析網址。")).toBeInTheDocument();
+    expect(await screen.findByRole("heading", { name: "系統狀態" })).toBeInTheDocument();
+    expect(screen.getByText("可用")).toBeInTheDocument();
+    expect(screen.queryByText("系統正常，可以開始分析網址。")).not.toBeInTheDocument();
     expect(screen.queryByText("yt-dlp 版本號")).not.toBeInTheDocument();
     expect(screen.queryByText("v2026.01.01")).not.toBeInTheDocument();
     expect(screen.queryByText(/ffmpeg/i)).not.toBeInTheDocument();
@@ -234,7 +236,7 @@ function analysisResponse() {
     durationSeconds: 123,
     extractor: "youtube",
     webpageUrl: "https://example.com/watch?v=demo",
-    recommendedOptions: { qualityPreset: "bestAvailable", preferMp4: true },
+    recommendedOptions: { qualityPreset: "bestAvailable" },
     formatSummary: "mp4 up to 1080p"
   };
 }

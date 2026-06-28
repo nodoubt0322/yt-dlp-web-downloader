@@ -153,10 +153,9 @@ function validationError(message: string) {
 }
 
 function readDownloadOptions(value: unknown) {
-  const input = value && typeof value === "object" ? (value as { qualityPreset?: unknown; preferMp4?: unknown }) : {};
+  const input = value && typeof value === "object" ? (value as { qualityPreset?: unknown }) : {};
   return {
-    qualityPreset: readQualityPreset(input.qualityPreset),
-    preferMp4: true
+    qualityPreset: readQualityPreset(input.qualityPreset)
   };
 }
 

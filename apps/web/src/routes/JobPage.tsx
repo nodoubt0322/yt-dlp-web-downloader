@@ -7,7 +7,7 @@ import { JobProgressCard } from "../components/JobProgressCard";
 import { messageForError } from "./messages";
 
 const POLL_INTERVAL_MS = 2000;
-const TERMINAL_STATUSES = new Set(["completed", "failed", "canceled", "expired"]);
+const TERMINAL_STATUSES = new Set(["completed", "failed", "expired"]);
 
 interface JobPageProps {
   jobId: string;

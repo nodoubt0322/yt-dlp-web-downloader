@@ -29,8 +29,7 @@ describe("analyzeWithYtDlp", () => {
       extractor: "mock",
       webpageUrl: "https://example.com/watch?v=123",
       recommendedOptions: {
-        qualityPreset: "bestAvailable",
-        preferMp4: true
+        qualityPreset: "bestAvailable"
       },
       formatSummary: {
         hasVideo: true,

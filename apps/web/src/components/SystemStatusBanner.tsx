@@ -26,7 +26,7 @@ export function SystemStatusBanner({ status, loading, hasToken }: SystemStatusBa
       <div className="panel-heading compact-heading">
         <div>
           <h2>系統狀態</h2>
-          <p>{problems.length === 0 ? "系統正常，可以開始分析網址。" : "系統檢查未通過，請查看伺服器設定。"}</p>
+          {problems.length > 0 ? <p>系統檢查未通過，請查看伺服器設定。</p> : null}
         </div>
         <span className={problems.length === 0 ? "status-pill success" : "status-pill warning"}>
           {problems.length === 0 ? "可用" : "注意"}

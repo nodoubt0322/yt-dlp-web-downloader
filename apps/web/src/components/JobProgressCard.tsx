@@ -147,8 +147,6 @@ function statusLabel(status: Exclude<JobDetails["status"], "completed">) {
       return "準備中";
     case "failed":
       return "處理失敗";
-    case "canceled":
-      return "已取消";
     case "expired":
       return "檔案已過期";
   }
@@ -165,8 +163,6 @@ function statusTone(status: JobDetails["status"]) {
     case "failed":
     case "expired":
       return "danger";
-    case "canceled":
-      return "warning";
     default:
       return "neutral";
   }

@@ -83,7 +83,7 @@ Fastify API server
 - `apps/web/src/routes/JobPage.tsx`
   - 讀取單一 job。
   - 每 2 秒 polling，直到 job 進入 terminal status。
-  - terminal status 包含 `completed`、`failed`、`canceled`、`expired`。
+  - terminal status 包含 `completed`、`failed`、`expired`。
 - `apps/web/src/components/JobProgressCard.tsx`
   - 顯示等待、處理、重試、完成與過期訊息。
   - 顯示處理時間。
@@ -331,7 +331,7 @@ Job:
   POST /api/jobs
   -> queued
   -> running
-  -> completed / failed / canceled / expired
+  -> completed / failed / expired
 
 File:
   DATA_DIR/jobs/{jobId}/{filename}.mp4
@@ -568,8 +568,7 @@ Response 會包含：
   "extractor": "Twitter",
   "webpageUrl": "https://...",
   "recommendedOptions": {
-    "qualityPreset": "bestAvailable",
-    "preferMp4": true
+    "qualityPreset": "bestAvailable"
   },
   "formatSummary": {
     "hasVideo": true,
@@ -589,8 +588,7 @@ Response 會包含：
 {
   "analysisId": "ana_...",
   "options": {
-    "qualityPreset": "bestUnder1080p",
-    "preferMp4": true
+    "qualityPreset": "bestUnder1080p"
   }
 }
 ```
@@ -601,8 +599,7 @@ Response 會包含：
 {
   "url": "https://example.com/watch?v=...",
   "options": {
-    "qualityPreset": "bestAvailable",
-    "preferMp4": true
+    "qualityPreset": "bestAvailable"
   }
 }
 ```
@@ -761,6 +758,8 @@ Service URL: http://localhost:8787
 - 不支援瀏覽器 cookie 匯入。
 - 不支援 DRM 或付費牆繞過。
 - 不支援多使用者帳號。
+- 不提供取消或刪除任務的功能；任務只能執行至 completed、failed 或 expired。
+- 不提供任務歷史頁面。
 - 不支援 SSE；前端使用 polling。
 - 尚未支援 HTTP range request。
 - ffmpeg 壓縮策略目前是固定 preset，不提供 UI 調整 CRF、codec 或 bitrate。

@@ -58,11 +58,10 @@ export interface JobStore {
 }
 
 const allowedTransitions: Record<JobStatus, JobStatus[]> = {
-  queued: ["running", "canceled"],
-  running: ["completed", "failed", "canceled"],
+  queued: ["running"],
+  running: ["completed", "failed"],
   completed: ["expired"],
   failed: ["expired"],
-  canceled: ["expired"],
   expired: []
 };
 
@@ -200,7 +199,7 @@ export function createJobStore(options: CreateJobStoreOptions): JobStore {
       return db
         .prepare(
           `SELECT * FROM jobs
-           WHERE status IN ('completed', 'failed', 'canceled') AND expires_at <= ?
+           WHERE status IN ('completed', 'failed') AND expires_at <= ?
            ORDER BY expires_at ASC`
         )
         .all(referenceTime.toISOString())

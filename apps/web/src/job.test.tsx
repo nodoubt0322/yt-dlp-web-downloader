@@ -49,7 +49,7 @@ describe("job flow", () => {
         body: JSON.stringify({
           analysisId: "ana_123",
           url: "https://example.com/watch?v=demo",
-          options: { qualityPreset: "bestUnder720p", preferMp4: true }
+          options: { qualityPreset: "bestUnder720p" }
         })
       })
     );

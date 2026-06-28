@@ -137,7 +137,6 @@ export function HomePage({ activeJobId, onClearActiveJob, onNavigateToJob }: Hom
             ) : (
               <section className="panel empty-panel" aria-label="尚未分析影片">
                 <h2>貼上 URL 後先分析，再建立下載任務</h2>
-                <p>分析只讀取 metadata，不會直接下載影片。完成後你可以用預設品質建立非同步 job。</p>
               </section>
             )}
             {analysis && activeJobId ? <JobPage jobId={activeJobId} embedded /> : null}

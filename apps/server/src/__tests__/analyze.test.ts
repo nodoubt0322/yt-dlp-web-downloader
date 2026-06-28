@@ -97,8 +97,7 @@ describe("POST /api/analyze", () => {
       durationSeconds: 125,
       extractor: "mock",
       recommendedOptions: {
-        qualityPreset: "bestAvailable",
-        preferMp4: true
+        qualityPreset: "bestAvailable"
       },
       formatSummary: {
         hasVideo: true,

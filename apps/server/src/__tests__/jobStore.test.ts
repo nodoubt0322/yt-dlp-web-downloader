@@ -33,7 +33,7 @@ describe("jobStore", () => {
       normalizedUrl: "https://example.com/watch?v=1",
       title: "Demo",
       extractor: "Example",
-      options: { qualityPreset: "bestUnder1080p", preferMp4: true },
+      options: { qualityPreset: "bestUnder1080p" },
       expiresAt: new Date("2026-06-28T01:00:00.000Z")
     });
 
@@ -58,7 +58,7 @@ describe("jobStore", () => {
       progress: { phase: "download", percent: 42.5, downloadedBytes: 1024 },
       result: { fileName: "demo.mp4", size: 4096, contentType: "video/mp4" },
       error: null,
-      options: { qualityPreset: "bestUnder1080p", preferMp4: true },
+      options: { qualityPreset: "bestUnder1080p" },
       createdAt: "2026-06-27T01:00:00.000Z",
       startedAt: "2026-06-27T01:01:00.000Z",
       completedAt: "2026-06-27T01:02:00.000Z",

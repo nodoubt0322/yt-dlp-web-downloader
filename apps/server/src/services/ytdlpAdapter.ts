@@ -11,7 +11,6 @@ export interface NormalizedVideoMetadata {
   webpageUrl: string | null;
   recommendedOptions: {
     qualityPreset: "bestAvailable";
-    preferMp4: true;
   };
   formatSummary: {
     hasVideo: boolean;
@@ -73,8 +72,7 @@ function normalizeMetadata(raw: Record<string, unknown>, fallbackUrl: string): N
     extractor: readString(raw.extractor_key) ?? readString(raw.extractor),
     webpageUrl: readString(raw.webpage_url),
     recommendedOptions: {
-      qualityPreset: "bestAvailable",
-      preferMp4: true
+      qualityPreset: "bestAvailable"
     },
     formatSummary: {
       hasVideo: videoFormats.length > 0,

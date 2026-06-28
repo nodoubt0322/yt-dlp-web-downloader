@@ -1,4 +1,4 @@
-export type JobStatus = "queued" | "running" | "completed" | "failed" | "canceled" | "expired";
+export type JobStatus = "queued" | "running" | "completed" | "failed" | "expired";
 
 export interface JobProgress {
   phase?: string;

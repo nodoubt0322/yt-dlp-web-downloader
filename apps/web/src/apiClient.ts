@@ -46,7 +46,7 @@ export interface AnalysisResult {
 
 export type QualityPreset = "bestAvailable" | "bestUnder1080p" | "bestUnder720p" | "bestUnder480p";
 
-export type JobStatus = "queued" | "running" | "completed" | "failed" | "canceled" | "expired";
+export type JobStatus = "queued" | "running" | "completed" | "failed" | "expired";
 
 export interface JobProgress {
   phase?: string;
@@ -138,7 +138,7 @@ export function createApiClient(getToken: () => string) {
         body: JSON.stringify({
           analysisId: analysis.analysisId,
           url: analysis.url,
-          options: { qualityPreset: options.qualityPreset, preferMp4: true }
+          options: { qualityPreset: options.qualityPreset }
         })
       }),
     getJob: (jobId: string) => request<JobDetails>(`/api/jobs/${jobId}`)
