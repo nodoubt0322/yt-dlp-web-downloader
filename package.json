@@ -4,9 +4,10 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "concurrently -n api,web -c orange,cyan \"pnpm dev:api\" \"pnpm dev:web\"",
-    "dev:api": "pnpm --filter @yt-dlp-web-downloader/server dev",
-    "dev:web": "pnpm --filter @yt-dlp-web-downloader/web dev",
+    "dev": "dotenv -e .env -- concurrently -n api,web -c orange,cyan \"pnpm dev:api\" \"pnpm dev:web\"",
+    "dev:api": "dotenv -e .env -- pnpm --filter @yt-dlp-web-downloader/server dev",
+    "dev:api:tunnel": "dotenv -e .env -e .env.tunnel -- concurrently -n api,tunnel -c orange,blue \"pnpm --filter @yt-dlp-web-downloader/server dev\" \"cloudflared tunnel --config .cloudflared/yt-dlp-web-downloader.yml run yt-dlp-web-downloader\"",
+    "dev:web": "dotenv -e .env -- pnpm --filter @yt-dlp-web-downloader/web dev",
     "test": "pnpm -r test",
     "typecheck": "pnpm -r typecheck",
     "build": "pnpm -r build"
@@ -18,6 +19,7 @@
   "devDependencies": {
     "@types/node": "^24.10.1",
     "concurrently": "^10.0.3",
+    "dotenv-cli": "^11.0.0",
     "typescript": "^5.9.3",
     "vitest": "^4.0.15"
   }

@@ -15,6 +15,7 @@ beforeEach(() => {
 afterEach(() => {
   cleanup();
   vi.unstubAllGlobals();
+  vi.unstubAllEnvs();
 });
 
 describe("home downloader flow", () => {
@@ -49,6 +50,34 @@ describe("home downloader flow", () => {
         headers: expect.objectContaining({ Authorization: "Bearer admin-token" }),
         body: JSON.stringify({ url: "https://example.com/watch?v=demo" })
       })
+    );
+  });
+
+  it("uses the configured Cloudflare API base URL when deployed away from the local backend", async () => {
+    vi.stubEnv("VITE_API_BASE_URL", "https://dlp-api.example.com");
+    fetchMock
+      .mockResolvedValueOnce(jsonResponse(systemOk()))
+      .mockResolvedValueOnce(jsonResponse(analysisResponse()));
+    sessionStorage.setItem("yt-dlp-admin-token", "admin-token");
+
+    render(<App />);
+
+    await userEvent.type(screen.getByLabelText("影片 URL"), "https://example.com/watch?v=demo");
+    await userEvent.click(screen.getByRole("button", { name: "分析" }));
+
+    await screen.findByRole("heading", { name: "Demo Video" });
+
+    expect(fetchMock).toHaveBeenNthCalledWith(
+      1,
+      "https://dlp-api.example.com/api/system/check",
+      expect.objectContaining({
+        headers: expect.objectContaining({ Authorization: "Bearer admin-token" })
+      })
+    );
+    expect(fetchMock).toHaveBeenNthCalledWith(
+      2,
+      "https://dlp-api.example.com/api/analyze",
+      expect.objectContaining({ method: "POST" })
     );
   });
 

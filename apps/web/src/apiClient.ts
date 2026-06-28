@@ -115,7 +115,7 @@ export function createApiClient(getToken: () => string) {
       headers["Content-Type"] = "application/json";
     }
 
-    const response = await fetch(path, { ...init, headers });
+    const response = await fetch(resolveApiUrl(path), { ...init, headers });
     const data = await readJson(response);
 
     if (!response.ok) {
@@ -145,12 +145,30 @@ export function createApiClient(getToken: () => string) {
   };
 }
 
+export function resolveApiUrl(path: string) {
+  if (!path) {
+    return "";
+  }
+
+  if (/^https?:\/\//i.test(path)) {
+    return path;
+  }
+
+  const apiBaseUrl = normalizeApiBaseUrl(import.meta.env.VITE_API_BASE_URL);
+  return apiBaseUrl ? `${apiBaseUrl}${path.startsWith("/") ? path : `/${path}`}` : path;
+}
+
 async function readJson(response: Response): Promise<unknown> {
   try {
     return await response.json();
   } catch {
     return null;
   }
+}
+
+function normalizeApiBaseUrl(value: string | undefined) {
+  const normalized = value?.trim().replace(/\/+$/, "");
+  return normalized || "";
 }
 
 function readPublicError(data: unknown): PublicError {

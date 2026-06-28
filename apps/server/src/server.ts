@@ -1,4 +1,5 @@
 import Fastify from "fastify";
+import cors from "@fastify/cors";
 import fastifyStatic from "@fastify/static";
 import type { AppConfig } from "./config.js";
 import { mergeConfig } from "./config.js";
@@ -40,6 +41,16 @@ export async function buildServer(options: BuildServerOptions = {}) {
   const app = Fastify({
     logger: false
   });
+  if (config.allowedOrigins.length > 0) {
+    await app.register(cors, {
+      origin: (origin, callback) => {
+        callback(null, !origin || config.allowedOrigins.includes(origin));
+      },
+      methods: ["GET", "POST", "OPTIONS"],
+      allowedHeaders: ["Authorization", "Content-Type"],
+      exposedHeaders: ["Content-Disposition"]
+    });
+  }
   const cleanupService =
     options.services?.cleanupService ??
     (options.staticDir
@@ -52,6 +63,7 @@ export async function buildServer(options: BuildServerOptions = {}) {
   app.addHook("onRequest", async (request, reply) => {
     if (
       config.adminToken &&
+      request.method !== "OPTIONS" &&
       request.url.startsWith("/api/") &&
       !request.url.startsWith("/api/download/") &&
       request.headers.authorization !== `Bearer ${config.adminToken}`

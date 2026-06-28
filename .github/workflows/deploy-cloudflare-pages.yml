@@ -1,0 +1,57 @@
+name: Deploy Cloudflare Pages
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  deployments: write
+
+concurrency:
+  group: cloudflare-pages-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    name: Build and deploy web
+    runs-on: ubuntu-latest
+    env:
+      VITE_API_BASE_URL: https://dlp-api.example.com
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 11.5.2
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Test
+        run: pnpm -r test
+
+      - name: Typecheck
+        run: pnpm -r typecheck
+
+      - name: Build web for Cloudflare Pages
+        run: pnpm --filter @yt-dlp-web-downloader/web build
+
+      - name: Deploy to Cloudflare Pages
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          wranglerVersion: 4.105.0
+          command: pages deploy apps/web/dist --project-name=yt-dlp-web-downloader --branch=main
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}

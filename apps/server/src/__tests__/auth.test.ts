@@ -9,6 +9,7 @@ describe("loadConfig", () => {
 
     expect(config.port).toBe(8787);
     expect(config.publicBaseUrl).toBeUndefined();
+    expect(config.allowedOrigins).toEqual([]);
     expect(config.dataDir).toContain("data");
     expect(config.adminToken).toBeUndefined();
     expect(config.jobConcurrency).toBe(1);
@@ -30,12 +31,14 @@ describe("loadConfig", () => {
     const config = loadConfig({
       NODE_ENV: "test",
       PUBLIC_BASE_URL: "https://video.example.com",
+      ALLOWED_ORIGINS: "https://dlp.example.com, https://preview.example.com",
       JOB_CONCURRENCY: "1",
       ENABLE_SSE: "true",
       ENABLE_RANGE_REQUESTS: "true"
     });
 
     expect(config.publicBaseUrl).toBe("https://video.example.com");
+    expect(config.allowedOrigins).toEqual(["https://dlp.example.com", "https://preview.example.com"]);
     expect(config.jobConcurrency).toBe(1);
     expect(config.enableSse).toBe(true);
     expect(config.enableRangeRequests).toBe(true);
@@ -134,6 +137,66 @@ describe("auth", () => {
       ytDlp: { ok: true, version: "2026.01.01" },
       storage: { writable: true }
     });
+  });
+
+  it("allows Cloudflare Pages CORS preflight without requiring the bearer token", async () => {
+    const app = await buildServer({
+      config: {
+        adminToken: "test-admin-token",
+        allowedOrigins: ["https://dlp.example.com"]
+      }
+    });
+
+    const response = await app.inject({
+      method: "OPTIONS",
+      url: "/api/system/check",
+      headers: {
+        origin: "https://dlp.example.com",
+        "access-control-request-method": "GET",
+        "access-control-request-headers": "authorization"
+      }
+    });
+
+    expect(response.statusCode).toBe(204);
+    expect(response.headers["access-control-allow-origin"]).toBe("https://dlp.example.com");
+    expect(response.headers["access-control-allow-headers"]).toContain("Authorization");
+  });
+
+  it("adds CORS headers for allowed Cloudflare Pages API requests", async () => {
+    const app = await buildServer({
+      config: {
+        adminToken: "test-admin-token",
+        allowedOrigins: ["https://dlp.example.com"]
+      },
+      services: {
+        systemService: {
+          check: async () => ({
+            ytDlp: { ok: true, version: "2026.01.01" },
+            ffmpeg: { ok: true, version: "6.1" },
+            ffprobe: { ok: true, version: "6.1" },
+            storage: {
+              ok: true,
+              writable: true,
+              freeBytes: 10_000,
+              minRequiredFreeBytes: 1_000
+            }
+          })
+        }
+      }
+    });
+
+    const response = await app.inject({
+      method: "GET",
+      url: "/api/system/check",
+      headers: {
+        origin: "https://dlp.example.com",
+        authorization: "Bearer test-admin-token"
+      }
+    });
+
+    expect(response.statusCode).toBe(200);
+    expect(response.headers["access-control-allow-origin"]).toBe("https://dlp.example.com");
+    expect(response.headers["access-control-expose-headers"]).toContain("Content-Disposition");
   });
 });
 

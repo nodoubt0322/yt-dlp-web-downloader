@@ -1,4 +1,4 @@
-import { act, cleanup, render, screen } from "@testing-library/react";
+import { act, cleanup, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { App } from "./App";
@@ -16,6 +16,7 @@ afterEach(() => {
   cleanup();
   vi.useRealTimers();
   vi.unstubAllGlobals();
+  vi.unstubAllEnvs();
   sessionStorage.clear();
 });
 
@@ -199,6 +200,36 @@ describe("job flow", () => {
     expect(window.location.pathname).toBe("/jobs/job_123");
     expect(screen.queryByText(/DOWNLOAD_EXPIRED/)).not.toBeInTheDocument();
     expect(fetchMock).toHaveBeenNthCalledWith(2, "/api/download/dl_123");
+  });
+
+  it("uses the configured Cloudflare API base URL for completed download links", async () => {
+    vi.stubEnv("VITE_API_BASE_URL", "https://dlp-api.example.com/");
+    fetchMock
+      .mockResolvedValueOnce(jsonResponse(jobResponse({ status: "completed", progress: { percent: 100 }, result: completedResult() })))
+      .mockResolvedValueOnce(
+        jsonResponse(
+          {
+            error: {
+              code: "DOWNLOAD_EXPIRED",
+              message: "Download link expired"
+            }
+          },
+          410
+        )
+      );
+    window.history.replaceState(null, "", "/jobs/job_123");
+
+    render(<App />);
+
+    const downloadLink = await screen.findByRole("link", { name: "下載檔案" });
+
+    expect(downloadLink).toHaveAttribute("href", "https://dlp-api.example.com/api/download/dl_123");
+
+    await userEvent.click(downloadLink);
+
+    await waitFor(() => {
+      expect(fetchMock).toHaveBeenNthCalledWith(2, "https://dlp-api.example.com/api/download/dl_123");
+    });
   });
 });
 

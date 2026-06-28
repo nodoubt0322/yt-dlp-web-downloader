@@ -3,6 +3,7 @@ import { resolve } from "node:path";
 export interface AppConfig {
   port: number;
   publicBaseUrl?: string;
+  allowedOrigins: string[];
   dataDir: string;
   adminToken?: string;
   jobConcurrency: number;
@@ -47,6 +48,7 @@ export function loadConfig(env: ConfigInput = process.env): AppConfig {
   return {
     port: readNumber(env.PORT, "PORT", DEFAULTS.port),
     publicBaseUrl: normalizeOptional(env.PUBLIC_BASE_URL),
+    allowedOrigins: readList(env.ALLOWED_ORIGINS),
     dataDir: resolve(env.DATA_DIR ?? "data"),
     adminToken,
     jobConcurrency: readNumber(env.JOB_CONCURRENCY, "JOB_CONCURRENCY", DEFAULTS.jobConcurrency),
@@ -100,6 +102,15 @@ function readNumber(value: string | undefined, key: string, fallback: number) {
 function normalizeOptional(value: string | undefined) {
   const normalized = value?.trim();
   return normalized ? normalized : undefined;
+}
+
+function readList(value: string | undefined) {
+  return (
+    value
+      ?.split(",")
+      .map((item) => item.trim())
+      .filter(Boolean) ?? []
+  );
 }
 
 function readBoolean(value: string | undefined) {

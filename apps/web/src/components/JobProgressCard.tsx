@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import type { JobDetails } from "../apiClient";
+import { resolveApiUrl, type JobDetails } from "../apiClient";
 
 interface JobProgressCardProps {
   job: JobDetails;
@@ -70,11 +70,11 @@ export function JobProgressCard({ job, compact = false }: JobProgressCardProps) 
       {job.status === "completed" && job.result?.downloadUrl ? (
         <a
           className="button-link"
-          href={job.result.downloadUrl}
+          href={resolveApiUrl(job.result.downloadUrl)}
           aria-disabled={downloading}
           onClick={(event) => {
             event.preventDefault();
-            void downloadFile(job.result?.downloadUrl ?? "", setDownloadError, setDownloading);
+            void downloadFile(resolveApiUrl(job.result?.downloadUrl ?? ""), setDownloadError, setDownloading);
           }}
         >
           {downloading ? "準備下載中" : "下載檔案"}
