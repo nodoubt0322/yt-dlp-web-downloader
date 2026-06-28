@@ -18,6 +18,8 @@ jobs:
   deploy:
     name: Build and deploy web
     runs-on: ubuntu-latest
+    env:
+      TZ: Asia/Taipei
     steps:
       - name: Checkout
         uses: actions/checkout@v4
