@@ -25,7 +25,7 @@
 2. 輸入管理 Token
 3. 貼上影片 URL
 4. 點「分析」
-5. 前端顯示 metadata、縮圖、來源、長度、格式與可選畫質
+5. 前端顯示標題、URL、縮圖、長度與可選畫質
 6. 選擇品質
 7. 建立下載任務
 8. 前端輪詢 job 狀態
@@ -90,7 +90,8 @@ Fastify API server
   - 攔截「下載檔案」點擊，用 `fetch` 下載檔案。
   - 如果下載 token 過期，顯示 `下載連結已過期，請重新建立下載任務。`，不讓瀏覽器導到 JSON API 回應。
 - `apps/web/src/components/VideoMetadataCard.tsx`
-  - 顯示 metadata、縮圖、格式與品質選單。
+  - 顯示標題、URL、縮圖、長度與品質選單。
+  - 長度以「X分Y秒」顯示，秒數四捨五入。
   - 品質選單只顯示 `原始畫質`、`1080p`、`720p`、`480p`，不顯示估算檔案大小。
 - `apps/web/src/useHomeMotion.ts`
   - 使用 GSAP / anime.js 做首頁入場與細節動效。
@@ -179,7 +180,7 @@ yt-dlp --dump-json --no-playlist --playlist-items 1 --no-warnings -- <url>
   - container extension
   - 品質估算資料
 
-前端目前不顯示品質估算檔案大小，避免讓使用者誤解該數字等於最後產出的大小。最後檔案大小以實際下載與壓縮後的結果為準。
+前端目前不顯示來源、格式與品質估算檔案大小，避免讓 metadata 佔據主要操作區，也避免讓使用者誤解估算值等於最後產出的大小。最後檔案大小以實際下載與壓縮後的結果為準。
 
 ### 3. 畫質選擇
 
@@ -240,7 +241,10 @@ job B queued -> running -> completed/failed
 }
 ```
 
-server terminal 也會印出失敗原因，方便排查來源網站變更、網路問題、權限問題或 `yt-dlp` 版本問題。
+完整 `yt-dlp` 失敗細節會寫入 log；server terminal 只顯示簡短摘要與 log 路徑，避免大量 stderr 或 progress JSON 洗版。
+
+- 分析失敗 log：`DATA_DIR/logs/yt-dlp-analyze.log`
+- 下載失敗 log：`DATA_DIR/jobs/{jobId}/yt-dlp.log`
 
 ### 6. ffmpeg 下載後壓縮
 
@@ -785,7 +789,12 @@ curl -H "Authorization: Bearer <ADMIN_TOKEN>" http://127.0.0.1:8787/api/system/c
 
 ### `YTDLP_FAILED`
 
-server terminal 會列出 `yt-dlp` 的 exit code 與 stderr。
+server terminal 只會列出 `yt-dlp` 的簡短摘要與 log 路徑，不會把完整 stderr 或 progress JSON 全部印到 terminal。
+
+完整錯誤細節依階段寫到：
+
+- 分析階段：`DATA_DIR/logs/yt-dlp-analyze.log`
+- 下載階段：`DATA_DIR/jobs/{jobId}/yt-dlp.log`
 
 常見原因：
 

@@ -276,18 +276,18 @@ h2 {
 }
 
 .flow-line-primary {
-  width: 72%;
-  left: 13%;
-  top: 49%;
-  transform: rotate(-18deg);
+  width: 58%;
+  left: 23%;
+  top: 34%;
+  transform: rotate(-16deg);
 }
 
 .flow-line-secondary {
-  width: 54%;
-  left: 27%;
-  top: 67%;
+  width: 60%;
+  left: 18%;
+  top: 51%;
   opacity: 0.42;
-  transform: rotate(16deg);
+  transform: rotate(13deg);
 }
 
 .flow-node {
@@ -850,7 +850,7 @@ h2 {
 .empty-panel {
   display: grid;
   align-items: center;
-  min-height: 164px;
+  min-height: 185px;
   overflow: hidden;
   border-radius: var(--radius-lg);
   padding: var(--space-5);
