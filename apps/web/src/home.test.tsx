@@ -34,7 +34,7 @@ describe("home downloader flow", () => {
     await screen.findByRole("heading", { name: "Demo Video" });
 
     expect(sessionStorage.getItem("yt-dlp-admin-token")).toBe("admin-token");
-    expect(globalThis.localStorage?.getItem("yt-dlp-admin-token")).toBeUndefined();
+    expect(globalThis.localStorage?.getItem("yt-dlp-admin-token") ?? null).toBeNull();
     expect(fetchMock).toHaveBeenNthCalledWith(
       1,
       "/api/system/check",
