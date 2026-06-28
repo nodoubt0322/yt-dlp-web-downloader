@@ -27,22 +27,10 @@ export function VideoMetadataCard({ analysis, creatingJob, onStartDownload }: Vi
           </div>
         </div>
         <dl className="metadata-list">
-          {analysis.extractor ? (
-            <>
-              <dt>來源</dt>
-              <dd>來源：{analysis.extractor}</dd>
-            </>
-          ) : null}
           {typeof analysis.durationSeconds === "number" ? (
             <>
               <dt>長度</dt>
               <dd>長度：{formatDuration(analysis.durationSeconds)}</dd>
-            </>
-          ) : null}
-          {formatSummaryLabel(analysis.formatSummary) ? (
-            <>
-              <dt>格式</dt>
-              <dd>{formatSummaryLabel(analysis.formatSummary)}</dd>
             </>
           ) : null}
         </dl>
@@ -92,31 +80,9 @@ function getRequestedHeight(preset: QualityPreset) {
   }
 }
 
-function formatSummaryLabel(summary: AnalysisResult["formatSummary"]) {
-  if (!summary) {
-    return null;
-  }
-
-  const parts: string[] = [];
-  if (summary.ext) {
-    parts.push(summary.ext);
-  }
-  if (typeof summary.maxHeight === "number") {
-    parts.push(`${summary.maxHeight}p`);
-  }
-  if (summary.hasVideo && summary.hasAudio) {
-    parts.push("含影像與音訊");
-  } else if (summary.hasVideo) {
-    parts.push("含影像");
-  } else if (summary.hasAudio) {
-    parts.push("含音訊");
-  }
-
-  return parts.length > 0 ? `格式：${parts.join("，")}` : null;
-}
-
 function formatDuration(seconds: number) {
-  const minutes = Math.floor(seconds / 60);
-  const remainingSeconds = seconds % 60;
-  return `${minutes}:${String(remainingSeconds).padStart(2, "0")}`;
+  const roundedSeconds = Math.round(seconds);
+  const minutes = Math.floor(roundedSeconds / 60);
+  const remainingSeconds = roundedSeconds % 60;
+  return `${minutes}分${remainingSeconds}秒`;
 }

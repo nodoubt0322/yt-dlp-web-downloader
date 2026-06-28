@@ -1,8 +1,8 @@
-import { chmod, mkdtemp, rm } from "node:fs/promises";
+import { chmod, mkdtemp, readFile, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { createJobQueue } from "../services/jobQueue.js";
 import { createJobStore, type JobStore } from "../services/jobStore.js";
 
@@ -13,6 +13,7 @@ const tempDirs: string[] = [];
 const stores: JobStore[] = [];
 
 afterEach(async () => {
+  vi.restoreAllMocks();
   stores.splice(0).forEach((store) => store.close());
   await Promise.all(tempDirs.splice(0).map((dir) => rm(dir, { force: true, recursive: true })));
 });
@@ -107,6 +108,40 @@ describe("jobQueue", () => {
         retryable: false
       }
     });
+  });
+
+  it("writes full yt-dlp failure details to a job log and keeps terminal output short", async () => {
+    await Promise.all([chmod(mockYtDlp, 0o755), chmod(mockFfmpeg, 0o755)]);
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => undefined);
+    const error = vi.spyOn(console, "error").mockImplementation(() => undefined);
+    const { store, dataDir } = await createStore();
+    const job = store.createJob({
+      url: "https://example.com/watch?v=fail",
+      options: {},
+      expiresAt: new Date(Date.now() + 60_000)
+    });
+    const queue = createJobQueue({
+      store,
+      dataDir,
+      ytDlpBinary: mockYtDlp,
+      ffmpegBinary: mockFfmpeg,
+      timeoutMs: 5_000,
+      publicBaseUrl: "",
+      fileTtlMinutes: 3,
+      retryDelayMs: 1
+    });
+
+    await queue.enqueue(job.id);
+
+    const terminalOutput = [...warn.mock.calls, ...error.mock.calls].flat().join("\n");
+    expect(terminalOutput).toContain(`yt-dlp download failed for ${job.id}`);
+    expect(terminalOutput).toContain("log=");
+    expect(terminalOutput).not.toContain("/Users/private/video.mp4");
+    expect(terminalOutput).not.toContain("Unsupported URL");
+
+    const jobLog = await readFile(join(dataDir, "jobs", job.id, "yt-dlp.log"), "utf8");
+    expect(jobLog).toContain("Process exited with code 1");
+    expect(jobLog).toContain("ERROR: Unsupported URL: /Users/private/video.mp4");
   });
 
   it("retries transient yt-dlp download failures and exposes retry progress", async () => {

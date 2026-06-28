@@ -1,4 +1,5 @@
 import type { FastifyInstance } from "fastify";
+import { join } from "node:path";
 import type { AppConfig } from "../config.js";
 import { createId } from "../services/id.js";
 import type { JobStore } from "../services/jobStore.js";
@@ -46,7 +47,8 @@ export async function registerAnalyzeRoutes(app: FastifyInstance, options: Regis
       const metadata = await analyzeWithYtDlp({
         url: normalizedUrl,
         ytDlpBinary: options.config.ytDlpBinary,
-        timeoutMs: options.config.analyzeTimeoutMs
+        timeoutMs: options.config.analyzeTimeoutMs,
+        logDir: join(options.config.dataDir, "logs")
       });
       const responseBody = {
         analysisId,

@@ -1,3 +1,5 @@
+import { appendFile, mkdir } from "node:fs/promises";
+import { join } from "node:path";
 import { buildAnalyzeArgs } from "./commandBuilder.js";
 import { normalizeYtDlpError, type NormalizedYtDlpError } from "./errors.js";
 import { ProcessRunnerError, runProcess } from "./processRunner.js";
@@ -31,6 +33,7 @@ export interface AnalyzeWithYtDlpOptions {
   ytDlpBinary: string;
   timeoutMs: number;
   env?: Record<string, string | undefined>;
+  logDir?: string;
 }
 
 export async function analyzeWithYtDlp(options: AnalyzeWithYtDlpOptions): Promise<NormalizedVideoMetadata> {
@@ -41,7 +44,7 @@ export async function analyzeWithYtDlp(options: AnalyzeWithYtDlpOptions): Promis
     });
     return normalizeMetadata(parseSingleJsonObject(result.stdout), options.url);
   } catch (error) {
-    logAnalyzeFailure(error);
+    await logAnalyzeFailure(error, options.logDir);
     throw normalizeAnalyzeError(error);
   }
 }
@@ -168,19 +171,33 @@ function isNormalizedError(value: unknown): value is NormalizedYtDlpError {
   return isRecord(value) && typeof value.code === "string" && typeof value.message === "string";
 }
 
-function logAnalyzeFailure(error: unknown) {
+async function logAnalyzeFailure(error: unknown, logDir: string | undefined) {
   if (!(error instanceof ProcessRunnerError)) {
     return;
   }
 
-  console.error(`[yt-dlp analyze failed] exitCode=${error.exitCode ?? "unknown"} timedOut=${error.timedOut}`);
-  if (error.stderr.trim()) {
-    console.error(`[yt-dlp stderr]\n${error.stderr.trim()}`);
-    return;
-  }
-  if (error.stdout.trim()) {
-    console.error(`[yt-dlp stdout]\n${error.stdout.trim().slice(0, 2000)}`);
-  }
+  const logPath = logDir ? await appendAnalyzeFailureLog(logDir, error) : null;
+  console.error(
+    `[yt-dlp analyze failed] exitCode=${error.exitCode ?? "unknown"} timedOut=${error.timedOut}${logPath ? ` log=${logPath}` : ""}`
+  );
+}
+
+async function appendAnalyzeFailureLog(logDir: string, error: ProcessRunnerError) {
+  await mkdir(logDir, { recursive: true });
+  const logPath = join(logDir, "yt-dlp-analyze.log");
+  await appendFile(
+    logPath,
+    [
+      `[${new Date().toISOString()}] ${error.message}`,
+      `exitCode=${error.exitCode ?? "unknown"} timedOut=${error.timedOut}`,
+      error.stderr.trim() ? `[stderr]\n${error.stderr.trim()}` : null,
+      error.stdout.trim() ? `[stdout]\n${error.stdout.trim()}` : null
+    ]
+      .filter(Boolean)
+      .join("\n") + "\n",
+    "utf8"
+  );
+  return logPath;
 }
 
 function readString(value: unknown) {

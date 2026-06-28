@@ -1,4 +1,4 @@
-import { mkdir, rename, rm, stat } from "node:fs/promises";
+import { appendFile, mkdir, rename, rm, stat } from "node:fs/promises";
 import { join } from "node:path";
 import { buildDownloadArgs, buildOptimizeVideoArgs, type QualityPreset } from "./commandBuilder.js";
 import { normalizeYtDlpError } from "./errors.js";
@@ -115,7 +115,9 @@ export function createJobQueue(options: CreateJobQueueOptions): JobQueue {
         });
         return;
       } catch (error) {
+        const logPath = await appendProcessFailureLog(download.homePath, error);
         if (attempt > retryMax) {
+          console.error(`yt-dlp download failed for ${jobId}; no retries left: ${readProcessSummary(error)}; log=${logPath}`);
           throw error;
         }
 
@@ -126,7 +128,7 @@ export function createJobQueue(options: CreateJobQueueOptions): JobQueue {
           retryAttempt,
           retryMax
         });
-        console.warn(`yt-dlp download failed for ${jobId}; retrying ${retryAttempt}/${retryMax}: ${readProcessErrorMessage(error)}`);
+        console.warn(`yt-dlp download failed for ${jobId}; retrying ${retryAttempt}/${retryMax}: ${readProcessSummary(error)}; log=${logPath}`);
         await sleep(retryDelayMs);
       }
     }
@@ -179,10 +181,30 @@ export function createJobQueue(options: CreateJobQueueOptions): JobQueue {
   }
 }
 
-function readProcessErrorMessage(error: unknown) {
+async function appendProcessFailureLog(jobDir: string, error: unknown) {
+  const logPath = join(jobDir, "yt-dlp.log");
+  await appendFile(logPath, `${formatProcessLogEntry(error)}\n`, "utf8");
+  return logPath;
+}
+
+function formatProcessLogEntry(error: unknown) {
+  const timestamp = new Date().toISOString();
   if (error instanceof ProcessRunnerError) {
-    const details = [error.message, error.stderr, error.stdout].filter(Boolean).join(" ");
-    return details.replace(/\s+/g, " ").trim();
+    return [
+      `[${timestamp}] ${error.message}`,
+      `exitCode=${error.exitCode ?? "unknown"} timedOut=${error.timedOut}`,
+      error.stderr.trim() ? `[stderr]\n${error.stderr.trim()}` : null,
+      error.stdout.trim() ? `[stdout]\n${error.stdout.trim()}` : null
+    ]
+      .filter(Boolean)
+      .join("\n");
+  }
+  return `[${timestamp}] ${error instanceof Error ? error.stack ?? error.message : String(error)}`;
+}
+
+function readProcessSummary(error: unknown) {
+  if (error instanceof ProcessRunnerError) {
+    return `exitCode=${error.exitCode ?? "unknown"} timedOut=${error.timedOut}`;
   }
   return error instanceof Error ? error.message : String(error);
 }

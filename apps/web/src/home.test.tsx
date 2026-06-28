@@ -120,9 +120,9 @@ describe("home downloader flow", () => {
     await userEvent.click(screen.getByRole("button", { name: "分析" }));
 
     expect(await screen.findByRole("heading", { name: "Demo Video" })).toBeInTheDocument();
-    expect(screen.getByText("來源：youtube")).toBeInTheDocument();
-    expect(screen.getByText("長度：2:03")).toBeInTheDocument();
-    expect(screen.getByText("格式：mp4，1080p，含影像與音訊")).toBeInTheDocument();
+    expect(screen.getByText("長度：0分8秒")).toBeInTheDocument();
+    expect(screen.queryByText("來源：youtube")).not.toBeInTheDocument();
+    expect(screen.queryByText("格式：mp4，1080p，含影像與音訊")).not.toBeInTheDocument();
     expect(screen.getByAltText("Demo Video 縮圖")).toHaveAttribute("src", "https://example.com/thumb.jpg");
     expect(screen.getByLabelText("下載品質")).toHaveValue("bestAvailable");
     expect(screen.getByRole("option", { name: "原始畫質" })).toBeInTheDocument();
@@ -233,7 +233,7 @@ function analysisResponse() {
     url: "https://example.com/watch?v=demo",
     title: "Demo Video",
     thumbnail: "https://example.com/thumb.jpg",
-    durationSeconds: 123,
+    durationSeconds: 7.569,
     extractor: "youtube",
     webpageUrl: "https://example.com/watch?v=demo",
     recommendedOptions: { qualityPreset: "bestAvailable" },

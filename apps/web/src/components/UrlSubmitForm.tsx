@@ -29,10 +29,10 @@ export function UrlSubmitForm({ disabled, loading, error, onSubmit }: UrlSubmitF
           <h2>分析影片連結</h2>
         </div>
       </div>
-      <label htmlFor="video-url">影片 URL</label>
       <div className="input-row">
         <input
           id="video-url"
+          aria-label="影片 URL"
           name="url"
           type="url"
           value={url}
