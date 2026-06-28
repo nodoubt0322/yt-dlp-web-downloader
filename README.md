@@ -623,7 +623,7 @@ cloudflared tunnel route dns yt-dlp-web-downloader dlp-api.example.com
 啟動 tunnel：
 
 ```bash
-cloudflared tunnel --config .cloudflared/yt-dlp-web-downloader.yml run yt-dlp-web-downloader
+cloudflared tunnel --config .cloudflared/yt-dlp-web-downloader.yml --loglevel warn --transport-loglevel warn run yt-dlp-web-downloader
 ```
 
 ### 7. 驗證
@@ -643,6 +643,15 @@ curl -H "Authorization: Bearer <ADMIN_TOKEN>" https://dlp-api.example.com/api/sy
 6. 下載完成檔案
 
 如果瀏覽器 console 出現 CORS error，先確認本機 server 是用 `.env.tunnel` 啟動，且 `ALLOWED_ORIGINS=https://dlp.example.com`。
+
+如果 DevTools 裡 request 沒有任何 response headers，通常不是 CORS allow-list，而是 `dlp-api.example.com` 沒有解析到 Cloudflare Tunnel，或 tunnel process 沒有連上。先確認：
+
+```bash
+dig @1.1.1.1 +short dlp-api.example.com A
+pnpm dev:api:tunnel
+```
+
+`dig` 應該看到 Cloudflare proxy 的 A records；如果 `@1.1.1.1` 有值但瀏覽器仍連不到，通常是本機或瀏覽器 DNS cache 還沒更新。`pnpm dev:api:tunnel` 必須持續執行，外網 API 才會在線。
 
 ## 設定
 

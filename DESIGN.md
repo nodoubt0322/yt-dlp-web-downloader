@@ -1,252 +1,258 @@
-# N8n — Style Reference
-> Workflow engine at midnight — the feeling of a live automation canvas running in a dark server room, lit by status indicators and data flows.
+# Linear — Style Reference
+> midnight command deck — acid-lime status light on obsidian instrument panel
 
 **Theme:** dark
 
-n8n is a dark workflow canvas that feels like staring into a running machine at night — deep purple-black surfaces lit from within by orange fire and electric blue current. The #0e0918 base is nearly black but carries a violet undertone that makes the darkness feel technological rather than neutral. The signature visual move is the orange-to-red gradient CTA against this void: rgb(253,137,37) → rgb(255,12,0) at 30deg creates an ember glow that reads as kinetic energy. Typography runs entirely in geomanist at weights 300 and 400 — the light weight at 54px headline sizes feels deliberately restrained, letting the lightning bolt hero illustration do the shouting. Cards are not floating objects but embedded panels, using inset white-10% borders and faint orange inset bottom-glows (rgba(255,142,93,0.3)) that suggest backlit hardware.
+Linear is a midnight command deck for product teams: a near-black canvas, razor-thin type, and tight monochrome surfaces that feel like an obsidian instrument panel. For this project, primary buttons use a dark raised control treatment instead of acid-lime fill; lime remains available only as a restrained status accent. Cards gain presence through 1px inset borders and soft drop shadows rather than fills, and the entire surface stack stays in a narrow 4-step range from canvas to elevated. Typography is Inter Variable at 510/590 with custom stylistic sets, producing dense, instrument-panel density where every pixel earns its place. The voice is engineering-native: Berkeley Mono for code, tight tracking on all display sizes, and a refusal to decorate what data can already say.
 
 ## Tokens — Colors
 
 | Name | Value | Token | Role |
 |------|-------|-------|------|
-| Void Base | `#0e0918` | `--color-void-base` | Primary page background and hero section — the near-black violet creates depth without being neutral charcoal |
-| Elevated Surface | `#1a1624` | `--color-elevated-surface` | Card backgrounds (rgb(26,22,36)) — one step above void, visible as panels |
-| Deep Panel | `#1b1728` | `--color-deep-panel` | Secondary card surface (rgb(27,23,40)) — close to Elevated Surface, used for 24px-radius feature cards |
-| Muted Shell | `#2c2834` | `--color-muted-shell` | Ghost button backgrounds — semi-transparent frosted layer over dark surfaces |
-| Border Smoke | `#3e3a46` | `--color-border-smoke` | Nav and container borders — low-contrast edge definition on dark surfaces |
-| Ash Text | `#d1cece` | `--color-ash-text` | Primary body and UI text — warm-gray rather than pure white, reducing harshness against dark bg |
-| Fog Text | `#9d9797` | `--color-fog-text` | Secondary body text, captions, de-emphasized labels |
-| Silver Rail | `#e5e7eb` | `--color-silver-rail` | Border lines across components and nav — light border on dark background creates fine hairline edges |
-| Cloud White | `#ffffff` | `--color-cloud-white` | High-emphasis headings, icon fills, badge text, active nav items |
-| Steel Muted | `#48556a` | `--color-steel-muted` | Badge text on light badge backgrounds |
-| Ember CTA | `linear-gradient(30deg, rgb(253, 137, 37), rgb(255, 12, 0))` | `--color-ember-cta` | Primary CTA buttons — orange-to-red gradient (rgb(253,137,37) → rgb(255,12,0)) burns against the dark void; the only warm-chromatic element above the fold, creating immediate focal pull |
-| Electric Current | `linear-gradient(141deg, rgb(7, 122, 199), rgb(107, 33, 239))` | `--color-electric-current` | Link underline glow, active focus rings, node connection lines in workflow canvas — blue-to-violet gradient (rgb(7,122,199) → rgb(107,33,239)) signals data flow and connectivity |
-| Ember Scorch | `#ff492c` | `--color-ember-scorch` | Icon fills and secondary highlight accents — pure saturated red-orange for SVG emphasis marks |
-| Crimson Glow | `#56312d` | `--color-crimson-glow` | Card box-shadow tint — dark muted red used in shadow layers beneath cards, creating a heat-haze underneath panels |
+| Onyx | `#08090a` | `--color-onyx` | Page background, primary canvas, deepest surface |
+| Charcoal | `#0f1011` | `--color-charcoal` | Navigation bar, card base, elevated surface level 1 |
+| Obsidian | `#161718` | `--color-obsidian` | Deepest card backgrounds, modal overlays, deepest elevation |
+| Graphite | `#23252a` | `--color-graphite` | Hairline borders, dividers, card inset edges, input outlines |
+| Iron | `#323334` | `--color-iron` | Medium borders, secondary dividers, subtle separators |
+| Steel | `#383b3f` | `--color-steel` | Input field backgrounds, slightly raised surface, soft borders |
+| Slate | `#62666d` | `--color-slate` | Muted text, placeholder text, inactive nav, low-emphasis borders — the workhorse gray |
+| Fog | `#8a8f98` | `--color-fog` | Secondary text, captions, metadata, icon stroke at rest |
+| Mist | `#d0d6e0` | `--color-mist` | Tertiary text, light icon strokes, subtle borders on dark surfaces |
+| Platinum | `#e5e5e6` | `--color-platinum` | High-contrast borders, inverted surface fills, strong separators |
+| Snow | `#f7f8f8` | `--color-snow` | Primary text, primary icons, high-contrast UI elements — near-white but not pure |
+| Acid Lime | `#e4f222` | `--color-acid-lime` | Green action color for filled buttons, selected navigation states, and focused conversion moments |
+| Indigo | `#5e6ad2` | `--color-indigo` | Icon accent, link emphasis, brand surface washes, decorative indigo that signals Linear identity in secondary contexts |
+| Emerald | `#27a644` | `--color-emerald` | Green outline accent for tags, dividers, and focused UI edges. Use as a supporting accent, not as a status color |
+| Crimson | `#eb5757` | `--color-crimson` | Red outline accent for tags, dividers, and focused UI edges. Use as a supporting accent, not as a status color |
+| Cyan | `#02b8cc` | `--color-cyan` | Teal wash for highlight backgrounds, decorative bands, and soft emphasis behind content. Use as a supporting accent, not as a status color |
 
 ## Tokens — Typography
 
-### geomanist — The sole display and body typeface. Weight 300 at 48–54px is the defining choice — headlines whisper against the dark background rather than asserting. Weight 400 handles body copy at 15–18px with 1.5–1.7 line-height for comfortable reading in dark contexts. The compressed line-height of 0.88 at 54px stacks headline lines into a dense visual block. · `--font-geomanist`
-- **Substitute:** DM Sans, Inter (variable, set to weight 300 for display)
-- **Weights:** 300, 400
-- **Sizes:** 12px, 14px, 15px, 16px, 18px, 20px, 24px, 48px, 54px
-- **Line height:** 0.88–1.70 (tight 0.88 at display sizes, 1.5–1.7 at body sizes)
-- **Letter spacing:** -1.08px at 54px, -0.86px at 48px (from -0.018em to -0.020em; tight negative tracking at display sizes, normal at body)
-- **Role:** The sole display and body typeface. Weight 300 at 48–54px is the defining choice — headlines whisper against the dark background rather than asserting. Weight 400 handles body copy at 15–18px with 1.5–1.7 line-height for comfortable reading in dark contexts. The compressed line-height of 0.88 at 54px stacks headline lines into a dense visual block.
+### Inter Variable — All UI text — navigation, headings, body, buttons, badges, inputs. The custom weight 510 sits between Regular and Medium for that signature Linear "precise but not bold" voice; weight 590 is used sparingly for emphasis. Weight 300 on display sizes is an anti-loud choice: the headlines whisper authority through restraint rather than shout with 700+. · `--font-inter-variable`
+- **Substitute:** Inter (Google Fonts), or General Sans
+- **Weights:** 300, 400, 510, 590
+- **Sizes:** 10, 11, 12, 13, 14, 15, 16, 17, 20, 24, 32, 48, 64, 72
+- **Line height:** 1.00, 1.13, 1.20, 1.33, 1.40, 1.47, 1.50, 1.60, 1.71, 2.00, 2.46, 2.75
+- **Letter spacing:** -0.0220em at 72px (-1.58px), -0.0150em at 64px (-0.96px), -0.0130em at 48px (-0.624px), -0.0120em at 32px (-0.384px), -0.0110em at 24px (-0.264px), -0.0100em at 20px (-0.2px)
+- **OpenType features:** `"cv01" on, "ss03" on`
+- **Role:** All UI text — navigation, headings, body, buttons, badges, inputs. The custom weight 510 sits between Regular and Medium for that signature Linear "precise but not bold" voice; weight 590 is used sparingly for emphasis. Weight 300 on display sizes is an anti-loud choice: the headlines whisper authority through restraint rather than shout with 700+.
 
-### geomanist-book — Medium-emphasis subheadings and section labels. The 'book' variant sits optically between 300 and regular 400, used for callout text in feature cards and section introductions at 20–24px. · `--font-geomanist-book`
-- **Substitute:** DM Sans 500
+### Berkeley Mono — Code, IDs, keyboard shortcuts, technical metadata (issue IDs like ENG-2703, code references in agent prompts). Its presence signals "this is a tool, not a marketing site" — the monospace voice only speaks where precision matters. · `--font-berkeley-mono`
+- **Substitute:** JetBrains Mono, IBM Plex Mono
 - **Weights:** 400
-- **Sizes:** 16px, 18px, 20px, 24px
-- **Line height:** 1.00, 1.50
-- **Letter spacing:** -0.29px at 16px (from -0.0180em); -0.17px at 24px (from -0.0070em)
-- **Role:** Medium-emphasis subheadings and section labels. The 'book' variant sits optically between 300 and regular 400, used for callout text in feature cards and section introductions at 20–24px.
+- **Sizes:** 12, 13, 14
+- **Line height:** 1.30, 1.40, 1.50, 1.71
+- **Letter spacing:** -0.0150em
+- **Role:** Code, IDs, keyboard shortcuts, technical metadata (issue IDs like ENG-2703, code references in agent prompts). Its presence signals "this is a tool, not a marketing site" — the monospace voice only speaks where precision matters.
 
 ### Type Scale
 
 | Role | Size | Line Height | Letter Spacing | Token |
 |------|------|-------------|----------------|-------|
-| caption | 12px | 1.5 | — | `--text-caption` |
-| body-sm | 14px | 1.5 | — | `--text-body-sm` |
-| body | 16px | 1.5 | -0.29px | `--text-body` |
-| subheading | 18px | 1.4 | — | `--text-subheading` |
-| heading-sm | 20px | 1.25 | — | `--text-heading-sm` |
-| heading | 24px | 1.2 | -0.17px | `--text-heading` |
-| heading-lg | 48px | 0.94 | -0.86px | `--text-heading-lg` |
-| display | 54px | 0.88 | -1.08px | `--text-display` |
+| micro-sm | 12px | 1.4 | — | `--text-micro-sm` |
+| caption | 14px | 1.71 | — | `--text-caption` |
+| body-lg | 17px | 1.6 | — | `--text-body-lg` |
+| subheading | 20px | 1.47 | -0.2px | `--text-subheading` |
+| heading-sm | 24px | 1.4 | -0.264px | `--text-heading-sm` |
+| heading | 32px | 1.33 | -0.384px | `--text-heading` |
+| heading-lg | 48px | 1.2 | -0.624px | `--text-heading-lg` |
+| display-sm | 64px | 1.13 | -0.96px | `--text-display-sm` |
+| display | 72px | 1 | -1.58px | `--text-display` |
 
 ## Tokens — Spacing & Shapes
 
-**Base unit:** 8px
+**Base unit:** 4px
 
-**Density:** comfortable
+**Density:** compact
 
 ### Spacing Scale
 
 | Name | Value | Token |
 |------|-------|-------|
+| 4 | 4px | `--spacing-4` |
 | 8 | 8px | `--spacing-8` |
+| 12 | 12px | `--spacing-12` |
 | 16 | 16px | `--spacing-16` |
+| 20 | 20px | `--spacing-20` |
 | 24 | 24px | `--spacing-24` |
+| 28 | 28px | `--spacing-28` |
 | 32 | 32px | `--spacing-32` |
+| 36 | 36px | `--spacing-36` |
 | 40 | 40px | `--spacing-40` |
 | 48 | 48px | `--spacing-48` |
+| 56 | 56px | `--spacing-56` |
 | 64 | 64px | `--spacing-64` |
 | 80 | 80px | `--spacing-80` |
+| 96 | 96px | `--spacing-96` |
 | 128 | 128px | `--spacing-128` |
 
 ### Border Radius
 
 | Element | Value |
 |---------|-------|
-| cards | 16px |
-| nodes | 12px |
+| nav | 6px |
+| cards | 12px |
 | pills | 9999px |
-| badges | 24px |
-| inputs | 8px |
-| buttons | 8px |
-| cardsLarge | 24px |
+| badges | 2px |
+| inputs | 6px |
+| buttons | 6px |
 
 ### Shadows
 
 | Name | Value | Token |
 |------|-------|-------|
-| subtle | `rgba(255, 255, 255, 0.2) 0px 1px 1px 0px inset, rgba(8, 8...` | `--shadow-subtle` |
-| sm | `rgba(0, 0, 0, 0.26) 0px 0px 8px 0px` | `--shadow-sm` |
-| subtle-2 | `rgba(255, 255, 255, 0.1) 0px 0px 0px 1px inset, rgba(255,...` | `--shadow-subtle-2` |
+| sm | `rgba(0, 0, 0, 0.4) 0px 2px 4px 0px` | `--shadow-sm` |
+| md | `rgba(0, 0, 0, 0.2) 0px 0px 12px 0px inset` | `--shadow-md` |
+| subtle | `rgb(35, 37, 42) 0px 0px 0px 1px inset` | `--shadow-subtle` |
+| subtle-2 | `rgba(0, 0, 0, 0.2) 0px 0px 0px 1px` | `--shadow-subtle-2` |
+| subtle-3 | `rgba(0, 0, 0, 0.01) 0px 5px 2px 0px, rgba(0, 0, 0, 0.04) ...` | `--shadow-subtle-3` |
+| xl | `rgba(8, 9, 10, 0.6) 0px 4px 32px 0px` | `--shadow-xl` |
+| subtle-4 | `rgba(0, 0, 0, 0.1) 0px 0px 0px 2px` | `--shadow-subtle-4` |
+| subtle-5 | `rgba(0, 0, 0, 0.33) 0px 0px 0px 1px` | `--shadow-subtle-5` |
+| subtle-6 | `rgba(255, 255, 255, 0.03) 0px 0px 0px 1px inset, rgba(255...` | `--shadow-subtle-6` |
 
 ### Layout
 
 - **Page max-width:** 1200px
 - **Section gap:** 80-120px
-- **Element gap:** 16-24px
+- **Card padding:** 24-32px
+- **Element gap:** 8-12px
 
 ## Components
 
-### Ember Gradient CTA Button
-**Role:** Primary call-to-action, top nav and hero section
+### Primary Dark CTA
+**Role:** The single most important action on any page
 
-Background: linear-gradient(30deg, rgb(253,137,37), rgb(255,12,0)). Text: #ffffff, geomanist 400 14–16px. Border-radius: 8px. Padding: 10–14px vertical, 20–24px horizontal. No border. On hover, the gradient intensifies. This is the only warm-chromatic element in the nav.
+Filled with a dark raised surface (`#242527` to `#1b1c1e`), text in #f7f8f8 Snow, weight 510 Inter, 14px, padding 8px 16px, border-radius 6px, 1px Iron border, subtle inset highlight, and compact shadow. This matches the Linear control language without using acid-lime as the action fill.
 
-### Ghost Outline Button
-**Role:** Secondary action, hero section ('Talk to sales')
+### Ghost Nav Button
+**Role:** Text-only navigation links in the top bar
 
-Background: rgba(0,0,0,0). Border: 1px solid rgb(229,231,235) (#e5e7eb). Text: #ffffff, geomanist 400. Border-radius: 6px. Padding: 24px all sides (generous equal padding creates a square-ratio for short labels). Shadow: none.
+No background, text in #8a8f98 Fog at 14px weight 400, no border, padding 8px 12px. On hover, text shifts to #f7f8f8 Snow. Zero visual weight — the nav is a whisper, the CTA is the shout.
 
-### Frosted Ghost Button
-**Role:** Tertiary actions and icon buttons over dark card surfaces
+### Sign Up Pill Button
+**Role:** Outlined registration action in nav
 
-Background: rgba(13,10,25,0.28). Border: 1px solid rgba(255,255,255,0.1). Text: rgb(209,206,206). Border-radius: 8px. Padding: 14px all sides. Box-shadow: rgba(0,0,0,0.26) 0px 0px 8px 0px. Translucent panel-within-panel effect.
+White (#f7f8f8) 1px border, transparent background, #f7f8f8 text at 14px weight 400, padding 6px 14px, border-radius 9999px. The pill geometry is the only fully rounded element — it stands apart from all 6px/12px rectilinear components.
 
-### Pill Tag Button
-**Role:** Use-case category pills and filter selectors
+### Product Screenshot Card
+**Role:** Large product UI mockups in hero and feature sections
 
-Background: rgba(163,163,163,0.2). Border: 1px solid rgb(229,231,235). Text: #ffffff. Border-radius: 8px. Padding: 0 20px. Height implicit from line-height. Flat matte surface, no gradient.
+Background #0f1011 Charcoal, border-radius 12px, inset 1px border in rgb(35, 37, 42) Graphite, 2px 4px 4px rgba(0,0,0,0.4) drop shadow. Internal product UI uses its own micro-surface system (#161718 for issue rows, #383b3f for inputs). The card frames the screenshot as a tangible device sitting on the dark canvas.
 
-### Feature Card
-**Role:** Primary content panels in features section
+### Announcement Banner
+**Role:** Compact text link in hero (e.g. "Issue tracking is dead")
 
-Background: rgb(26,22,36) (#1a1624). Border-radius: 16px. Padding: 48px 44px. No box-shadow. The elevated surface sits 1 step above the #0e0918 page background through color alone — no drop shadow needed.
+Transparent background, inline layout, small #5e6ad2 Indigo dot (4px) + text in #d0d6e0 Mist at 13px weight 400, followed by #8a8f98 link text and → arrow. Sits below the hero subtext. Zero chrome — it is a footnote that happens to be a link.
 
-### Glowing Inset Card
-**Role:** Highlighted stats, testimonials, community proof cards
+### Customer Logo Strip
+**Role:** Row of client/partner logos in the trust band
 
-Background: rgba(0,0,0,0) — transparent so page bg shows through. Border: rgba(255,255,255,0.1) 0px 0px 0px 1px inset (white hairline) + rgba(255,142,93,0.3) 0px 1px 0px 0px inset (orange bottom-edge glow). Border-radius: 24px. The orange inset bottom line mimics a backlit indicator.
+Logos rendered in #8a8f98 Fog / white at reduced opacity, evenly spaced in a single horizontal row with ~60px gaps. No container, no background, no dividers. The logos float directly on the Onyx canvas.
 
-### Dark Feature Panel
-**Role:** Full-width section panels with workflow canvas previews
+### Feature Split Section
+**Role:** Two-column text + product UI sections
 
-Background: rgb(27,23,40) (#1b1728). Border-radius: 24px. No padding on container (content bleeds). Used as viewport-wide dark stage for product screenshots.
+Left column: 48px heading-lg Inter weight 400, #f7f8f8, tracking -0.624px, followed by 17px body-lg in #8a8f98. Right column: Product Screenshot Card. Generous 80-120px vertical gap between sections. The asymmetry is deliberate — text never sits above the product, it always leads or follows.
 
-### Hiring Badge
-**Role:** Status indicator tags (e.g., 'Hiring' label in footer nav)
+### Issue Card (Kanban)
+**Role:** Individual issue rows in product UI mockups
 
-Background: #ffffff. Text: rgb(72,85,106) (#48556a), geomanist 400 12px. Border-radius: 24px. Padding: 4px 10px. White pill on dark background — maximum contrast for status signaling.
+Background #161718 Obsidian, 1px border in #23252a Graphite, border-radius 6px, padding 12px 16px. Issue ID in Berkeley Mono (ENG-2703), title in Inter 14px weight 510, status pill in lower right. Tight, instrument-panel density.
 
-### Workflow Node
-**Role:** Canvas node objects in workflow diagram illustrations
+### Status Pill Badge
+**Role:** In Progress / Backlog / Done indicators
 
-Background: #1a1624 or app-brand color. Border-radius: 12px. Connected by lines using Electric Current gradient (linear-gradient(141deg, #077ac7, #6b21ef)). Icons centered with 40–48px container. Appear in product screenshot sections.
+Inline label, no border, 2px border-radius, 11-12px Inter weight 510, paired with a 6px colored dot (#eb5757 Crimson for In Progress, #62666d for Backlog, #27a644 for Done). Padding 2px 8px. Text color matches dot color family at reduced opacity or uses #d0d6e0 Mist.
 
-### Nav Bar
-**Role:** Sticky top navigation
+### Input Field
+**Role:** Form inputs, search, AI prompt fields
 
-Background: #0e0918 (same as page, full-bleed). Border-bottom: 1px solid #3e3a46. Height: 66px. Left: n8n logo with chain-link icon. Center: nav links in geomanist 400 14px, color #d1cece. Right: GitHub star count (pill, frosted glass), 'Sign in' ghost, 'Get Started' Ember gradient button at 8px radius.
+Background #383b3f Steel, border-radius 6px, no visible border at rest, 1px inset shadow rgba(0,0,0,0.2). Text in #f7f8f8, placeholder in #62666d Slate. Padding 8px 12px. Focus state: subtle inner ring in #5e6ad2 Indigo.
 
-### Social Proof Row
-**Role:** Logo bar showing enterprise customers
+### Top Navigation Bar
+**Role:** Sticky header across all pages
 
-Background: transparent, sits within dark section. Logos rendered in #d1cece (muted ash) — desaturated to prevent brand color competition. No card wrapper, pure horizontal flex layout with 32–48px columnGap.
+Background #0f1011 Charcoal, height ~56px, full-width, no visible bottom border (or 1px in #23252a if at edge). Logo left (Linear mark + wordmark in #f7f8f8), nav links center, auth actions right. Padding 0 24px.
 
-### Footer Mega-Nav
-**Role:** Site-wide footer with multi-column link grid
+### Avatar/Profile Indicator
+**Role:** User presence dots and profile chips in product UI
 
-Background: radial-gradient warm ember glow (rgba(175,106,140,0.46) → rgba(98,65,83,0.38) → transparent) overlaid on #0e0918. Column headers in geomanist 400 14px #ffffff. Links in geomanist 300 14px #9d9797. 5-column grid. Top section has logo + tagline + social icons in #d1cece at 24px size.
+6-8px circular dot, filled with #02b8cc Cyan or #27a644 Emerald for status. Profile chips are 24px circles with 2px border in #23252a, text label 12px in #d0d6e0. Always paired with Berkeley Mono for IDs.
 
 ## Do's and Don'ts
 
 ### Do
-- Use #0e0918 as the only page background — never substitute with pure #000000 or neutral dark gray; the violet undertone is load-bearing for the palette
-- Apply the Ember gradient (linear-gradient(30deg, rgb(253,137,37), rgb(255,12,0))) exclusively to primary CTA buttons — using it for decorative elements dilutes its focal pull
-- Set geomanist 300 at line-height 0.88 for 48–54px display headlines with letter-spacing -0.018em to -0.020em; the tight stack is intentional
-- Use inset box-shadows (rgba(255,255,255,0.1) 1px inset + rgba(255,142,93,0.3) bottom inset) instead of border properties on transparent-background cards
-- Maintain card surfaces at rgb(26,22,36) or rgb(27,23,40) — exactly one visible step above the base void; three distinct surface levels exist: page → card → elevated panel
-- Use 8px border-radius for buttons and inputs, 16px for standard cards, 24px for large feature panels — apply the correct tier per component scale
-- Apply Electric Current gradient (linear-gradient(141deg, #077ac7, #6b21ef)) only for link underlines, focus rings, and canvas connection lines — it signals interactivity and data flow
+- Use the dark raised button treatment for primary actions; reserve #e4f222 Acid Lime for rare status emphasis only
+- Apply Inter Variable weight 510 for UI emphasis and weight 400 for body — the 510/400 split is the system's voice
+- Set tracking to -0.0220em at 72px, scaling proportionally down: the tighter the size, the less the negative tracking
+- Use #5e6ad2 Indigo for icon accents, link emphasis, and brand surface washes — not for buttons or large fills
+- Layer card depth with inset 1px border in #23252a plus rgba(0,0,0,0.4) drop shadow — never rely on fill alone for elevation
+- Reach for Berkeley Mono for all IDs, code references, and keyboard shortcuts — it signals technical context instantly
+- Keep vertical rhythm at 80-120px between major sections; use 8-12px gaps for intra-component spacing
 
 ### Don't
-- Never use a warm or neutral dark gray (#1a1a1a, #222, #333) as a surface — all surfaces must carry the violet undertone that differentiates n8n's dark from generic dark mode
-- Never use geomanist 700 or 800 weight — the type system is intentionally limited to 300 and 400; heavy weight breaks the restrained visual register
-- Never place body text in #ffffff at normal reading sizes — use #d1cece or #e5e7eb; pure white at 15–16px creates harshness against the violet-black background
-- Never use drop-shadows (outset box-shadows) for card elevation — elevation is expressed through background color stepping, not shadow lifting
-- Never use the Ember gradient as a background fill for sections or banners — it appears only on interactive CTA buttons
-- Never apply 9999px radius to cards or section containers — pill radius (9999px) is reserved for tags, status indicators, and circular icon wrappers only
-- Never show partner/customer logos in their brand colors — all logos in the social proof row must be monochrome #d1cece to avoid palette pollution
+- Never use #e4f222 Lime as a filled button color in this project — it is too loud for the local operations UI
+- Don't introduce new accent colors — the palette is Lime + Indigo + semantic (Emerald/Crimson/Cyan), nothing else
+- Don't use weight 700+ in Inter Variable — the system caps at 590, and weight 300 exists for display restraint
+- Don't add gradients to UI surfaces — the only gradient is the black-to-mist banner on scroll fade, and it appears once
+- Don't use bright fills on cards — product cards stay in the #161718/#0f1011 range with border-defined edges
+- Don't use system fonts as a substitute for Inter — the cv01 and ss03 features are part of the identity, not optional polish
+- Don't lighten the canvas — #08090a is near-black but not #000000; the slight warmth keeps it from feeling harsh
 
 ## Surfaces
 
 | Level | Name | Value | Purpose |
 |-------|------|-------|---------|
-| 0 | Void Base | `#0e0918` | Page background, hero, full-bleed sections |
-| 1 | Elevated Surface | `#1a1624` | Primary card backgrounds in features grid |
-| 2 | Deep Panel | `#1b1728` | Large feature panels and workflow canvas backdrops |
-| 3 | Muted Shell | `#2c2834` | Ghost buttons and tertiary interactive surfaces |
+| 0 | Canvas | `#08090a` | Page background, hero sections, the void that everything floats on |
+| 1 | Nav | `#0f1011` | Top navigation bar, sticky header surface |
+| 2 | Card | `#161718` | Product UI card backgrounds, elevated content blocks |
+| 3 | Input | `#383b3f` | Form input fields, search bars, slightly lifted interactive surfaces |
 
 ## Elevation
 
-n8n uses color-stepping instead of drop shadows for elevation. Moving from #0e0918 → #1a1624 → #1b1728 creates three panel depths visible only through background color — no outset shadow appears on any card. The single exception is the frosted ghost button which uses rgba(0,0,0,0.26) 0px 0px 8px as a halo, not an elevation lift. Cards that need 'active' or 'highlighted' states use inset white and orange glow shadows (rgba(255,255,255,0.1) + rgba(255,142,93,0.3)) — light emanates from within the surface, not beneath it.
+- **Product cards:** `0px 2px 4px 0px rgba(0, 0, 0, 0.4)`
+- **Product cards (inset border):** `inset 0px 0px 0px 1px rgb(35, 37, 42)`
+- **Inputs and field outlines:** `0px 0px 0px 1px rgba(0, 0, 0, 0.2)`
+- **Buttons and nav (depth stack):** `0px 5px 2px 0px rgba(0, 0, 0, 0.01), 0px 3px 2px 0px rgba(0, 0, 0, 0.04), 0px 1px 1px 0px rgba(0, 0, 0, 0.07), 0px 0px 1px 0px rgba(0, 0, 0, 0.08)`
+- **Floating overlays and menus:** `0px 4px 32px 0px rgba(8, 9, 10, 0.6)`
 
 ## Imagery
 
-Primary visual is a single hero 3D illustration — a glowing orange-red lightning bolt rendered with volumetric light, glass-like facets, and bloom glow, positioned right-bleed over the dark background. This is product-metaphor imagery, not photography. The bolt bleeds off the right edge with no containment, which creates asymmetric tension with the left-aligned headline block. Workflow canvas screenshots appear in product sections as contained flat UI captures with 24px border-radius clipping — the product IS the imagery. Section backgrounds use subtle radial gradients (warm ember at corners, faint blue halos) that function as atmospheric depth rather than visible graphics. No photography, no lifestyle imagery. Icons in workflow nodes are multi-color brand icons (Slack, Jira, etc.) appearing at 32–48px within 12px-radius containers — the only colorful elements outside the CTA and hero illustration. Overall density is image-light with one hero hero and one product-screenshot per section.
+Imagery is entirely product-screenshot-driven: full-bleed UI mockups of the Linear app rendered in the same dark palette as the marketing site, creating a seamless visual loop where the product IS the hero. Customer logos appear as monochrome wordmarks in a single trust band. No lifestyle photography, no abstract 3D renders, no illustration. The only non-product visual is the small Indigo status dot in the announcement banner. Product screenshots have 12px radius, 1px inset border, and a soft 4px drop shadow — they read as physical devices sitting on the dark canvas rather than flat graphics.
 
 ## Layout
 
-Full-bleed dark canvas with max-width ~1200px content columns centered horizontally. Hero is left-aligned headline + CTA column with a right-bleed 3D illustration occupying 50% viewport width — the illustration breaks the content boundary intentionally. Below hero: a social proof logo bar flush to section bottom. Feature sections use large 24px-radius dark panels (full content width) containing split layouts: text column left, product screenshot right. A 'use case' section uses a left sidebar of vertical tab pills next to a right-fill product canvas — asymmetric 30/70 split. Stats/proof section: 3-column equal card grid using Glowing Inset Cards. Integration section: centered headline over a dense icon grid. Vertical section rhythm uses ~80–120px gaps with no divider lines — sections are distinguished by surface color changes (void → panel → void alternation). Footer is full-bleed with ember radial glow in the upper-right corner, 5-column link grid below a logo/tagline row.
-
-## Gradient System
-
-Two primary gradients drive the entire chromatic identity:
-
-1. EMBER (CTAs): linear-gradient(30deg, rgb(253,137,37), rgb(255,12,0)) — orange-to-red at shallow angle. Applied ONLY to the 'Get Started' primary button. Creates fire-colored focal anchor against the void.
-
-2. ELECTRIC CURRENT (connectivity): linear-gradient(141deg, rgb(7,122,199), rgb(107,33,239)) — blue-to-violet at steep diagonal. Applied to link hover underlines, active focus rings, and workflow canvas edge connections. Signals data flow and active state.
-
-3. ATMOSPHERIC EMBER (backgrounds): radial-gradient(126.99% 234.27% at 10.15% 142.35%, rgba(217,126,75,0.133) 0%, rgba(255,255,255,0) 37%) — very-low-opacity warm glow used as section atmosphere. Opacity 13% makes it subliminal, not visible at a glance.
-
-4. FOOTER ROSE (footer header): radial-gradient(circle farthest-side at 100% -80%, rgba(175,106,140,0.46), rgba(98,65,83,0.38) 39%, rgba(0,0,0,0) 55%) — muted rose/wine glow behind footer top edge. References the orange brand hue through a cooled, desaturated variant.
+Full-bleed dark canvas at #08090a with max-width 1200px content containers centered. Hero is a two-block vertical stack: large 64-72px headline (weight 300) over single-line subtext, with a compact announcement banner below, followed by a full-width product screenshot card that bleeds close to the container edges. The page alternates between text-left/product-right and product-left/text-right split sections with 80-120px vertical gaps. A customer logo strip sits as a quiet horizontal band between hero and first feature section — no container, just floating logos. The navigation is a single 56px sticky top bar. The overall density is compact and instrument-panel: the page does not breathe with excessive whitespace, it moves through sections with purposeful vertical rhythm.
 
 ## Agent Prompt Guide
 
-QUICK COLOR REFERENCE:
-- Page background: #0e0918
-- Primary text: #d1cece
-- Headline text: #ffffff
-- Card surface: #1a1624
-- CTA button: linear-gradient(30deg, rgb(253,137,37), rgb(255,12,0))
-- Border / divider: #3e3a46
-- Secondary text: #9d9797
-- Active / accent: linear-gradient(141deg, #077ac7, #6b21ef)
+Quick Color Reference:
+- text: #f7f8f8 (primary), #8a8f98 (secondary), #62666d (muted)
+- background: #08090a (canvas), #0f1011 (nav/card), #161718 (deep card)
+- border: #23252a (hairline), #383b3f (input)
+- accent: #5e6ad2 (indigo icon/link)
+- primary action: #e4f222 (filled action)
 
-EXAMPLE COMPONENT PROMPTS:
+Example Component Prompts:
 
-1. HERO SECTION: Dark full-bleed background #0e0918. Left column (50%): headline 54px geomanist weight 300 #ffffff letter-spacing -1.08px line-height 0.88, stacked 2 lines. Below headline: body text 16px geomanist 400 #d1cece line-height 1.5. CTA row: 'Get started' button with linear-gradient(30deg, rgb(253,137,37), rgb(255,12,0)) background, #ffffff text, 8px radius, 12px 24px padding. 'Talk to sales' ghost button: transparent bg, 1px solid #e5e7eb border, #ffffff text, 6px radius, 24px padding. Right side: 3D illustration bleeding off right edge.
+1. Create a Primary Action Button: dark raised background from #242527 to #1b1c1e, #f7f8f8 text, 1px #323334 border, 6px radius, compact padding, subtle inset highlight and 0 2px 4px rgba(0,0,0,0.4) shadow.
 
-2. FEATURE CARD: Background rgb(26,22,36), border-radius 16px, padding 48px 44px. Section label: 12px geomanist 400 #9d9797 uppercase. Card headline: 24px geomanist-book 400 #ffffff letter-spacing -0.17px. Body: 16px geomanist 300 #d1cece line-height 1.5. No box-shadow.
+2. Product Screenshot Card: background #0f1011, border-radius 12px, inset 1px border in #23252a, drop shadow 0 2px 4px rgba(0,0,0,0.4). Internal product rows on #161718 with 1px #23252a borders, 6px radius, 12px 16px padding.
 
-3. GLOWING PROOF CARD: Background transparent. Box-shadow: rgba(255,255,255,0.1) 0px 0px 0px 1px inset, rgba(255,142,93,0.3) 0px 1px 0px 0px inset. Border-radius 24px. Padding 24px 32px. Body text 14px geomanist 400 #d1cece. Bold label in #ffffff.
+3. Top Navigation: full-width bar at 56px height, background #0f1011, padding 0 24px. Logo left (#f7f8f8). Nav links center in #8a8f98 Fog at 14px weight 400, hover to #f7f8f8. Sign up button right: outlined pill with 1px #f7f8f8 border, border-radius 9999px, padding 6px 14px.
 
-4. NAV BAR: Background #0e0918, border-bottom 1px solid #3e3a46, height 66px. Logo left. Center links: geomanist 400 14px #d1cece with chevron for dropdowns. Right: GitHub count pill (frosted glass bg rgba(13,10,25,0.28), border rgba(255,255,255,0.1), 8px radius), 'Sign in' text link #d1cece, 'Get Started' Ember gradient button 8px radius.
+4. Feature Split Section: two-column grid, gap 64px. Left: 48px heading Inter weight 400, #f7f8f8, tracking -0.624px. Right: Product Screenshot Card. Vertical section gap 100px.
 
-5. FOOTER COLUMN: Background #0e0918 with radial rose glow top-right. Column header: geomanist 400 14px #ffffff. Links: geomanist 300 14px #9d9797, line-height 1.7. 5-column grid, 32px column gap. Show more links in #9d9797 with underline on hover.
+5. Status Badge: inline-flex with 6px dot (#eb5757 Crimson or #27a644 Emerald) + label text in #d0d6e0 Mist at 12px Inter weight 510, 2px 8px padding, 2px border-radius.
 
 ## Similar Brands
 
-- **Retool** — Same dark violet-black surface palette with orange accent buttons and workflow canvas product screenshots as primary imagery
-- **Zapier** — Shared automation-platform category but inverted: where n8n uses dark violet + ember, Zapier uses white + orange — both isolate warm CTA against monochrome field
-- **Temporal.io** — Dark dev-tools aesthetic with deep purple-black surfaces, light-weight display type, and electric-gradient accent on interactive elements
-- **Supabase** — Dark background with single electric-green/blue accent isolated on CTA, geomanist-class geometric sans at light weight for headlines
-- **Linear** — Violet-tinted dark surfaces (#0e0918 vs Linear's #0f0f10), weight-300 display headlines, inset border cards without drop shadows
+- **Vercel** — Same near-black canvas, Inter Variable typography, single high-contrast accent color (Vercel's white-on-black geometry vs Linear's acid lime), and product-screenshot-driven hero sections with minimal decoration
+- **Cursor** — Identical dark instrument-panel aesthetic, compact density, code-editor-influenced typography, and the "tool for engineers" voice that uses mono fonts and tight tracking
+- **Raycast** — Dark-mode product UI with one signature accent color, tight 4px spacing grid, and the same approach of using inset borders and subtle shadows rather than fills for card elevation
+- **Arc Browser** — Dark canvas with selective high-saturation accents, generous use of Inter at custom weights, and product-screenshot-as-hero composition
+- **Stripe** — Though lighter, shares the custom-variable-font approach, tight tracking on display sizes, and the discipline of one accent color doing all the heavy lifting
 
 ## Quick Start
 
@@ -255,97 +261,117 @@ EXAMPLE COMPONENT PROMPTS:
 ```css
 :root {
   /* Colors */
-  --color-void-base: #0e0918;
-  --color-elevated-surface: #1a1624;
-  --color-deep-panel: #1b1728;
-  --color-muted-shell: #2c2834;
-  --color-border-smoke: #3e3a46;
-  --color-ash-text: #d1cece;
-  --color-fog-text: #9d9797;
-  --color-silver-rail: #e5e7eb;
-  --color-cloud-white: #ffffff;
-  --color-steel-muted: #48556a;
-  --color-ember-cta: #fd8925;
-  --gradient-ember-cta: linear-gradient(30deg, rgb(253, 137, 37), rgb(255, 12, 0));
-  --color-electric-current: #077ac7;
-  --gradient-electric-current: linear-gradient(141deg, rgb(7, 122, 199), rgb(107, 33, 239));
-  --color-ember-scorch: #ff492c;
-  --color-crimson-glow: #56312d;
+  --color-onyx: #08090a;
+  --color-charcoal: #0f1011;
+  --color-obsidian: #161718;
+  --color-graphite: #23252a;
+  --color-iron: #323334;
+  --color-steel: #383b3f;
+  --color-slate: #62666d;
+  --color-fog: #8a8f98;
+  --color-mist: #d0d6e0;
+  --color-platinum: #e5e5e6;
+  --color-snow: #f7f8f8;
+  --color-acid-lime: #e4f222;
+  --color-indigo: #5e6ad2;
+  --color-emerald: #27a644;
+  --color-crimson: #eb5757;
+  --color-cyan: #02b8cc;
 
   /* Typography — Font Families */
-  --font-geomanist: 'geomanist', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  --font-geomanist-book: 'geomanist-book', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-inter-variable: 'Inter Variable', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-berkeley-mono: 'Berkeley Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 
   /* Typography — Scale */
-  --text-caption: 12px;
-  --leading-caption: 1.5;
-  --text-body-sm: 14px;
-  --leading-body-sm: 1.5;
-  --text-body: 16px;
-  --leading-body: 1.5;
-  --tracking-body: -0.29px;
-  --text-subheading: 18px;
-  --leading-subheading: 1.4;
-  --text-heading-sm: 20px;
-  --leading-heading-sm: 1.25;
-  --text-heading: 24px;
-  --leading-heading: 1.2;
-  --tracking-heading: -0.17px;
+  --text-micro-sm: 12px;
+  --leading-micro-sm: 1.4;
+  --text-caption: 14px;
+  --leading-caption: 1.71;
+  --text-body-lg: 17px;
+  --leading-body-lg: 1.6;
+  --text-subheading: 20px;
+  --leading-subheading: 1.47;
+  --tracking-subheading: -0.2px;
+  --text-heading-sm: 24px;
+  --leading-heading-sm: 1.4;
+  --tracking-heading-sm: -0.264px;
+  --text-heading: 32px;
+  --leading-heading: 1.33;
+  --tracking-heading: -0.384px;
   --text-heading-lg: 48px;
-  --leading-heading-lg: 0.94;
-  --tracking-heading-lg: -0.86px;
-  --text-display: 54px;
-  --leading-display: 0.88;
-  --tracking-display: -1.08px;
+  --leading-heading-lg: 1.2;
+  --tracking-heading-lg: -0.624px;
+  --text-display-sm: 64px;
+  --leading-display-sm: 1.13;
+  --tracking-display-sm: -0.96px;
+  --text-display: 72px;
+  --leading-display: 1;
+  --tracking-display: -1.58px;
 
   /* Typography — Weights */
   --font-weight-light: 300;
   --font-weight-regular: 400;
+  --font-weight-w510: 510;
+  --font-weight-w590: 590;
 
   /* Spacing */
-  --spacing-unit: 8px;
+  --spacing-unit: 4px;
+  --spacing-4: 4px;
   --spacing-8: 8px;
+  --spacing-12: 12px;
   --spacing-16: 16px;
+  --spacing-20: 20px;
   --spacing-24: 24px;
+  --spacing-28: 28px;
   --spacing-32: 32px;
+  --spacing-36: 36px;
   --spacing-40: 40px;
   --spacing-48: 48px;
+  --spacing-56: 56px;
   --spacing-64: 64px;
   --spacing-80: 80px;
+  --spacing-96: 96px;
   --spacing-128: 128px;
 
   /* Layout */
   --page-max-width: 1200px;
   --section-gap: 80-120px;
-  --element-gap: 16-24px;
+  --card-padding: 24-32px;
+  --element-gap: 8-12px;
 
   /* Border Radius */
   --radius-sm: 2px;
-  --radius-lg: 8px;
+  --radius-md: 6px;
   --radius-xl: 12px;
   --radius-2xl: 16px;
-  --radius-3xl: 24px;
-  --radius-full: 9999px;
+  --radius-2xl-2: 22px;
+  --radius-full: 400px;
+  --radius-full-2: 9999px;
 
   /* Named Radii */
-  --radius-cards: 16px;
-  --radius-nodes: 12px;
+  --radius-nav: 6px;
+  --radius-cards: 12px;
   --radius-pills: 9999px;
-  --radius-badges: 24px;
-  --radius-inputs: 8px;
-  --radius-buttons: 8px;
-  --radius-cardslarge: 24px;
+  --radius-badges: 2px;
+  --radius-inputs: 6px;
+  --radius-buttons: 6px;
 
   /* Shadows */
-  --shadow-subtle: rgba(255, 255, 255, 0.2) 0px 1px 1px 0px inset, rgba(8, 8, 8, 0.2) 0px 1px 2px 0px, rgba(8, 8, 8, 0.08) 0px 4px 4px 0px, rgb(7, 122, 199) 0px 7px 0px -12px, rgba(255, 255, 255, 0.12) 0px 6px 12px 0px inset;
-  --shadow-sm: rgba(0, 0, 0, 0.26) 0px 0px 8px 0px;
-  --shadow-subtle-2: rgba(255, 255, 255, 0.1) 0px 0px 0px 1px inset, rgba(255, 142, 93, 0.3) 0px 1px 0px 0px inset;
+  --shadow-sm: rgba(0, 0, 0, 0.4) 0px 2px 4px 0px;
+  --shadow-md: rgba(0, 0, 0, 0.2) 0px 0px 12px 0px inset;
+  --shadow-subtle: rgb(35, 37, 42) 0px 0px 0px 1px inset;
+  --shadow-subtle-2: rgba(0, 0, 0, 0.2) 0px 0px 0px 1px;
+  --shadow-subtle-3: rgba(0, 0, 0, 0.01) 0px 5px 2px 0px, rgba(0, 0, 0, 0.04) 0px 3px 2px 0px, rgba(0, 0, 0, 0.07) 0px 1px 1px 0px, rgba(0, 0, 0, 0.08) 0px 0px 1px 0px;
+  --shadow-xl: rgba(8, 9, 10, 0.6) 0px 4px 32px 0px;
+  --shadow-subtle-4: rgba(0, 0, 0, 0.1) 0px 0px 0px 2px;
+  --shadow-subtle-5: rgba(0, 0, 0, 0.33) 0px 0px 0px 1px;
+  --shadow-subtle-6: rgba(255, 255, 255, 0.03) 0px 0px 0px 1px inset, rgba(255, 255, 255, 0.04) 0px 1px 0px 0px inset, rgba(0, 0, 0, 0.6) 0px 0px 0px 1px, rgba(0, 0, 0, 0.1) 0px 4px 4px 0px;
 
   /* Surfaces */
-  --surface-void-base: #0e0918;
-  --surface-elevated-surface: #1a1624;
-  --surface-deep-panel: #1b1728;
-  --surface-muted-shell: #2c2834;
+  --surface-canvas: #08090a;
+  --surface-nav: #0f1011;
+  --surface-card: #161718;
+  --surface-input: #383b3f;
 }
 ```
 
@@ -354,69 +380,89 @@ EXAMPLE COMPONENT PROMPTS:
 ```css
 @theme {
   /* Colors */
-  --color-void-base: #0e0918;
-  --color-elevated-surface: #1a1624;
-  --color-deep-panel: #1b1728;
-  --color-muted-shell: #2c2834;
-  --color-border-smoke: #3e3a46;
-  --color-ash-text: #d1cece;
-  --color-fog-text: #9d9797;
-  --color-silver-rail: #e5e7eb;
-  --color-cloud-white: #ffffff;
-  --color-steel-muted: #48556a;
-  --color-ember-cta: #fd8925;
-  --color-electric-current: #077ac7;
-  --color-ember-scorch: #ff492c;
-  --color-crimson-glow: #56312d;
+  --color-onyx: #08090a;
+  --color-charcoal: #0f1011;
+  --color-obsidian: #161718;
+  --color-graphite: #23252a;
+  --color-iron: #323334;
+  --color-steel: #383b3f;
+  --color-slate: #62666d;
+  --color-fog: #8a8f98;
+  --color-mist: #d0d6e0;
+  --color-platinum: #e5e5e6;
+  --color-snow: #f7f8f8;
+  --color-acid-lime: #e4f222;
+  --color-indigo: #5e6ad2;
+  --color-emerald: #27a644;
+  --color-crimson: #eb5757;
+  --color-cyan: #02b8cc;
 
   /* Typography */
-  --font-geomanist: 'geomanist', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  --font-geomanist-book: 'geomanist-book', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-inter-variable: 'Inter Variable', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-berkeley-mono: 'Berkeley Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 
   /* Typography — Scale */
-  --text-caption: 12px;
-  --leading-caption: 1.5;
-  --text-body-sm: 14px;
-  --leading-body-sm: 1.5;
-  --text-body: 16px;
-  --leading-body: 1.5;
-  --tracking-body: -0.29px;
-  --text-subheading: 18px;
-  --leading-subheading: 1.4;
-  --text-heading-sm: 20px;
-  --leading-heading-sm: 1.25;
-  --text-heading: 24px;
-  --leading-heading: 1.2;
-  --tracking-heading: -0.17px;
+  --text-micro-sm: 12px;
+  --leading-micro-sm: 1.4;
+  --text-caption: 14px;
+  --leading-caption: 1.71;
+  --text-body-lg: 17px;
+  --leading-body-lg: 1.6;
+  --text-subheading: 20px;
+  --leading-subheading: 1.47;
+  --tracking-subheading: -0.2px;
+  --text-heading-sm: 24px;
+  --leading-heading-sm: 1.4;
+  --tracking-heading-sm: -0.264px;
+  --text-heading: 32px;
+  --leading-heading: 1.33;
+  --tracking-heading: -0.384px;
   --text-heading-lg: 48px;
-  --leading-heading-lg: 0.94;
-  --tracking-heading-lg: -0.86px;
-  --text-display: 54px;
-  --leading-display: 0.88;
-  --tracking-display: -1.08px;
+  --leading-heading-lg: 1.2;
+  --tracking-heading-lg: -0.624px;
+  --text-display-sm: 64px;
+  --leading-display-sm: 1.13;
+  --tracking-display-sm: -0.96px;
+  --text-display: 72px;
+  --leading-display: 1;
+  --tracking-display: -1.58px;
 
   /* Spacing */
+  --spacing-4: 4px;
   --spacing-8: 8px;
+  --spacing-12: 12px;
   --spacing-16: 16px;
+  --spacing-20: 20px;
   --spacing-24: 24px;
+  --spacing-28: 28px;
   --spacing-32: 32px;
+  --spacing-36: 36px;
   --spacing-40: 40px;
   --spacing-48: 48px;
+  --spacing-56: 56px;
   --spacing-64: 64px;
   --spacing-80: 80px;
+  --spacing-96: 96px;
   --spacing-128: 128px;
 
   /* Border Radius */
   --radius-sm: 2px;
-  --radius-lg: 8px;
+  --radius-md: 6px;
   --radius-xl: 12px;
   --radius-2xl: 16px;
-  --radius-3xl: 24px;
-  --radius-full: 9999px;
+  --radius-2xl-2: 22px;
+  --radius-full: 400px;
+  --radius-full-2: 9999px;
 
   /* Shadows */
-  --shadow-subtle: rgba(255, 255, 255, 0.2) 0px 1px 1px 0px inset, rgba(8, 8, 8, 0.2) 0px 1px 2px 0px, rgba(8, 8, 8, 0.08) 0px 4px 4px 0px, rgb(7, 122, 199) 0px 7px 0px -12px, rgba(255, 255, 255, 0.12) 0px 6px 12px 0px inset;
-  --shadow-sm: rgba(0, 0, 0, 0.26) 0px 0px 8px 0px;
-  --shadow-subtle-2: rgba(255, 255, 255, 0.1) 0px 0px 0px 1px inset, rgba(255, 142, 93, 0.3) 0px 1px 0px 0px inset;
+  --shadow-sm: rgba(0, 0, 0, 0.4) 0px 2px 4px 0px;
+  --shadow-md: rgba(0, 0, 0, 0.2) 0px 0px 12px 0px inset;
+  --shadow-subtle: rgb(35, 37, 42) 0px 0px 0px 1px inset;
+  --shadow-subtle-2: rgba(0, 0, 0, 0.2) 0px 0px 0px 1px;
+  --shadow-subtle-3: rgba(0, 0, 0, 0.01) 0px 5px 2px 0px, rgba(0, 0, 0, 0.04) 0px 3px 2px 0px, rgba(0, 0, 0, 0.07) 0px 1px 1px 0px, rgba(0, 0, 0, 0.08) 0px 0px 1px 0px;
+  --shadow-xl: rgba(8, 9, 10, 0.6) 0px 4px 32px 0px;
+  --shadow-subtle-4: rgba(0, 0, 0, 0.1) 0px 0px 0px 2px;
+  --shadow-subtle-5: rgba(0, 0, 0, 0.33) 0px 0px 0px 1px;
+  --shadow-subtle-6: rgba(255, 255, 255, 0.03) 0px 0px 0px 1px inset, rgba(255, 255, 255, 0.04) 0px 1px 0px 0px inset, rgba(0, 0, 0, 0.6) 0px 0px 0px 1px, rgba(0, 0, 0, 0.1) 0px 4px 4px 0px;
 }
 ```
