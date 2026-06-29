@@ -3,10 +3,11 @@ import { createApiClient, type AnalysisResult, type QualityPreset, type SystemCh
 import { readAdminToken, saveAdminToken } from "../auth";
 import { ErrorAlert } from "../components/ErrorAlert";
 import { SystemStatusBanner } from "../components/SystemStatusBanner";
-import { TokenGate } from "../components/TokenGate";
+import { TokenDialog, TokenGate } from "../components/TokenGate";
 import { UrlSubmitForm } from "../components/UrlSubmitForm";
 import { VideoMetadataCard } from "../components/VideoMetadataCard";
 import { useHomeMotion } from "../useHomeMotion";
+import { useMediaQuery } from "../useMediaQuery";
 import { JobPage } from "./JobPage";
 import { messageForError } from "./messages";
 
@@ -27,6 +28,9 @@ export function HomePage({ activeJobId, onClearActiveJob, onNavigateToJob }: Hom
   const [jobError, setJobError] = useState<string | null>(null);
   const [creatingJob, setCreatingJob] = useState(false);
   const api = useMemo(() => createApiClient(() => token), [token]);
+  // On phones, token management collapses into a masthead gear + dialog so the
+  // analyze → download flow stays at the top with no large scrolling.
+  const isMobile = useMediaQuery("(max-width: 620px)");
   useHomeMotion(rootRef);
 
   useEffect(() => {
@@ -106,6 +110,7 @@ export function HomePage({ activeJobId, onClearActiveJob, onNavigateToJob }: Hom
               <span>影片下載器</span>
             </h1>
           </div>
+          {isMobile ? <TokenDialog token={token} onSave={handleSaveToken} /> : null}
           <div className="workflow-stage" aria-hidden="true">
             <div className="masthead-status">
               <span>私人工具</span>
@@ -124,7 +129,7 @@ export function HomePage({ activeJobId, onClearActiveJob, onNavigateToJob }: Hom
 
         <div className="workflow-grid">
           <aside className="sidebar-stack" aria-label="系統狀態">
-            <TokenGate token={token} onSave={handleSaveToken} />
+            {!isMobile ? <TokenGate token={token} onSave={handleSaveToken} /> : null}
             <SystemStatusBanner status={systemStatus} loading={systemLoading} hasToken={Boolean(token)} />
           </aside>
 

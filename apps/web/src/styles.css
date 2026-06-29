@@ -877,6 +877,139 @@ h2 {
   color: var(--ash-text);
 }
 
+/* Mobile token management: gear trigger lives in the masthead top-right, opens a centered dialog. */
+.token-settings {
+  position: absolute;
+  z-index: 3;
+  top: 0;
+  right: 0;
+}
+
+.token-trigger {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border: 1px solid rgb(255 255 255 / 0.1);
+  border-radius: 12px;
+  color: var(--ash-text);
+  background: rgb(15 16 17 / 0.94);
+  box-shadow:
+    rgb(35 37 42) 0 0 0 1px inset,
+    rgb(0 0 0 / 0.4) 0 2px 4px 0;
+  transition:
+    color 180ms ease,
+    border-color 180ms ease,
+    transform 180ms ease;
+}
+
+.token-trigger:hover {
+  color: var(--cloud-white);
+  border-color: rgb(94 106 210 / 0.6);
+}
+
+.token-trigger:active {
+  transform: translateY(1px);
+}
+
+/* Status dot signals whether a token is set without opening the dialog. */
+.token-dot {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  box-shadow: 0 0 0 2px rgb(15 16 17 / 0.94);
+}
+
+.token-dot.set {
+  background: var(--success);
+}
+
+.token-dot.unset {
+  background: var(--warning);
+}
+
+.token-dialog {
+  width: min(420px, calc(100vw - 32px));
+  margin: auto;
+  border: none;
+  border-radius: 14px;
+  padding: var(--space-5);
+  color: var(--ash-text);
+  background:
+    linear-gradient(180deg, rgb(255 255 255 / 0.026), rgb(255 255 255 / 0)),
+    var(--elevated-surface);
+  box-shadow:
+    rgb(35 37 42) 0 0 0 1px inset,
+    rgb(0 0 0 / 0.6) 0 18px 50px 0;
+}
+
+.token-dialog::backdrop {
+  background: rgb(8 9 10 / 0.66);
+}
+
+.dialog-dismiss {
+  justify-self: stretch;
+  min-height: 44px;
+  border: 1px solid var(--border-smoke);
+  border-radius: var(--radius-sm);
+  padding: 11px 16px;
+  color: var(--fog-text);
+  background: transparent;
+  font-weight: 400;
+  transition:
+    color 180ms ease,
+    border-color 180ms ease;
+}
+
+.dialog-dismiss:hover {
+  color: var(--cloud-white);
+  border-color: var(--muted-shell);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .token-dialog,
+  .token-dialog::backdrop {
+    transition:
+      opacity 180ms ease,
+      transform 200ms cubic-bezier(0.16, 1, 0.3, 1),
+      overlay 200ms allow-discrete,
+      display 200ms allow-discrete;
+  }
+
+  .token-dialog {
+    opacity: 0;
+    transform: translateY(10px) scale(0.98);
+  }
+
+  .token-dialog[open] {
+    opacity: 1;
+    transform: none;
+  }
+
+  .token-dialog::backdrop {
+    opacity: 0;
+  }
+
+  .token-dialog[open]::backdrop {
+    opacity: 1;
+  }
+
+  @starting-style {
+    .token-dialog[open] {
+      opacity: 0;
+      transform: translateY(10px) scale(0.98);
+    }
+
+    .token-dialog[open]::backdrop {
+      opacity: 0;
+    }
+  }
+}
+
 @media (prefers-reduced-motion: no-preference) {
   .flow-line-primary {
     animation: current-pulse 3.4s ease-in-out infinite;
@@ -925,6 +1058,11 @@ h2 {
   .workflow-grid {
     grid-template-columns: 1fr;
     margin-top: 0;
+  }
+
+  /* Single-column flow is always analyze form → result/download → system status. */
+  .primary-stack {
+    order: -1;
   }
 
   .sidebar-stack {
