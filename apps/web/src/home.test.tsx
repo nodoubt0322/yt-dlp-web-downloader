@@ -81,6 +81,16 @@ describe("home downloader flow", () => {
     );
   });
 
+  it("prompts to set the token instead of calling analyze when no token is configured", async () => {
+    render(<App />);
+
+    await userEvent.type(screen.getByLabelText("影片 URL"), "https://example.com/watch?v=demo");
+    await userEvent.click(screen.getByRole("button", { name: "分析" }));
+
+    expect(await screen.findByText("請先設定管理 Token，才能分析影片。")).toBeInTheDocument();
+    expect(fetchMock).not.toHaveBeenCalledWith("/api/analyze", expect.anything());
+  });
+
   it("shows client-side URL validation and the required safety copy", async () => {
     render(<App />);
 

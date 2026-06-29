@@ -1060,8 +1060,10 @@ h2 {
     margin-top: 0;
   }
 
-  /* Single-column flow is always analyze form → result/download → system status. */
-  .primary-stack {
+  /* Single-column flow is always analyze form → result/download → system status.
+     Scope to the direct grid child: an embedded JobPage also uses .primary-stack,
+     and an unscoped rule would reorder that nested stack above the analyze form. */
+  .workflow-grid > .primary-stack {
     order: -1;
   }
 
@@ -1114,7 +1116,6 @@ h2 {
   }
 
   .primary-stack {
-    order: -1;
     gap: var(--space-3);
   }
 

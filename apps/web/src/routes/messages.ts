@@ -22,6 +22,8 @@ function readCode(error: unknown) {
 
 function messageForCode(code: string, context: ErrorContext) {
   switch (code) {
+    case "UNAUTHORIZED":
+      return "管理 Token 未設定或無效，請確認後再試。";
     case "UNSAFE_URL":
     case "UNSUPPORTED_URL":
       return "不支援或不允許使用這個網址。";

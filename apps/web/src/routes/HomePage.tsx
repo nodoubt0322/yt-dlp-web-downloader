@@ -69,6 +69,14 @@ export function HomePage({ activeJobId, onClearActiveJob, onNavigateToJob }: Hom
   }
 
   async function handleAnalyze(url: string) {
+    // Surface the missing token up front; otherwise a 401 reads like a server fault.
+    if (!token) {
+      setAnalysis(null);
+      setJobError(null);
+      setAnalysisError("請先設定管理 Token，才能分析影片。");
+      return;
+    }
+
     setAnalysisLoading(true);
     setAnalysisError(null);
     setJobError(null);
