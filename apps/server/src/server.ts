@@ -1,9 +1,9 @@
+import { timingSafeEqual } from "node:crypto";
 import Fastify from "fastify";
 import cors from "@fastify/cors";
 import fastifyStatic from "@fastify/static";
 import type { AppConfig } from "./config.js";
 import { mergeConfig } from "./config.js";
-import { registerAuthPlugin } from "./plugins/auth.js";
 import { registerRateLimitPlugin } from "./plugins/rateLimit.js";
 import { registerAnalyzeRoutes } from "./routes/analyze.js";
 import { registerDownloadRoutes } from "./routes/download.js";
@@ -16,6 +16,19 @@ import { createJobStore, type JobStore } from "./services/jobStore.js";
 import { createStorageService } from "./services/storageService.js";
 import { createSystemService, type SystemService } from "./services/systemService.js";
 import type { DnsResolver } from "./services/urlSafety.js";
+
+// Constant-time compare so a wrong admin token can't be inferred from response timing.
+function hasValidBearerToken(header: string | undefined, token: string): boolean {
+  if (!header) {
+    return false;
+  }
+
+  const expected = Buffer.from(`Bearer ${token}`);
+  const actual = Buffer.from(header);
+
+  // timingSafeEqual requires equal-length buffers; the header length itself is not secret.
+  return actual.length === expected.length && timingSafeEqual(actual, expected);
+}
 
 interface BuildServerOptions {
   config?: Partial<AppConfig>;
@@ -66,7 +79,7 @@ export async function buildServer(options: BuildServerOptions = {}) {
       request.method !== "OPTIONS" &&
       request.url.startsWith("/api/") &&
       !request.url.startsWith("/api/download/") &&
-      request.headers.authorization !== `Bearer ${config.adminToken}`
+      !hasValidBearerToken(request.headers.authorization, config.adminToken)
     ) {
       return reply.code(401).send({
         error: {
@@ -96,7 +109,6 @@ export async function buildServer(options: BuildServerOptions = {}) {
   );
   await app.register(
     async (api) => {
-      await registerAuthPlugin(api, config);
       await registerRateLimitPlugin(api, config);
       await registerAnalyzeRoutes(api, {
         config,
