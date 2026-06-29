@@ -1,8 +1,8 @@
 # yt-dlp Web Downloader
 
-本專案是一個「本機單一擁有者」使用的影片連結下載器。使用者在 Web UI 貼上影片 URL，後端先用 `yt-dlp` 讀取 metadata，確認後建立非同步下載任務；下載完成後再用 `ffmpeg` 做保守壓縮，最後用短效 signed URL 提供檔案下載。
+這是一個供「本機單一擁有者」使用的影片下載器。使用者在 Web UI 貼上影片 URL，後端先用 `yt-dlp` 讀取 metadata，確認後建立非同步下載任務；下載完成後再用 `ffmpeg` 做保守壓縮，最後用短效 signed URL 提供檔案下載。
 
-核心目標是：用瀏覽器操作，但把真正的下載、轉檔、檔案保存與安全檢查都放在本機後端處理。這不是匿名公開下載服務，也不是多使用者 SaaS。
+核心理念是：操作在瀏覽器，但真正的下載、轉檔、保存與安全檢查都在本機後端完成。這不是匿名公開下載服務，也不是多使用者 SaaS。
 
 ## 功能概要
 
@@ -190,7 +190,7 @@ yt-dlp --dump-json --no-playlist --playlist-items 1 --no-warnings -- <url>
   - container extension
   - 品質估算資料
 
-前端目前不顯示來源、格式與品質估算檔案大小，避免讓 metadata 佔據主要操作區，也避免讓使用者誤解估算值等於最後產出的大小。最後檔案大小以實際下載與壓縮後的結果為準。
+前端目前不顯示來源、格式與品質估算檔案大小，以免 metadata 佔據主要操作區，也避免使用者把估算值誤認為最終產出大小。最終大小一律以實際下載並壓縮後的結果為準。
 
 ### 3. 畫質選擇
 
@@ -359,7 +359,7 @@ Download token:
   token expiresAt 預設與 job 檔案 TTL 對齊
 ```
 
-預設檔案 TTL 是 3 分鐘，原因是這個工具設計為本機短暫中轉，不是長期媒體庫。
+預設檔案 TTL 為 3 分鐘；這個工具定位為本機短暫中轉，不是長期媒體庫。
 
 ## 系統需求
 
@@ -413,7 +413,7 @@ pnpm dev
 http://127.0.0.1:5173
 ```
 
-`pnpm dev` 會自動讀取根目錄 `.env`，因此 `ADMIN_TOKEN` 寫在 `.env` 後，不需要在 shell 前綴 `ADMIN_TOKEN=...`。使用受保護 API 操作前，先在 UI token 欄位輸入 `.env` 裡的 token。
+`pnpm dev` 會自動讀取根目錄 `.env`，因此 `ADMIN_TOKEN` 寫在 `.env` 後，不需要在 shell 前綴 `ADMIN_TOKEN=...`。操作受保護 API 前，先在 UI token 欄位輸入 `.env` 裡的 token。
 
 `pnpm dev` 會同時啟動：
 
