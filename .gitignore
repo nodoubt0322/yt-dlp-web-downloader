@@ -48,3 +48,7 @@ Thumbs.db
 .vscode/
 *.swp
 *.swo
+
+# Local agent tooling (Claude Code skills) — not part of the project
+.claude/
+.agents/
