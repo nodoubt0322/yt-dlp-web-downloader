@@ -43,7 +43,7 @@ export function SystemStatusBanner({ status, loading, hasToken }: SystemStatusBa
   );
 }
 
-function collectProblems(status: SystemCheck) {
+export function collectProblems(status: SystemCheck) {
   const problems: string[] = [];
   if (!status.ytDlp.ok) {
     problems.push("影片分析服務目前不可用。");

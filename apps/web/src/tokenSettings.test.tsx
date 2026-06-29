@@ -61,6 +61,17 @@ describe("mobile token settings", () => {
     expect(dialog.open).toBe(false);
     expect(screen.getByRole("button", { name: "管理 Token，已設定" })).toBeInTheDocument();
   });
+
+  it("shows readiness as a compact masthead pill instead of the full panel when the system is healthy", async () => {
+    sessionStorage.setItem("yt-dlp-admin-token", "admin-token");
+
+    render(<App />);
+
+    expect(await screen.findByText("可用")).toBeInTheDocument();
+    expect(screen.getByText("狀態")).toBeInTheDocument();
+    // The full readiness panel is removed on phones while the system is healthy.
+    expect(screen.queryByRole("heading", { name: "系統狀態" })).not.toBeInTheDocument();
+  });
 });
 
 function systemOk() {

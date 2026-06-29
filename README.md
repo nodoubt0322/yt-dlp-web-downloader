@@ -80,6 +80,8 @@ Fastify API server
   - 顯示 metadata。
   - 建立下載任務。
   - 在首頁嵌入 job 狀態。
+  - 未設定 token 時按「分析」會先提示設定 token，不送出請求，避免 401 被誤認為伺服器錯誤。
+  - 手機版單欄順序固定為「分析表單 → 結果／下載 → 系統狀態」。
 - `apps/web/src/routes/JobPage.tsx`
   - 讀取單一 job。
   - 每 2 秒 polling，直到 job 進入 terminal status。
@@ -93,6 +95,14 @@ Fastify API server
   - 顯示標題、URL、縮圖、長度與品質選單。
   - 長度以「X分Y秒」顯示，秒數四捨五入。
   - 品質選單只顯示 `原始畫質`、`1080p`、`720p`、`480p`，不顯示估算檔案大小。
+- `apps/web/src/components/TokenGate.tsx`
+  - 桌機在側欄以面板管理 token。
+  - 手機版收進 masthead 右上角齒輪，點擊以置中 `<dialog>` 彈出管理，齒輪上的小圓點標示是否已設定。
+- `apps/web/src/components/SystemStatusBanner.tsx` 與 `apps/web/src/components/SystemStatusPill.tsx`
+  - 桌機顯示完整系統狀態面板。
+  - 手機版改以齒輪左側的精簡狀態藥丸（`狀態 可用` 等）顯示；僅在系統有問題時才保留完整問題明細面板，避免隱藏失敗。
+- `apps/web/src/useMediaQuery.ts`
+  - 提供手機／桌機結構互斥切換（如 token 面板與 dialog），避免兩者同時存在於 DOM。
 - `apps/web/src/useHomeMotion.ts`
   - 使用 GSAP / anime.js 做首頁入場與細節動效。
 

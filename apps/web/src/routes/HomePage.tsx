@@ -2,7 +2,8 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { createApiClient, type AnalysisResult, type QualityPreset, type SystemCheck } from "../apiClient";
 import { readAdminToken, saveAdminToken } from "../auth";
 import { ErrorAlert } from "../components/ErrorAlert";
-import { SystemStatusBanner } from "../components/SystemStatusBanner";
+import { SystemStatusBanner, collectProblems } from "../components/SystemStatusBanner";
+import { SystemStatusPill } from "../components/SystemStatusPill";
 import { TokenDialog, TokenGate } from "../components/TokenGate";
 import { UrlSubmitForm } from "../components/UrlSubmitForm";
 import { VideoMetadataCard } from "../components/VideoMetadataCard";
@@ -31,6 +32,10 @@ export function HomePage({ activeJobId, onClearActiveJob, onNavigateToJob }: Hom
   // On phones, token management collapses into a masthead gear + dialog so the
   // analyze → download flow stays at the top with no large scrolling.
   const isMobile = useMediaQuery("(max-width: 620px)");
+  // On phones the readiness panel collapses into a masthead pill; only real
+  // problems still warrant the full panel so failures stay visible.
+  const hasSystemProblems = systemStatus ? collectProblems(systemStatus).length > 0 : false;
+  const showStatusBanner = !isMobile || hasSystemProblems;
   useHomeMotion(rootRef);
 
   useEffect(() => {
@@ -118,7 +123,12 @@ export function HomePage({ activeJobId, onClearActiveJob, onNavigateToJob }: Hom
               <span>影片下載器</span>
             </h1>
           </div>
-          {isMobile ? <TokenDialog token={token} onSave={handleSaveToken} /> : null}
+          {isMobile ? (
+            <div className="masthead-tools">
+              <SystemStatusPill status={systemStatus} loading={systemLoading} hasToken={Boolean(token)} />
+              <TokenDialog token={token} onSave={handleSaveToken} />
+            </div>
+          ) : null}
           <div className="workflow-stage" aria-hidden="true">
             <div className="masthead-status">
               <span>私人工具</span>
@@ -138,7 +148,9 @@ export function HomePage({ activeJobId, onClearActiveJob, onNavigateToJob }: Hom
         <div className="workflow-grid">
           <aside className="sidebar-stack" aria-label="系統狀態">
             {!isMobile ? <TokenGate token={token} onSave={handleSaveToken} /> : null}
-            <SystemStatusBanner status={systemStatus} loading={systemLoading} hasToken={Boolean(token)} />
+            {showStatusBanner ? (
+              <SystemStatusBanner status={systemStatus} loading={systemLoading} hasToken={Boolean(token)} />
+            ) : null}
           </aside>
 
           <div className="primary-stack">
