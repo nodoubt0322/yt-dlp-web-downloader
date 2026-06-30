@@ -404,6 +404,7 @@ Authorization: Bearer <ADMIN_TOKEN>
 
 ```bash
 pnpm install
+cp .env.example .env
 pnpm dev
 ```
 
@@ -413,16 +414,16 @@ pnpm dev
 http://127.0.0.1:5173
 ```
 
-`pnpm dev` 會自動讀取根目錄 `.env`，因此 `ADMIN_TOKEN` 寫在 `.env` 後，不需要在 shell 前綴 `ADMIN_TOKEN=...`。操作受保護 API 前，先在 UI token 欄位輸入 `.env` 裡的 token。
+`pnpm dev` 只會讀取根目錄 `.env`。本地開發請讓 `.env` 使用 `PORT=8788`，避免跟對外 tunnel API 的 `8787` 衝突。操作受保護 API 前，先在 UI token 欄位輸入 `.env` 裡的 token。
 
 `pnpm dev` 會同時啟動：
 
 ```text
-api: http://127.0.0.1:8787
+api: http://127.0.0.1:8788
 web: http://127.0.0.1:5173
 ```
 
-開發時請打開 `5173`。Vite 會提供 hot reload，並把 `/api` 代理到後端。
+開發時請打開 `5173`。Vite 會提供 hot reload，並把 `/api` 代理到本地開發後端。
 
 如果後端程式碼更動後行為沒有更新，確認 `tsx watch` 是否仍在運作；必要時重跑 `pnpm dev`。
 
@@ -442,10 +443,10 @@ pnpm dev:api
 pnpm dev:web
 ```
 
-如果要在開發模式同時開 Cloudflare Tunnel，使用明確的 tunnel 腳本，不要讓一般 `pnpm dev` 自動公開本機服務：
+對外 API + Cloudflare Tunnel 使用獨立指令；一般 `pnpm dev` 不會公開本機服務：
 
 ```bash
-pnpm dev:api:tunnel  # API + Cloudflare Tunnel
+pnpm api:tunnel
 ```
 
 單獨跑 package：
@@ -496,7 +497,7 @@ pnpm build
 
 ```bash
 pnpm build
-dotenv -e .env -e .env.tunnel -- pnpm --filter @yt-dlp-web-downloader/server start
+dotenv -e .env.production -e .env -- pnpm --filter @yt-dlp-web-downloader/server start
 ```
 
 server 預設會提供 `apps/web/dist` 裡的 built frontend assets。需要時可用 `STATIC_DIR=/path/to/dist` 覆寫。
@@ -591,17 +592,19 @@ workflow 內設定：
 VITE_API_BASE_URL=https://dlp-api.example.com
 ```
 
-因此 Cloudflare Pages 上的前端會呼叫 tunnel API hostname；本機 `pnpm dev` 不設定 `VITE_API_BASE_URL` 時仍走 `/api`，不會受到影響。
+因此 Cloudflare Pages 上的前端會呼叫 tunnel API hostname；本機 `pnpm dev` 仍走 `/api`，不會受到影響。
+
+GitHub Actions 只會部署 Cloudflare Pages 前端，不會啟動或更新本機 API。外網 API 仍由這台機器上的 `pnpm api:tunnel` 提供，所以 `.env.production` 必須留在本機並由本機 process 讀取。
 
 手動觸發也可以到 GitHub Actions 頁面執行 `Deploy Cloudflare Pages` workflow。
 
 ### 5. 建立本機 tunnel runtime env
 
 ```bash
-cp .env.tunnel.example .env.tunnel
+cp .env.production.example .env.production
 ```
 
-目前 `.env.tunnel.example`：
+目前 `.env.production.example`：
 
 ```bash
 NODE_ENV=production
@@ -612,11 +615,13 @@ ALLOWED_ORIGINS=https://dlp.example.com
 DATA_DIR=./data
 ```
 
-`.env` 保留 `ADMIN_TOKEN`；`.env.tunnel` 放 Cloudflare production URL 與 CORS 設定。啟動本機 API：
+`.env` 保留共用 secret；`.env.production` 放 Cloudflare production URL、CORS、`PORT=8787` 與 production data path。`dotenv-cli` 會保留先讀到的值，所以 production 指令要先讀 `.env.production`，再讀 `.env` 補上 `ADMIN_TOKEN` 等共用 secret。
+
+啟動 production API：
 
 ```bash
 pnpm build
-dotenv -e .env -e .env.tunnel -- pnpm --filter @yt-dlp-web-downloader/server start
+dotenv -e .env.production -e .env -- pnpm --filter @yt-dlp-web-downloader/server start
 ```
 
 ### 6. 建立 Cloudflare Tunnel
@@ -653,16 +658,16 @@ curl -H "Authorization: Bearer <ADMIN_TOKEN>" https://dlp-api.example.com/api/sy
 5. 建立下載任務
 6. 下載完成檔案
 
-如果瀏覽器 console 出現 CORS error，先確認本機 server 是用 `.env.tunnel` 啟動，且 `ALLOWED_ORIGINS=https://dlp.example.com`。
+如果瀏覽器 console 出現 CORS error，先確認本機 server 是用 `.env.production` 啟動，且 `ALLOWED_ORIGINS=https://dlp.example.com`。
 
 如果 DevTools 裡 request 沒有任何 response headers，通常不是 CORS allow-list，而是 `dlp-api.example.com` 沒有解析到 Cloudflare Tunnel，或 tunnel process 沒有連上。先確認：
 
 ```bash
 dig @1.1.1.1 +short dlp-api.example.com A
-pnpm dev:api:tunnel
+pnpm api:tunnel
 ```
 
-`dig` 應該看到 Cloudflare proxy 的 A records；如果 `@1.1.1.1` 有值但瀏覽器仍連不到，通常是本機或瀏覽器 DNS cache 還沒更新。`pnpm dev:api:tunnel` 必須持續執行，外網 API 才會在線。
+`dig` 應該看到 Cloudflare proxy 的 A records；如果 `@1.1.1.1` 有值但瀏覽器仍連不到，通常是本機或瀏覽器 DNS cache 還沒更新。`pnpm api:tunnel` 必須持續執行，外網 API 才會在線。
 
 每次服務收到 request，server terminal 會記錄使用時間：
 
@@ -675,10 +680,10 @@ pnpm dev:api:tunnel
 所有設定鍵請參考 `.env.example`。重要預設值：
 
 ```text
-PORT=8787
-PUBLIC_BASE_URL=http://127.0.0.1:8787
+PORT=8788
+PUBLIC_BASE_URL=http://127.0.0.1:8788
 ALLOWED_ORIGINS=
-DATA_DIR=./data
+DATA_DIR=./data-dev
 JOB_CONCURRENCY=1
 ANALYZE_TIMEOUT_SECONDS=60
 DOWNLOAD_TIMEOUT_SECONDS=7200
@@ -692,7 +697,7 @@ ENABLE_RANGE_REQUESTS=false
 YT_DLP_BINARY=yt-dlp
 FFMPEG_BINARY=ffmpeg
 FFPROBE_BINARY=ffprobe
-API_ORIGIN=http://127.0.0.1:8787
+API_ORIGIN=http://127.0.0.1:8788
 VITE_API_BASE_URL=
 ```
 

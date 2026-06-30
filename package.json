@@ -6,8 +6,8 @@
   "scripts": {
     "dev": "dotenv -e .env -- concurrently -n api,web -c orange,cyan \"pnpm dev:api\" \"pnpm dev:web\"",
     "dev:api": "dotenv -e .env -- pnpm --filter @yt-dlp-web-downloader/server dev",
-    "dev:api:tunnel": "dotenv -e .env -e .env.tunnel -- concurrently -n api,tunnel -c orange,blue \"pnpm --filter @yt-dlp-web-downloader/server dev\" \"cloudflared tunnel --config .cloudflared/yt-dlp-web-downloader.yml --loglevel warn --transport-loglevel warn run yt-dlp-web-downloader\"",
     "dev:web": "dotenv -e .env -- pnpm --filter @yt-dlp-web-downloader/web dev",
+    "api:tunnel": "dotenv -e .env.production -e .env -- concurrently -n api,tunnel -c orange,blue \"pnpm --filter @yt-dlp-web-downloader/server dev\" \"cloudflared tunnel --config .cloudflared/yt-dlp-web-downloader.yml --loglevel warn --transport-loglevel warn run yt-dlp-web-downloader\"",
     "test": "pnpm -r test",
     "typecheck": "pnpm -r typecheck",
     "build": "pnpm -r build"
