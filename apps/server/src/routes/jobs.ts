@@ -13,6 +13,8 @@ interface RegisterJobsRoutesOptions {
   urlResolver?: DnsResolver;
   getFreeBytes?: (dataDir: string) => Promise<number>;
   now?: () => Date;
+  usageLog?: boolean;
+  logUsage?: (date: Date) => void;
 }
 
 export async function registerJobsRoutes(app: FastifyInstance, options: RegisterJobsRoutesOptions) {
@@ -49,6 +51,10 @@ export async function registerJobsRoutes(app: FastifyInstance, options: Register
       options: readDownloadOptions(body?.options),
       expiresAt: new Date((options.now ?? (() => new Date()))().getTime() + options.config.fileTtlMinutes * 60_000)
     });
+
+    if (options.usageLog) {
+      options.logUsage?.((options.now ?? (() => new Date()))());
+    }
 
     void queue.enqueue(job.id);
 

@@ -68,11 +68,6 @@ export async function buildServer(options: BuildServerOptions = {}) {
   const app = Fastify({
     logger: false
   });
-  if (enableAccessLog) {
-    app.addHook("onResponse", async () => {
-      console.log(formatUsageLogLine(options.services?.now?.() ?? new Date()));
-    });
-  }
   if (config.allowedOrigins.length > 0) {
     await app.register(cors, {
       origin: (origin, callback) => {
@@ -141,7 +136,9 @@ export async function buildServer(options: BuildServerOptions = {}) {
         queue: options.services?.queue,
         urlResolver: options.services?.urlResolver,
         getFreeBytes: options.services?.getFreeBytes,
-        now: options.services?.now
+        now: options.services?.now,
+        usageLog: enableAccessLog,
+        logUsage: (date) => console.log(formatUsageLogLine(date))
       });
       await registerSystemRoutes(api, options.services?.systemService ?? createSystemService({ config }));
     },
