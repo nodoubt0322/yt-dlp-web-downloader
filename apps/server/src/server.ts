@@ -30,9 +30,22 @@ function hasValidBearerToken(header: string | undefined, token: string): boolean
   return actual.length === expected.length && timingSafeEqual(actual, expected);
 }
 
+function formatLocalMinute(date: Date): string {
+  const pad = (value: number) => value.toString().padStart(2, "0");
+
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ${pad(date.getHours())}:${pad(
+    date.getMinutes()
+  )}`;
+}
+
+export function formatUsageLogLine(date: Date): string {
+  return `[usage] ${formatLocalMinute(date)} service used`;
+}
+
 interface BuildServerOptions {
   config?: Partial<AppConfig>;
   staticDir?: string;
+  accessLog?: boolean;
   services?: {
     systemService?: SystemService;
     jobStore?: JobStore;
@@ -46,6 +59,7 @@ interface BuildServerOptions {
 
 export async function buildServer(options: BuildServerOptions = {}) {
   const config = mergeConfig(options.config);
+  const enableAccessLog = options.accessLog ?? process.env.NODE_ENV !== "test";
   const defaultJobStore =
     options.services?.jobStore ??
     createJobStore({
@@ -54,6 +68,11 @@ export async function buildServer(options: BuildServerOptions = {}) {
   const app = Fastify({
     logger: false
   });
+  if (enableAccessLog) {
+    app.addHook("onResponse", async () => {
+      console.log(formatUsageLogLine(options.services?.now?.() ?? new Date()));
+    });
+  }
   if (config.allowedOrigins.length > 0) {
     await app.register(cors, {
       origin: (origin, callback) => {

@@ -664,6 +664,12 @@ pnpm dev:api:tunnel
 
 `dig` 應該看到 Cloudflare proxy 的 A records；如果 `@1.1.1.1` 有值但瀏覽器仍連不到，通常是本機或瀏覽器 DNS cache 還沒更新。`pnpm dev:api:tunnel` 必須持續執行，外網 API 才會在線。
 
+每次服務收到 request，server terminal 會記錄使用時間：
+
+```text
+[usage] 2026-06-30 22:14 service used
+```
+
 ## 設定
 
 所有設定鍵請參考 `.env.example`。重要預設值：
