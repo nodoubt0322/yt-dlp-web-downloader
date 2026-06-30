@@ -629,6 +629,7 @@ cloudflared tunnel route dns yt-dlp-web-downloader dlp-api.example.com
 ```
 
 建立後把 `.cloudflared/yt-dlp-web-downloader.example.yml` 複製成 `.cloudflared/yt-dlp-web-downloader.yml`，並把 `credentials-file` 換成 `cloudflared tunnel create` 產生的 credentials JSON 路徑。
+此專案的 tunnel config 固定使用 `protocol: http2`，避免部分網路環境下 QUIC/UDP 連線不穩。
 
 啟動 tunnel：
 

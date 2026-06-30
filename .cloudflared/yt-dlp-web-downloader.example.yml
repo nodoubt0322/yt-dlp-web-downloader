@@ -1,5 +1,6 @@
 tunnel: yt-dlp-web-downloader
 credentials-file: /Users/nodoubt0322/.cloudflared/<tunnel-id>.json
+protocol: http2
 
 ingress:
   - hostname: dlp-api.example.com
